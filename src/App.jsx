@@ -1,9 +1,12 @@
-import React from 'react'
-
+import Footer from '@/components/Footer/Footer.jsx'
+import Home from "@/Pages/Home/Home";
 const App = () => {
   return (
-    <div>App hai kya ye</div>
-  )
-}
+    <>
+    <Home/>
+    <Footer/>
+    </>
+  );
+};
 
-export default App
+export default App;
