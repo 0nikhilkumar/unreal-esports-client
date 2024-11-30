@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import Navbar from "../../components/Navbar/Navbar";
 
 function Home() {
   const [hamburger, setHamburger] = useState(false);
@@ -45,36 +46,9 @@ function Home() {
       <div className="absolute inset-0 bg-black bg-opacity-50"></div>
 
       {/* Navbar  */}
-      <nav className="absolute top-0 left-0 w-full flex p-5 bg-black bg-opacity-0 text-white justify-around items-center z-40">
-        <div className="text-xl font-bold">Logo</div>
-        <div className="hidden md:flex space-x-4">
-          <Link to="/" className="hover:text-gray-300">
-            Nikhil
-          </Link>
-          <Link to="/about" className="hover:text-gray-300">
-            Chutiya
-          </Link>
-          <Link to="/schedule" className="hover:text-gray-300">
-            Hai
-          </Link>
-          <Link to="/faq" className="hover:text-gray-300">
-            Kya tu
-          </Link>
-          <button onClick={toggleAudio}>{isMuted ? "UnMute" : "Mute"}</button>
-        </div>
 
-        {/* Hamburger */}
-        <div className="md:hidden">
-          <button
-            className="text-xl hover-text-gray-300 focus:outline-none"
-            onClick={handleHamburger}
-          >
-            ☰
-          </button>
-        </div>
-      </nav>
+      <Navbar/>
 
-     
       {/* Hero Section */}
 
       <section className="relative flex flex-col items-center  justify-center  h-full text-center text-white px-4">
