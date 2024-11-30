@@ -1,33 +1,53 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 function Home() {
   const [hamburger, setHamburger] = useState(false);
+  const videoRef = useRef(null); // Reference to the video element
+  const [isMuted, setIsMuted] = useState(true); // State to track mute status
+  const [isDark, setIsDark] = useState(false);
 
   function handleHamburger() {
     setHamburger(!hamburger);
   }
 
+  const toggleAudio = () => {
+    if (videoRef.current) {
+      videoRef.current.volume = 0.3;
+      videoRef.current.playbackRate = 1;
+      videoRef.current.muted = !isMuted; // Toggle the muted property of the video
+      setIsMuted(!isMuted);
+      setIsDark(!isDark); // Toggle dark effect
+    }
+  };
+
   return (
     <div className=" relative h-screen w-full overflow-hidden">
       {/* Video */}
       <video
+      ref={videoRef}
+      src="/Video/video.mp4"
         autoPlay
         loop
         muted
         className="absolute top-0 left-0 w-full h-full object-cover"
+        style={{
+          width: "100%",
+          height: "auto",
+          filter: isDark ? "brightness(50%)" : "none", // Dark effect using CSS filter
+          transition: "filter 0.3s ease", // Smooth transition
+        }}
       >
-        <source src="../public/Video/demo.mp4" type="video/mp4" />
+        <source src="/Video/video.mp4" type="video/mp4" />
       </video>
 
       {/* Overlays */}
       <div className="absolute inset-0 bg-black bg-opacity-50"></div>
 
       {/* Navbar  */}
-      <nav className="absolute top-0 left-0 w-full flex p-5 bg-black bg-opacity-0 text-white justify-around items-center">
+      <nav className="absolute top-0 left-0 w-full flex p-5 bg-black bg-opacity-0 text-white justify-around items-center z-40">
         <div className="text-xl font-bold">Logo</div>
         <div className="hidden md:flex space-x-4">
-
           <Link to="/" className="hover:text-gray-300">
             Nikhil
           </Link>
@@ -40,6 +60,7 @@ function Home() {
           <Link to="/faq" className="hover:text-gray-300">
             Kya tu
           </Link>
+          <button onClick={toggleAudio}>{isMuted ? "UnMute" : "Mute"}</button>
         </div>
 
         {/* Hamburger */}
