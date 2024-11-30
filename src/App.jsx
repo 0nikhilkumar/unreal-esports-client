@@ -5,8 +5,6 @@ const App = () => {
     <>
     <Outlet/>
     <Footer/>
-
-     
     </>
   );
 };
