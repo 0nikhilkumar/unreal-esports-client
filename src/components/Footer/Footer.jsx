@@ -35,7 +35,7 @@ function Footer() {
         </div>
       </nav>
       <aside>
-        <p>© {new Date().getFullYear()} - All right reserved by Battle Arena</p>
+        <p>© {new Date().getFullYear()} - All right reserved by Unreal Esports</p>
       </aside>
     </footer>
   );
