@@ -17,8 +17,8 @@ function Home() {
     }
   };
 
-  return (
-    <div className="relative h-screen w-full overflow-hidden">
+return (
+     <div className="relative h-screen w-full overflow-hidden">
       {/* Video */}
       <video
         ref={videoRef}

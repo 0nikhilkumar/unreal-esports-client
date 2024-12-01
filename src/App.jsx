@@ -1,9 +1,9 @@
-import { Outlet } from "react-router-dom";
-import Footer from "@/components/Footer/Footer";
+import Footer from '@/components/Footer/Footer.jsx'
+import Home from "@/Pages/Home/Home";
 const App = () => {
   return (
     <>
-    <Outlet/>
+    <Home/>
     <Footer/>
     </>
   );
