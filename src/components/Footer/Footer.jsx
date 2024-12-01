@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 function Footer() {
   return (
-    <footer className="bg-[#0A1623] text-white py-6">
+    <footer className="bg-[#0A1623] text-white py-14">
       <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center ">
         <div>
           {/* Logo Section */}
