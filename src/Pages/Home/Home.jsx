@@ -32,8 +32,11 @@ return (
           transition: "filter 0.3s ease", // Smooth transition
         }}></video>
 
+        {/* Fade Overlay */}
+      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-b from-transparent to-black pointer-events-none"></div>
+
       {/* Overlays */}
-      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      <div className="absolute inset-0 bg-black bg-opacity-10"></div>
 
       {/* Navbar */}
       <Navbar toggleAudio={toggleAudio} isMuted={isMuted} />
