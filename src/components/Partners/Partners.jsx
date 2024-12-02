@@ -27,7 +27,7 @@ const LOGOS = [
 const Partners = () => {
   return (
     <div className="relative bg-black">
-      <h1 className="absolute inset-0 text-black text-center text-3xl font-semibold mt-3 text-white">
+      <h1 className="absolute left-0 right-0 text-center text-3xl font-semibold top-5 bottom-5 text-white">
         Partners
       </h1>
       <div className="px-20 h-52 flex justify-center items-center">
