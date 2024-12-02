@@ -18,20 +18,20 @@ function Navbar({toggleAudio, isMuted}) {
               alt="Logo"
               className="w-15 h-12 md:w-20 md:h-15 lg:w-24 lg:h-18 rounded-e-full"
             />
-            <h1 className="text-[1rem] hidden md:display">Unreal Esports</h1>
+            <h1 className="text-[1rem] md:display">Unreal Esports</h1>
           </Link>
         </div>
         <div className=" flex justify-center items-center hidden md:flex space-x-5 mr-5">
           <Link to="/" className="hover:text-gray-300">
             Home
           </Link>
-          <Link to="about" className="hover:text-gray-300">
+          <Link to="/about" className="hover:text-gray-300">
             About
           </Link>
-          <Link to="tournament" className="hover:text-gray-300">
+          <Link to="/tournament" className="hover:text-gray-300">
             Tournament
           </Link>
-          <Link to="faq" className="hover:text-gray-300">
+          <Link to="/faq" className="hover:text-gray-300">
             FAQ
           </Link>
           <div className="cursor-pointer text-2xl" onClick={toggleAudio}>

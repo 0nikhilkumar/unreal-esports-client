@@ -10,10 +10,10 @@ import Tournament from "./Pages/Tournament/Tournament";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<App/>} errorElement={<Error/>}>
-      <Route path="/" element={<Home/>}/>
-      <Route path="/about" element={<About/>}/>
-      <Route path="/tournament" element={<Tournament/>}/>
+    <Route path="/" element={<App />} errorElement={<Error />}>
+      <Route path="/" element={<Home/>} />
+      <Route path="/about" element={<About/>} />
+      <Route path="/tournament" element={<Tournament />} />
     </Route>
   )
 )

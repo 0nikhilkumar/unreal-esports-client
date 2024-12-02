@@ -34,8 +34,10 @@ return (
 
         {/* Fade Overlay */}
       <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-b from-transparent to-black pointer-events-none"></div>
+      {/* <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-b from-transparent to-black pointer-events-none"></div> */}
 
       {/* Overlays */}
+      <div className="absolute inset-0 bg-black bg-opacity-10"></div>
       <div className="absolute inset-0 bg-black bg-opacity-10"></div>
 
       {/* Navbar */}
@@ -50,7 +52,7 @@ return (
           <span className="h-px w-12 sm:w-16 bg-blue-500 sm:block"></span>
           <p className="text-2xl flex flex-col justify-center items-center gap-2 sm:text-3xl md:text-4xl sm:flex-row md:flex-row lg:text-5xl mx-4 font-bold text-center group">
             <span className="text-red-700">Unreal</span>{" "}
-            <span className="bg-red-600 rounded-xl px-3 py-1 pb-2">
+            <span className="bg-red-600 rounded-xl px-3 py-1 pb-3">
               Esports
             </span>
           </p>

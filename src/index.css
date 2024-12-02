@@ -2,9 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
+:root{
+  --raisin-black-1: hsl(234, 14%, 14%);
+  --raisin-black-2: hsl(231, 12%, 12%);
+  --raisin-black-3: hsl(228, 12%, 17%);
+  --eerie-black: hsl(240, 11%, 9%);
+  --light-gray: hsl(0, 0%, 80%);
+  --platinum: hsl(0, 4%, 91%);
+  --xiketic: hsl(275, 24%, 10%);
+  --orange: hsl(31, 100%, 51%);
+  --white: hsl(0, 0%, 100%);
+  --onyx: hsl(240, 5%, 26%);
+}
+
+
+::-webkit-scrollbar { width: 8px; }
+
+::-webkit-scrollbar-track { background: var(--raisin-black-2); }
+
+::-webkit-scrollbar-thumb {
+  background: var(--orange);
+  border-radius: 10px;
+}
 
 @layer utilities {
-    .animation-pause {
-      animation-play-state: paused;
-    }
+  .animation-pause {
+    animation-play-state: paused;
   }
+}
+
+
+.custom-cursor {
+  position: fixed;
+  width: 25px;
+  height: 25px;
+  background-color: rgba(255, 165, 0, 0.8); /* Orange color */
+  border-radius: 50%;
+  pointer-events: none; /* Prevent cursor blocking interactions */
+  transform: translate(-50%, -50%);
+  z-index: 1000; /* Place cursor above other elements */
+  transition: transform 0.2s ease-out, width 0.2s, height 0.2s;
+}
+
+.custom-cursor.hovered {
+  width: 30px;
+  height: 30px;
+  opacity: 0.5;
+  transform: translate(-50%, -50%) scale(1.5); /* Expand on hover */
+  background-color: rgba(255, 165, 0, 1);
+}

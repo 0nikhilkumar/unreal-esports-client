@@ -1,14 +1,16 @@
-import Footer from '@/components/Footer/Footer.jsx'
+import Footer from '@/components/Footer/Footer.jsx';
 import Home from "@/Pages/Home/Home";
-import Partners from './components/Partners/Partners'
+import CustomCursor from './components/CustomCurson';
 import Join_Now from './components/Join_Now/Join_Now';
-import Tournament from './Pages/Tournament/Tournament';
+import Partners from './components/Partners/Partners';
+import TournamentComponent from './components/Tournament/TournamentComponent';
 const App = () => {
   return (
     <>
+    <CustomCursor />
     <Home/>
     <Partners/>
-    <Tournament />
+    <TournamentComponent />
     <Join_Now/>
     <Footer/>
     </>
