@@ -18,7 +18,7 @@ function Footer() {
               className="w-12 h-12 md:w-16 md:h-16 rounded-full"
             />
           </div>
-          <div className="text-sm">&copy; 2024 UnReal Esports. All rights reserved</div>
+          <div className="text-sm">&copy; 2024 Unreal Esports. All rights reserved</div>
         </div>
 
         {/* Links Section */}

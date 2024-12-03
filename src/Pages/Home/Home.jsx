@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 
 function Home() {
-  const [hamburger, setHamburger] = useState(false);
+  // const [hamburger, setHamburger] = useState(false);
   const videoRef = useRef(null); // Reference to the video element
   const [isMuted, setIsMuted] = useState(true); // State to track mute status
   const [isDark, setIsDark] = useState(false);
@@ -17,8 +17,8 @@ function Home() {
     }
   };
 
-return (
-     <div className="relative h-screen w-full overflow-hidden">
+  return (
+    <div className="relative h-screen w-full overflow-hidden">
       {/* Video */}
       <video
         ref={videoRef}
@@ -32,7 +32,7 @@ return (
           transition: "filter 0.3s ease", // Smooth transition
         }}></video>
 
-        {/* Fade Overlay */}
+      {/* Fade Overlay */}
       <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-b from-transparent to-black pointer-events-none"></div>
       {/* <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-b from-transparent to-black pointer-events-none"></div> */}
 
@@ -45,7 +45,7 @@ return (
 
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center  h-full bg-black bg-opacity-50 text-center text-white px-4">
-        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-wide">
           LevelUp Gaming Platform
         </h1>
         <div className="flex flex-row sm:flex-row md:flex-row justify-center items-center mt-3">
@@ -58,7 +58,7 @@ return (
           </p>
           <span className="h-px w-12 sm:w-16 bg-blue-500 sm:block"></span>
         </div>
-        <p className="text-xs sm:text-sm md:text-base lg:text-lg max-w-lg md:max-w-2xl bg-black bg-opacity-30 p-3 rounded-md mt-4 selection:bg-yellow-500 selection:text-white">
+        <p className="text-xs sm:text-sm md:text-base lg:text-lg max-w-lg md:max-w-2xl bg-black bg-opacity-30 p-3 rounded-md mt-4">
           We are experts in game Esports. Our mission is to become the most
           beloved metaverse and game Esports company.
         </p>

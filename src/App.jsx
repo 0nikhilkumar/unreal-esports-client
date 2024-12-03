@@ -5,11 +5,13 @@ import Join_Now from './components/Join_Now/Join_Now';
 import Partners from './components/Partners/Partners';
 import TournamentComponent from './components/Tournament/TournamentComponent';
 import FAQ from './components/FAQ/FAQ';
+import About_Us from './components/AboutComponent/About';
 const App = () => {
   return (
     <>
-    <CustomCursor />
+    {/* <CustomCursor /> */}
     <Home/>
+    <About_Us />
     <Partners/>
     <TournamentComponent />
     <Join_Now/>

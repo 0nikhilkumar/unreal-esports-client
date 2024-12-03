@@ -10,7 +10,7 @@ function TournamentComponent() {
         
         {/* Background Image */}
         <div
-          className="absolute rounded-lg inset-0 bg-cover bg-center grayscale transition-all duration-700 ease-in-out group-hover:grayscale-[50px]"
+          className="absolute rounded-lg inset-0 bg-cover bg-center grayscale-[50px]"
           style={{
             backgroundColor: "gray",
             backgroundImage: "url('/images/section-wrapper-bg.jpg')",
@@ -18,10 +18,10 @@ function TournamentComponent() {
         ></div>
 
         {/* Animated Gradient Overlay for Top-to-Bottom Color Reveal */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-50 group-hover:animate-gradient transition-all duration-10 ease-in-out"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-50 "></div>
 
         {/* Animated Gradient Overlay for Top-to-Bottom Color Reveal */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-0 group-hover:opacity-100 group-hover:animate-gradient transition-all duration-700 ease-in-out"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-100"></div>
 
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-center items-center h-full px-5">
