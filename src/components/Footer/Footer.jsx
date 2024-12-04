@@ -11,12 +11,13 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row justify-between items-center space-y-5 lg:space-y-0">
         {/* Logo and Copyright Section */}
         <div className="text-center lg:text-left">
-          <div className="flex justify-center lg:justify-start space-x-3 mb-5">
+          <div className="flex justify-center lg:justify-start mb-5">
             <img
-              src="/images/logo.jpg"
+              src="/images/logo-fav.png"
               alt="logo"
               className="w-12 h-12 md:w-16 md:h-16 rounded-full"
             />
+            <p className="flex justify-center items-center -ml-2 sm:-ml-4">Unreal Esport</p>
           </div>
           <div className="text-sm">&copy; 2024 Unreal Esports. All rights reserved</div>
         </div>
@@ -25,13 +26,13 @@ function Footer() {
         <div className="text-center lg:text-right space-y-6">
           <div className="flex justify-center lg:justify-end space-x-6">
             <Link to={"/about"} className="hover:text-gray-300">
-              About
+              Games
             </Link>
             <Link to={"/tournament"} className="hover:text-gray-300">
               Tournament
             </Link>
             <Link to={"/faq"} className="hover:text-gray-300">
-              FAQ
+              Teams
             </Link>
           </div>
 

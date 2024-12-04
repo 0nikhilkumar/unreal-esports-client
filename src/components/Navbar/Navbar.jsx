@@ -3,90 +3,124 @@ import { Link } from "react-router-dom";
 import { HiMiniSpeakerWave } from "react-icons/hi2";
 import { HiMiniSpeakerXMark } from "react-icons/hi2";
 
-
-function Navbar({toggleAudio, isMuted}) {
-    const [hamburger, setHamburger] = useState(false);
+function Navbar({ toggleAudio, isMuted }) {
+  const [hamburger, setHamburger] = useState(false);
 
   return (
-    <>
-      {/* Navbar  */}
-      <nav className="absolute top-0 left-0 w-full flex px-5 py-1 delay-100 bg-black bg-opacity-[0] hover:bg-opacity-[0.3] text-white items-center justify-between z-50">
-        <div className="ml-0">
-          <Link to={"/"} className="flex justify-center items-center ">
-            <img
-              src={"/images/logo-fav.png"}
-              alt="Logo"
-              className=" md:w-20 md:h-15 lg:w-24 lg:h-18 rounded-e-full"
-            />
-            <h1 className="text-[1.1rem] font-semibold md:display uppercase -ml-5 sm:-ml-6">
-              Unreal <span className="">Esports</span>
-            </h1>
-          </Link>
-        </div>
-        <div className=" flex justify-center items-center hidden md:flex space-x-5 mr-5">
-          <Link to="/" className="hover:text-gray-300">
-            Home
-          </Link>
-          <Link to="/about" className="hover:text-gray-300">
-            About
-          </Link>
-          <Link to="/tournament" className="hover:text-gray-300">
-            Tournament
-          </Link>
-          <Link to="/faq" className="hover:text-gray-300">
-            FAQ
-          </Link>
-          <div className="cursor-pointer text-2xl" onClick={toggleAudio}>
-            {isMuted ? (
-              <HiMiniSpeakerWave />
-            ) : (
-              <HiMiniSpeakerXMark className="text-red-800" />
-            )}
-          </div>
-        </div>
+    <nav
+      className={`absolute top-0 left-0 w-full flex px-5 py-2 items-center md:hover:bg-opacity-[0.3] md:bg-black md:bg-opacity-[0] justify-between transition-all z-[1] duration-300 ${
+        hamburger ? "bg-black" : "bg-transparent"
+      } text-white`} 
+      // Apply black background on both the navbar and hamburger icon section when hamburger is true
+    >
+      {/* Logo Section */}
+      <div className="flex items-center">
+        <Link to={"/"} className="flex items-center">
+          <img
+            src={"/images/logo-fav.png"}
+            alt="Logo"
+            className="w-12 h-12 sm:w-16 sm:h-16 rounded-e-full"
+          />
+          <h1 className="text-[1.1rem] sm:text-lg font-semibold uppercase -ml-2">
+            Unreal <span>Esports</span>
+          </h1>
+        </Link>
+      </div>
 
-        {/* Hamburger */}
-        <div className="md:hidden">
-          <button
-            className="text-xl hover-text-gray-300 focus:outline-none"
-            onClick={() => setHamburger(!hamburger)}>
-            ☰
-          </button>
+      {/* Links for Medium & Large Screens */}
+      <div className="hidden md:flex items-center space-x-6">
+        <Link to="/" className="hover:text-gray-300 transition-colors">
+          Home
+        </Link>
+        <Link to="/about" className="hover:text-gray-300 transition-colors">
+          Games
+        </Link>
+        <Link
+          to="/tournament"
+          className="hover:text-gray-300 transition-colors"
+        >
+          Tournament
+        </Link>
+        <Link to="/faq" className="hover:text-gray-300 transition-colors">
+          Teams
+        </Link>
+        <button className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-lg shadow-md transition-transform hover:scale-105 focus:outline-none">
+          <Link to="/login">Login</Link>
+        </button>
+        <div className="cursor-pointer text-2xl" onClick={toggleAudio}>
+          {isMuted ? (
+            <HiMiniSpeakerWave />
+          ) : (
+            <HiMiniSpeakerXMark className="text-red-800" />
+          )}
         </div>
+      </div>
 
-        {/* Mobile Navbar */}
-        {hamburger && (
-          <div className="flex flex-col mt-4 space-y-4 md:hidden bg-black bg-opacity-90 p-4 rounded-lg">
-            <a
-              href="#home"
-              className="hover:text-gray-300"
-              onClick={() => setHamburger(false)}>
-              Home
-            </a>
-            <a
-              href="#about"
-              className="hover:text-gray-300"
-              onClick={() => setHamburger(false)}>
-              About
-            </a>
-            <a
-              href="#services"
-              className="hover:text-gray-300"
-              onClick={() => setHamburger(false)}>
-              Services
-            </a>
-            <button
-              onClick={() => {
-                toggleAudio();
-                setHamburger(false);
-              }}
-              className="hover:text-gray-300">
-              {isMuted ? "Unmute" : "Mute"}
-            </button>
-          </div>
-        )}
-      </nav>
-    </>
+      {/* Hamburger Button */}
+      <button
+        className="md:hidden text-2xl focus:outline-none"
+        onClick={() => setHamburger(!hamburger)}
+      >
+        {hamburger ? "X" : "☰"} {/* Conditional rendering of hamburger or cross icon */}
+      </button>
+
+      {/* Mobile Navbar */}
+      <div
+        className={`absolute top-0 left-0 w-full ${
+          hamburger ? "bg-black" : "bg-transparent"
+        } bg-opacity-90 text-white flex flex-col items-center py-5 space-y-5 md:hidden z-40 transform transition-transform duration-300 ease-in-out ${
+          hamburger ? "translate-y-16" : "-translate-y-full"
+        }`}
+      >
+        <Link
+          to="/"
+          className="hover:text-gray-300"
+          onClick={() => setHamburger(false)}
+        >
+          Home
+        </Link>
+        <Link
+          to="/about"
+          className="hover:text-gray-300"
+          onClick={() => setHamburger(false)}
+        >
+          Games
+        </Link>
+        <Link
+          to="/tournament"
+          className="hover:text-gray-300"
+          onClick={() => setHamburger(false)}
+        >
+          Tournament
+        </Link>
+        <Link
+          to="/faq"
+          className="hover:text-gray-300"
+          onClick={() => setHamburger(false)}
+        >
+          Teams
+        </Link>
+        <button
+          onClick={() => {
+            toggleAudio();
+            setHamburger(false);
+          }}
+          className="hover:text-gray-300"
+        >
+          {isMuted ? (
+            <HiMiniSpeakerWave />
+          ) : (
+            <HiMiniSpeakerXMark className="text-red-800" />
+          )}
+        </button>
+        <button
+          className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-lg shadow-md"
+          onClick={() => setHamburger(false)}
+        >
+          <Link to="/login">Login</Link>
+        </button>
+      </div>
+    </nav>
   );
 }
 
