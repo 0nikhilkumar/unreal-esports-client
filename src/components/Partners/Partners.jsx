@@ -29,7 +29,7 @@ const Partners = () => {
     <div className="relative bg-black py-10">
       {/* Headline */}
       <div className="text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold uppercase relative inline-block text-white">
+        <h1 className="text-lg sm:text-3xl md:text-4xl font-bold uppercase relative inline-block text-white">
           Partners
           <span className="block h-1 bg-blue-500 w-16 mx-auto mt-2"></span>
         </h1>

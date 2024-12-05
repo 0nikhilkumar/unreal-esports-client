@@ -53,7 +53,7 @@ function Home() {
           <span className="h-px w-12 sm:w-16 bg-blue-500 sm:block"></span>
           <p className="text-2xl flex flex-col justify-center items-center gap-2 sm:text-3xl md:text-4xl sm:flex-row md:flex-row lg:text-5xl mx-4 font-bold text-center group">
             <span className="text-red-700">Unreal</span>{" "}
-            <span className="bg-red-600 rounded-xl px-3 py-1 pb-3">
+            <span className="bg-red-600 flex justify-center items-center rounded-xl px-3 py-1 pb-2 sm:pb-3">
               Esports
             </span>
           </p>

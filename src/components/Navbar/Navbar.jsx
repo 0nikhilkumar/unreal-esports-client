@@ -1,7 +1,6 @@
 import React, { useState } from "react";
+import { HiMiniSpeakerWave, HiMiniSpeakerXMark } from "react-icons/hi2";
 import { Link } from "react-router-dom";
-import { HiMiniSpeakerWave } from "react-icons/hi2";
-import { HiMiniSpeakerXMark } from "react-icons/hi2";
 
 function Navbar({ toggleAudio, isMuted }) {
   const [hamburger, setHamburger] = useState(false);
@@ -21,7 +20,7 @@ function Navbar({ toggleAudio, isMuted }) {
             alt="Logo"
             className="w-12 h-12 sm:w-16 sm:h-16 rounded-e-full"
           />
-          <h1 className="text-[1.1rem] sm:text-lg font-semibold uppercase -ml-2">
+          <h1 className="text-[0.8rem] sm:text-lg font-semibold uppercase -ml-2">
             Unreal <span>Esports</span>
           </h1>
         </Link>
@@ -33,7 +32,7 @@ function Navbar({ toggleAudio, isMuted }) {
           Home
         </Link>
         <Link to="/about" className="hover:text-gray-300 transition-colors">
-          Games
+          About
         </Link>
         <Link
           to="/tournament"
@@ -41,24 +40,30 @@ function Navbar({ toggleAudio, isMuted }) {
         >
           Tournament
         </Link>
-        <Link to="/faq" className="hover:text-gray-300 transition-colors">
-          Teams
-        </Link>
-        <button className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-lg shadow-md transition-transform hover:scale-105 focus:outline-none">
-          <Link to="/login">Login</Link>
-        </button>
-        <div className="cursor-pointer text-2xl" onClick={toggleAudio}>
+        <a href="#faq" className="hover:text-gray-300 transition-colors">
+          FAQ
+        </a>
+        <Link
+            to="/login"
+            className=" overflow-hidden relative sm:text-xs inline-flex items-center justify-center px-6 sm:px-10 py-2 sm:py-4 font-mono font-medium tracking-tighter text-white bg-red-600 rounded-lg group">
+            <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-red-700 rounded-full group-hover:w-full group-hover:h-56"></span>
+            <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-red-500"></span>
+            <span className="relative flex justify-center items-center gap-2 uppercase tracking-wide">
+              Login 
+            </span>
+          </Link>
+        <div className="cursor-pointer bg-red-600 rounded py-3 px-4 text-2xl" onClick={toggleAudio}>
           {isMuted ? (
             <HiMiniSpeakerWave />
           ) : (
-            <HiMiniSpeakerXMark className="text-red-800" />
+            <HiMiniSpeakerXMark className="text-white" />
           )}
         </div>
       </div>
 
       {/* Hamburger Button */}
       <button
-        className="md:hidden text-2xl focus:outline-none"
+        className="md:hidden text-xl sm:text-2xl focus:outline-none"
         onClick={() => setHamburger(!hamburger)}
       >
         {hamburger ? "X" : "☰"} {/* Conditional rendering of hamburger or cross icon */}
@@ -68,7 +73,7 @@ function Navbar({ toggleAudio, isMuted }) {
       <div
         className={`absolute top-0 left-0 w-full ${
           hamburger ? "bg-black" : "bg-transparent"
-        } bg-opacity-90 text-white flex flex-col items-center py-5 space-y-5 md:hidden z-40 transform transition-transform duration-300 ease-in-out ${
+        } bg-opacity-100 text-white flex flex-col items-center py-5 space-y-5 md:hidden z-40 transform transition-transform duration-300 ease-in-out ${
           hamburger ? "translate-y-16" : "-translate-y-full"
         }`}
       >
@@ -84,7 +89,7 @@ function Navbar({ toggleAudio, isMuted }) {
           className="hover:text-gray-300"
           onClick={() => setHamburger(false)}
         >
-          Games
+          About
         </Link>
         <Link
           to="/tournament"
@@ -93,13 +98,13 @@ function Navbar({ toggleAudio, isMuted }) {
         >
           Tournament
         </Link>
-        <Link
-          to="/faq"
+        <a
+          href="#faq"
           className="hover:text-gray-300"
           onClick={() => setHamburger(false)}
         >
-          Teams
-        </Link>
+          FAQ
+        </a>
         <button
           onClick={() => {
             toggleAudio();
@@ -108,16 +113,16 @@ function Navbar({ toggleAudio, isMuted }) {
           className="hover:text-gray-300"
         >
           {isMuted ? (
-            <HiMiniSpeakerWave />
+             <div className="flex justify-center items-center gap-2">
+              <span>UnMute</span>
+              <HiMiniSpeakerWave />
+             </div>
           ) : (
-            <HiMiniSpeakerXMark className="text-red-800" />
+            <div className="flex justify-center items-center gap-2">
+              <span>Mute</span>
+              <HiMiniSpeakerXMark className="text-red-800" />
+            </div>
           )}
-        </button>
-        <button
-          className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-lg shadow-md"
-          onClick={() => setHamburger(false)}
-        >
-          <Link to="/login">Login</Link>
         </button>
       </div>
     </nav>

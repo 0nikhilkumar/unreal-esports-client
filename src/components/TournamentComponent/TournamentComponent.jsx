@@ -25,11 +25,11 @@ function TournamentComponent() {
 
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-center items-center h-full px-5">
-          <h1 className="text-5xl text-white text-center mb-5">Tournament</h1>
-          <p className="text-white text-lg text-center max-w-3xl">
-            Join Valorant leaderboards showcasing skills and team gameplay !
+          <h1 className="text-xl sm:text-5xl text-white text-center mb-5">Tournament</h1>
+          <p className="text-white text-xs sm:text-lg text-center max-w-3xl">
+            We're launching soon !
           </p>
-          <p className="text-4xl mt-5 text-white">Coming Soon...</p>
+          <p className="text-2xl bg-white rounded p-4 sm:text-4xl mt-5 text-black">Coming Soon...</p>
         </div>
       </div>
       {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#100D2A] opacity-50 group-hover:animate-gradient transition-all duration-10 ease-in-out"></div> */}

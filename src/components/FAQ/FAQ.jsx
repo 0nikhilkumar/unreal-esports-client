@@ -36,9 +36,9 @@ const FAQ = () => {
   };
 
   return (
-    <div className="bg-black p-2 flex items-center justify-center px-4 sm:px-10">
+    <div id="faq" className="bg-black p-2 flex items-center justify-center px-4 sm:px-10 scroll-smooth">
       <div className="px-6 py-10 bg-[#070614] shadow-lg m-3 rounded-lg w-full">
-        <h1 className="text-2xl sm:text-3xl font-semibold text-white text-center mb-6">
+        <h1 className="text-sm sm:text-3xl font-semibold text-white text-center mb-6">
           Frequently Asked Questions
         </h1>
         <div className="space-y-4">
@@ -46,7 +46,7 @@ const FAQ = () => {
             <div key={index} className="border-b border-gray-700">
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full text-left flex justify-between items-center py-3 text-lg sm:text-xl text-white focus:outline-none transition duration-500 ease-in-out"
+                className="w-full text-left flex justify-between items-center py-3 text-[10px] sm:text-xl text-white focus:outline-none transition duration-500 ease-in-out"
               >
                 {faq.question}
                 <span
@@ -58,7 +58,7 @@ const FAQ = () => {
                 </span>
               </button>
               <div
-                className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                className={`overflow-scroll text-[12px] sm:text-lg sm:overflow-hidden transition-all duration-500 ease-in-out ${
                   activeIndex === index ? "max-h-60" : "max-h-0"
                 }`}
               >

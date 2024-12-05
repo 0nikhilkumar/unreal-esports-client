@@ -12,6 +12,8 @@ import {
 } from "react-router-dom";
 import HomeLayout from "./Pages/HomeLayout/HomeLayout";
 import Login from "./components/Login/Login";
+import About from "./Pages/About/About";
+import Tournament from "./Pages/Tournament/Tournament";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,6 +21,8 @@ const router = createBrowserRouter(
       <Route path="" element={<HomeLayout />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/tournament" element={<Tournament />} />
     </Route>
   )
 );
