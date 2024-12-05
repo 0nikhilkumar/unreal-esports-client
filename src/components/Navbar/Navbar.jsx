@@ -9,7 +9,7 @@ function Navbar({ toggleAudio, isMuted }) {
     <nav
       className={`absolute top-0 left-0 w-full flex px-5 py-2 items-center md:hover:bg-opacity-[0.3] md:bg-black md:bg-opacity-[0] justify-between transition-all z-[1] duration-300 ${
         hamburger ? "bg-black" : "bg-transparent"
-      } text-white`} 
+      } text-white`}
       // Apply black background on both the navbar and hamburger icon section when hamburger is true
     >
       {/* Logo Section */}
@@ -27,7 +27,7 @@ function Navbar({ toggleAudio, isMuted }) {
       </div>
 
       {/* Links for Medium & Large Screens */}
-      <div className="hidden md:flex items-center space-x-6">
+      <div className="hidden md:flex items-center space-x-5">
         <Link to="/" className="hover:text-gray-300 transition-colors">
           Home
         </Link>
@@ -44,15 +44,19 @@ function Navbar({ toggleAudio, isMuted }) {
           FAQ
         </a>
         <Link
-            to="/login"
-            className=" overflow-hidden relative sm:text-xs inline-flex items-center justify-center px-6 sm:px-10 py-2 sm:py-4 font-mono font-medium tracking-tighter text-white bg-red-600 rounded-lg group">
-            <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-red-700 rounded-full group-hover:w-full group-hover:h-56"></span>
-            <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-red-500"></span>
-            <span className="relative flex justify-center items-center gap-2 uppercase tracking-wide">
-              Login 
-            </span>
-          </Link>
-        <div className="cursor-pointer bg-red-600 rounded py-3 px-4 text-2xl" onClick={toggleAudio}>
+          to="/login"
+          className=" overflow-hidden relative sm:text-xs inline-flex items-center justify-center px-6 sm:px-7 py-2 sm:py-3 font-mono font-medium tracking-tighter text-white bg-blue-600 rounded-lg group"
+        >
+          <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-blue-700 rounded-full group-hover:w-full group-hover:h-56"></span>
+          <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-blue-500"></span>
+          <span className="relative flex justify-center items-center gap-2 uppercase tracking-wide">
+            Login
+          </span>
+        </Link>
+        <div
+          className="cursor-pointer bg-blue-600 rounded py-2 px-3 text-2xl"
+          onClick={toggleAudio}
+        >
           {isMuted ? (
             <HiMiniSpeakerWave />
           ) : (
@@ -66,7 +70,8 @@ function Navbar({ toggleAudio, isMuted }) {
         className="md:hidden text-xl sm:text-2xl focus:outline-none"
         onClick={() => setHamburger(!hamburger)}
       >
-        {hamburger ? "X" : "☰"} {/* Conditional rendering of hamburger or cross icon */}
+        {hamburger ? "X" : "☰"}{" "}
+        {/* Conditional rendering of hamburger or cross icon */}
       </button>
 
       {/* Mobile Navbar */}
@@ -113,10 +118,10 @@ function Navbar({ toggleAudio, isMuted }) {
           className="hover:text-gray-300"
         >
           {isMuted ? (
-             <div className="flex justify-center items-center gap-2">
+            <div className="flex justify-center items-center gap-2">
               <span>UnMute</span>
               <HiMiniSpeakerWave />
-             </div>
+            </div>
           ) : (
             <div className="flex justify-center items-center gap-2">
               <span>Mute</span>

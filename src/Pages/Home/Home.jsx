@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer"
+import Feedback_Navbar from "../../components/Feedback_Navbar/Feedback_Navbar";
 
 function Home() {
   // const [hamburger, setHamburger] = useState(false);
@@ -40,6 +41,8 @@ function Home() {
       {/* Overlays */}
       <div className="absolute inset-0 bg-black bg-opacity-10"></div>
       <div className="absolute inset-0 bg-black bg-opacity-10"></div>
+
+      
 
       {/* Navbar */}
       <Navbar toggleAudio={toggleAudio} isMuted={isMuted} />
