@@ -50,7 +50,7 @@ const FAQ = () => {
               >
                 {faq.question}
                 <span
-                  className={`transform transition-transform duration-500 ${
+                  className={`transform transition-transform duration-500 ml-7 ${
                     activeIndex === index ? "rotate-180" : ""
                   }`}
                 >

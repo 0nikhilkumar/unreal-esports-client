@@ -22,7 +22,7 @@ const Join_Now = () => {
             <p className="text-blue-600 text-[14px] sm:text-lg font-oswald font-medium text-lg uppercase mb-4 text-center lg:text-left">
               Get all team members
             </p>
-            <h2 className="font-oswald w-full mx-auto sm: mx-0 sm:w-3/4 transition-all duration-200 hover:bg-white hover:text-black rounded text-[10px] sm:text-lg hover:md:p-4 uppercase leading-snug mb-4 text-center lg:text-left">
+            <h2 className="font-oswald w-full mx-auto sm:mx-0 sm:w-3/4 transition-all duration-200 sm:mx-auto lg:mx-0 sm:hover:bg-white sm:hover:text-black rounded text-[10px] sm:text-lg sm:hover:md:p-4 uppercase leading-snug mb-4 text-center lg:text-left">
               Experience just for gamers{" "}
               <strong className="text-blue-600">offer</strong>
             </h2>

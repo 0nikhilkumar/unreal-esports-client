@@ -115,20 +115,24 @@ function Navbar({ toggleAudio, isMuted }) {
             toggleAudio();
             setHamburger(false);
           }}
-          className="hover:text-gray-300"
+          className="hover:text-gray-300 cursor-pointer bg-blue-600 rounded py-[0.4rem] px-7 text-xl"
         >
           {isMuted ? (
-            <div className="flex justify-center items-center gap-2">
-              <span>UnMute</span>
-              <HiMiniSpeakerWave />
-            </div>
+            <HiMiniSpeakerWave />
           ) : (
-            <div className="flex justify-center items-center gap-2">
-              <span>Mute</span>
-              <HiMiniSpeakerXMark className="text-red-800" />
-            </div>
+            <HiMiniSpeakerXMark className="text-white" />
           )}
         </button>
+        <Link
+          to="/login"
+          className=" overflow-hidden relative sm:text-xs inline-flex items-center justify-center text-xs px-5 sm:px-7 py-2 sm:py-3 font-mono font-medium tracking-tighter text-white bg-blue-600 rounded group"
+        >
+          <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-blue-700 rounded-full group-hover:w-full group-hover:h-56"></span>
+          <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-blue-500"></span>
+          <span className="relative flex justify-center items-center gap-2 uppercase tracking-wide">
+            Login
+          </span>
+        </Link>
       </div>
     </nav>
   );
