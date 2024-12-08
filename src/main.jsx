@@ -23,7 +23,6 @@ import CreateRoom from "./Pages/Tournament/CreateRoom/CreateRoom";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />} errorElement={<Error />}>
-
       <Route path="" element={<HomeLayout />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
