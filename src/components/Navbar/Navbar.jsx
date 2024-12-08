@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 function Navbar({ toggleAudio, isMuted }) {
   const [hamburger, setHamburger] = useState(false);
+  const [isLoggedIn,setIsLoggedIn] = useState(false)
 
   return (
     <nav

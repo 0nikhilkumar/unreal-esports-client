@@ -6,6 +6,7 @@ import FAQ from '../../components/FAQ/FAQ'
 import Home from '../Home/Home'
 import Footer from "../../components/Footer/Footer"
 import Feedback_Navbar from '../../components/Feedback_Navbar/Feedback_Navbar'
+import { Toaster } from 'react-hot-toast'
 
 function HomeLayout() {
   return (

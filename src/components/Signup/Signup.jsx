@@ -1,8 +1,48 @@
-import React from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { RxCross2 } from "react-icons/rx";
+import api from "../../utils/Url";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
-const SignupForm = () => {
+const Signup = () => {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    username: "",
+    password: "",
+  });
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    try {
+      const res = await api.post("/signup", {
+        email: formData.email,
+        username: formData.username,
+        password: formData.password,
+      });
+      if (res.data.statusCode === 201) {
+        toast.success("Register Successfully");
+        navigate("/login");
+      } else {
+        toast.error(res.data.data);
+      }
+    } catch (err) {
+      toast.error(err.response.data.data);
+      console.log(err);
+    }
+  }
+
   return (
     <section className="bg-gray-50 dark:bg-gray-900 z-[30] ">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto w-full md:h-screen h-screen lg:py-0">
@@ -17,7 +57,7 @@ const SignupForm = () => {
                 <RxCross2 className="text-white text-xl cursor-pointer " />
               </Link>
             </div>
-            <form className="space-y-4 md:space-y-6" action="#">
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
               <div>
                 <label
                   htmlFor="email"
@@ -31,6 +71,26 @@ const SignupForm = () => {
                   id="email"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="name@company.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="username"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  id="username"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Your username"
+                  value={formData.username}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -47,22 +107,8 @@ const SignupForm = () => {
                   id="password"
                   placeholder="••••••••"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="confirm-password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Confirm password
-                </label>
-                <input
-                  type="password"
-                  name="confirm-password"
-                  id="confirm-password"
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  value={formData.password}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -114,4 +160,4 @@ const SignupForm = () => {
   );
 };
 
-export default SignupForm;
+export default Signup;
