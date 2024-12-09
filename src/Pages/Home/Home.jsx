@@ -1,10 +1,9 @@
 import { useRef, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
-import Footer from "../../components/Footer/Footer"
-import Feedback_Navbar from "../../components/Feedback_Navbar/Feedback_Navbar";
 
 function Home() {
-  // const [hamburger, setHamburger] = useState(false);
+ 
+
   const videoRef = useRef(null); // Reference to the video element
   const [isMuted, setIsMuted] = useState(true); // State to track mute status
   const [isDark, setIsDark] = useState(false);

@@ -1,17 +1,27 @@
 import React, { useState } from "react";
+import { CgProfile } from "react-icons/cg";
 import { HiMiniSpeakerWave, HiMiniSpeakerXMark } from "react-icons/hi2";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { logout } from "../../Store/loggedUser";
 
 function Navbar({ toggleAudio, isMuted }) {
   const [hamburger, setHamburger] = useState(false);
-  const [isLoggedIn,setIsLoggedIn] = useState(false)
+  const [showDropdown, setShowDropdown] = useState(false);
+
+
+  const { isLoggedIn, role } = useSelector((state) => state.isLogged);
+  const dispatch = useDispatch();
+
+  function handleLogout() {
+    dispatch(logout());
+  }
 
   return (
     <nav
       className={`absolute top-0 left-0 w-full flex px-5 py-2 items-center md:hover:bg-opacity-[0.3] md:bg-black md:bg-opacity-[0] justify-between transition-all z-[1] duration-300 ${
         hamburger ? "bg-black" : "bg-transparent"
       } text-white`}
-      // Apply black background on both the navbar and hamburger icon section when hamburger is true
     >
       {/* Logo Section */}
       <div className="flex items-center">
@@ -44,16 +54,95 @@ function Navbar({ toggleAudio, isMuted }) {
         <a href="#faq" className="hover:text-gray-300 transition-colors">
           FAQ
         </a>
-        <Link
-          to="/login"
-          className=" overflow-hidden relative sm:text-xs inline-flex items-center justify-center px-6 sm:px-7 py-2 sm:py-3 font-mono font-medium tracking-tighter text-white bg-blue-600 rounded-lg group"
-        >
-          <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-blue-700 rounded-full group-hover:w-full group-hover:h-56"></span>
-          <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-blue-500"></span>
-          <span className="relative flex justify-center items-center gap-2 uppercase tracking-wide">
+
+        {isLoggedIn ? (
+          role === "user" ? (
+            <div className="relative">
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="text-white text-2xl"
+              >
+                <CgProfile />
+              </button>
+              {showDropdown && (
+                <div className="absolute top-8 right-0 bg-black text-white rounded shadow-lg w-40">
+                  <Link
+                    to="/profile"
+                    className="block py-2 px-4 hover:bg-gray-700"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    to="/leaderboard"
+                    className="block py-2 px-4 hover:bg-gray-700"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Leaderboard
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block py-2 px-4 w-full text-left hover:bg-gray-700"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="text-white text-2xl"
+              >
+                <CgProfile />
+              </button>
+              {showDropdown && (
+                <div className="absolute top-8 right-0 bg-black text-white rounded shadow-lg w-40">
+                  <Link
+                    to="/profile"
+                    className="block py-2 px-4 hover:bg-gray-700"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    to="/hosting-tournament"
+                    className="block py-2 px-4 hover:bg-gray-700"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Create Tournament
+                  </Link>
+                  <Link
+                    to="/hosting-room"
+                    className="block py-2 px-4 hover:bg-gray-700"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Create Room
+                  </Link>
+                  <div
+                    className="block py-2 px-4 hover:bg-gray-700 cursor-pointer"
+                    onClick={() => {
+                      setShowDropdown(false);
+                      handleLogout()
+                    }}
+                  >
+                    Logout
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        ) : (
+          <Link
+            to="/login"
+            className="cursor-pointer bg-blue-600 rounded py-2 px-4 text-lg"
+          >
             Login
-          </span>
-        </Link>
+          </Link>
+        )}
+
+
         <div
           className="cursor-pointer bg-blue-600 rounded py-2 px-3 text-2xl"
           onClick={toggleAudio}
@@ -71,8 +160,7 @@ function Navbar({ toggleAudio, isMuted }) {
         className="md:hidden text-xl sm:text-2xl focus:outline-none"
         onClick={() => setHamburger(!hamburger)}
       >
-        {hamburger ? "X" : "☰"}{" "}
-        {/* Conditional rendering of hamburger or cross icon */}
+        {hamburger ? "X" : "☰"}
       </button>
 
       {/* Mobile Navbar */}
@@ -111,6 +199,7 @@ function Navbar({ toggleAudio, isMuted }) {
         >
           FAQ
         </a>
+
         <button
           onClick={() => {
             toggleAudio();
@@ -124,16 +213,45 @@ function Navbar({ toggleAudio, isMuted }) {
             <HiMiniSpeakerXMark className="text-white" />
           )}
         </button>
-        <Link
-          to="/login"
-          className=" overflow-hidden relative sm:text-xs inline-flex items-center justify-center text-xs px-5 sm:px-7 py-2 sm:py-3 font-mono font-medium tracking-tighter text-white bg-blue-600 rounded group"
-        >
-          <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-blue-700 rounded-full group-hover:w-full group-hover:h-56"></span>
-          <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-blue-500"></span>
-          <span className="relative flex justify-center items-center gap-2 uppercase tracking-wide">
+
+        {isLoggedIn ? (
+          <div className="relative">
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="block py-2 px-4 text-white text-2xl"
+            >
+              <CgProfile />
+            </button>
+            {showDropdown && (
+              <div className="absolute top-8 right-0 bg-black text-white rounded shadow-lg w-40">
+                <Link
+                  to="/profile"
+                  className="block py-2 px-4 hover:bg-gray-700"
+                  onClick={() => setShowDropdown(false)}
+                >
+                  Profile
+                </Link>
+                <Link
+                  to="/leaderboard"
+                  className="block py-2 px-4 hover:bg-gray-700"
+                  onClick={() => setShowDropdown(false)}
+                >
+                  Leaderboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block py-2 px-4 w-full text-left hover:bg-gray-700"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link to="/login" className="block py-2 px-4 bg-blue-600 rounded">
             Login
-          </span>
-        </Link>
+          </Link>
+        )}
       </div>
     </nav>
   );

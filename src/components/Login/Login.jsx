@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { RxCross2 } from "react-icons/rx";
-import api from "../../utils/Url";
+import api from "../../API/Url";
 import { useNavigate } from "react-router-dom";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { login } from "../../Store/loggedUser";
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [activeForm, setActiveForm] = useState("user");
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,33 +26,24 @@ const Login = () => {
     }));
   }
 
+  // async function handleSubmit(e){
+  //   e.preventDefault();
+  //   console.log(activeForm)
+  //   dispatch(login({ role: activeForm }))
+  //   // console.log("dispatch waala",dispatch({activeForm}))
+  //   // navigate('/')
+  // }
+
   async function handleSubmit(e) {
     e.preventDefault();
 
-    try {
-      const res = await api.post(
-        "/login",
-        {
-          email: formData.email,
-          password: formData.password,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-      toast.success("LoggedIn Successfully");
-      console.log(res.data.data);
-      navigate("/");
-    } catch (err) {
-      toast.error(err.response.data.data);
-      console.log(err.response.data.data);
+    if (!formData.email || !formData.password) {
+      return toast.error("Please fill in all fields.");
     }
-    finally {
-      setFormData({
-        email: "",
-        password: "",
-      });
-    }
+    toast.success("LoggedIn Successfully");
+    setIsSubmitting(true);
+    dispatch(login({ role: activeForm }));
+    navigate("/");
   }
 
   return (
@@ -64,29 +60,75 @@ const Login = () => {
                 <RxCross2 className="text-white text-xl cursor-pointer" />
               </Link>
             </div>
+
+            {/* Create User and Create Host Buttons */}
+            <div className="flex">
+              <button
+                onClick={() => setActiveForm("user")}
+                className={`w-full py-2 px-4 font-medium text-white rounded-l-lg text-sm transition-all duration-300 ease-in-out ${
+                  activeForm === "user"
+                    ? "bg-blue-600 border-2 border-blue-700"
+                    : "bg-gray-400 hover:bg-blue-500"
+                }`}
+              >
+                User
+              </button>
+              <button
+                onClick={() => setActiveForm("host")}
+                className={`w-full py-2 px-4 font-medium text-white rounded-r-lg text-sm transition-all duration-300 ease-in-out ${
+                  activeForm === "host"
+                    ? "bg-blue-600 border-2 border-blue-700"
+                    : "bg-gray-400 hover:bg-blue-500"
+                }`}
+              >
+                Host
+              </button>
+            </div>
+
             <form
               onSubmit={handleSubmit}
               className="space-y-4 md:space-y-6"
               action="#"
             >
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Your email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="name@company.com"
-                  required
-                />
-              </div>
+              {activeForm === "host" ? (
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Your email
+                  </label>
+                  <input
+                    type="text"
+                    name="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="host@gmail.com"
+                    required
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Your email or username
+                  </label>
+                  <input
+                    type="text"
+                    name="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="email or username"
+                    required
+                  />
+                </div>
+              )}
               <div>
                 <label
                   htmlFor="password"
@@ -133,8 +175,9 @@ const Login = () => {
               <button
                 type="submit"
                 className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                disabled={isSubmitting}
               >
-                Login
+                {isSubmitting ? "Logging in..." : "Login"}
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Don't have an account?{" "}
