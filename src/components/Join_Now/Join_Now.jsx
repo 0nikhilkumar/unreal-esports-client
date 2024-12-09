@@ -1,9 +1,12 @@
 import React from "react";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
 import { MdOutlineDoubleArrow } from "react-icons/md";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Join_Now = () => {
+  const { isLoggedIn } = useSelector((state) => state.isLogged);
+
   return (
     <div>
       {/* Headline */}
@@ -35,7 +38,9 @@ const Join_Now = () => {
             </p>
             <p className="text-gray-400 text-sm sm:text-base flex items-center gap-2">
               <MdOutlineDoubleArrow className="text-blue-600 text-sm sm:text-xl" />
-              <span className="uppercase text-[8px] sm:text-xl">Will give you an edge</span>
+              <span className="uppercase text-[8px] sm:text-xl">
+                Will give you an edge
+              </span>
             </p>
           </div>
         </div>
@@ -43,20 +48,30 @@ const Join_Now = () => {
         {/* Call to Action Section */}
         <div className="w-full lg:w-1/2 px-6 flex flex-col justify-center items-center text-center lg:text-left my-10">
           <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-            <span className="block text-white text-center ">JOIN THE BATTLE</span>
+            <span className="block text-white text-center ">
+              JOIN THE BATTLE
+            </span>
             <span className="block text-xs sm:text-base tracking-wide mt-2 text-white text-center">
               Step into the arena and conquer your fears
             </span>
           </h1>
-          <Link
-            to="/signup"
-            className=" overflow-hidden relative text-xs sm:text-lg inline-flex items-center justify-center px-8 sm:px-10 py-3 sm:py-4 font-mono font-medium tracking-tighter text-white bg-blue-600 rounded-lg group">
-            <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-blue-700 rounded-full group-hover:w-full group-hover:h-56"></span>
-            <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-blue-500"></span>
-            <span className="relative flex justify-center items-center gap-2 uppercase tracking-wide">
-              Register Now <IoIosArrowDroprightCircle />
-            </span>
-          </Link>
+
+          {isLoggedIn ? (
+            <h1 className="text-black text-center tracking-wider font-semibold uppercase bg-white px-5 py-3 rounded-lg text-2xl sm:text-3xl md:text-4xl lg:text-5xl ">
+              Welcome
+            </h1>
+          ) : (
+            <Link
+              to="/signup"
+              className=" overflow-hidden relative text-xs sm:text-lg inline-flex items-center justify-center px-8 sm:px-10 py-3 sm:py-4 font-mono font-medium tracking-tighter text-white bg-blue-600 rounded-lg group"
+            >
+              <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-blue-700 rounded-full group-hover:w-full group-hover:h-56"></span>
+              <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-blue-500"></span>
+              <span className="relative flex justify-center items-center gap-2 uppercase tracking-wide">
+                Register Now <IoIosArrowDroprightCircle />
+              </span>
+            </Link>
+          )}
         </div>
       </div>
     </div>

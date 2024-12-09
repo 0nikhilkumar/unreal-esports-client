@@ -34,7 +34,7 @@ const FAQ = () => {
   const toggleFAQ = (index) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
-
+ 
   return (
     <div id="faq" className="bg-black p-2 flex items-center justify-center px-4 sm:px-10 scroll-smooth">
       <div className="px-6 py-10 bg-[#070614] shadow-lg m-3 rounded-lg w-full">

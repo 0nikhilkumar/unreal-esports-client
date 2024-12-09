@@ -29,7 +29,7 @@ const CustomCursor = () => {
     hoverElements.forEach((el) => {
       el.addEventListener("mouseenter", addHoverEffect);
       el.addEventListener("mouseleave", removeHoverEffect);
-    });
+    }); 
 
     // Clean up hover effects
     return () => {
