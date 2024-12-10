@@ -1,6 +1,6 @@
-import Footer from '@/components/Footer/Footer.jsx';
+// import Footer from '@/components/Footer/Footer.jsx';
 import { Outlet } from 'react-router-dom';
-import Navbar from './components/Navbar/Navbar';
+// import Navbar from './components/Navbar/Navbar';
 import { Toaster } from "react-hot-toast";
 const App = () => {
   return (

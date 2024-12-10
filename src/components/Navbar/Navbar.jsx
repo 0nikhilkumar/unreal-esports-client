@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { HiMiniSpeakerWave, HiMiniSpeakerXMark } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 
 function Navbar({ toggleAudio, isMuted }) {
   const [hamburger, setHamburger] = useState(false);
-  const [isLoggedIn,setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <nav
@@ -34,6 +34,9 @@ function Navbar({ toggleAudio, isMuted }) {
         </Link>
         <Link to="/about" className="hover:text-gray-300 transition-colors">
           About
+        </Link>
+        <Link to="/room" className="hover:text-gray-300 transition-colors">
+          Room
         </Link>
         <Link
           to="/tournament"

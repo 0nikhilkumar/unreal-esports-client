@@ -17,14 +17,14 @@ import Tournament from "./Pages/Tournament/Tournament";
 import FeedbackForm from "./components/Feedback Form/FeedbackForm";
 // import Practice from "./Practice";
 import CreateRoom from "./Pages/Tournament/CreateRoom/CreateRoom";
-
-
+import Room from "./Pages/room/Room";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />} errorElement={<Error />}>
       <Route path="" element={<HomeLayout />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/room" element={<Room />} />
       <Route path="/login" element={<Login />} />
       <Route path="/about" element={<About />} />
       <Route path="/tournament" element={<Tournament />} />
