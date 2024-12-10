@@ -23,6 +23,8 @@ import HostingRoom from "./components/HostingRoom/HostingRoom";
 import CreateTournament from "./Pages/PlayArea/CreateTournament/CreateTournament";
 import Leaderboard from "./Pages/PlayArea/Leaderboard/Leaderboard";
 import Profile from "./Pages/Profile/Profile";
+import Arena from "./components/Arena/Arena";
+import UserRoom from "./UserRoom/UserRoom";
 
 
 
@@ -40,6 +42,8 @@ const router = createBrowserRouter(
       <Route path="/hosting-tournament" element={<CreateTournament />} />
       <Route path="/leaderboard" element={<Leaderboard />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/arena" element={<Arena />} />
+      <Route path="/arena/:id" element={<UserRoom />} />
     </Route>
   )
 );
