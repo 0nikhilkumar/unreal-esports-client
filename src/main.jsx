@@ -18,6 +18,12 @@ import FeedbackForm from "./components/Feedback Form/FeedbackForm";
 // import Practice from "./Practice";
 import CreateRoom from "./Pages/Tournament/CreateRoom/CreateRoom";
 import Room from "./Pages/room/Room";
+import { Provider } from "react-redux";
+import store from "./Store";
+import HostingRoom from "./components/HostingRoom/HostingRoom";
+import CreateTournament from "./Pages/PlayArea/CreateTournament/CreateTournament";
+import Leaderboard from "./Pages/PlayArea/Leaderboard/Leaderboard";
+import Profile from "./Pages/Profile/Profile";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,12 +36,18 @@ const router = createBrowserRouter(
       <Route path="/tournament" element={<Tournament />} />
       <Route path="/feedback" element={<FeedbackForm />} />
       <Route path="/create-room" element={<CreateRoom />} />
+      <Route path="/hosting-room" element={<HostingRoom />} />
+      <Route path="/hosting-tournament" element={<CreateTournament />} />
+      <Route path="/leaderboard" element={<Leaderboard />} />
+      <Route path="/profile" element={<Profile />} />
     </Route>
   )
 );
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </StrictMode>
 );
