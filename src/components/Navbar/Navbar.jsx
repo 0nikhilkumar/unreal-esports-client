@@ -74,6 +74,20 @@ function Navbar({ toggleAudio, isMuted }) {
                     Profile
                   </Link>
                   <Link
+                    to="/arena"
+                    className="block py-2 px-4 hover:bg-gray-700"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Rooms
+                  </Link>
+                  <Link
+                    to="/tournament"
+                    className="block py-2 px-4 hover:bg-gray-700"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Tournament
+                  </Link>
+                  <Link
                     to="/leaderboard"
                     className="block py-2 px-4 hover:bg-gray-700"
                     onClick={() => setShowDropdown(false)}
