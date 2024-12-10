@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 
 function Feedback_Navbar() {
+  
   return (
     <div className="bg-black p-2 flex justify-center items-center">
       <div>
