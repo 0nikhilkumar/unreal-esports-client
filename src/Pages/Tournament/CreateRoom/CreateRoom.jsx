@@ -1,7 +1,8 @@
 import { nanoid } from "@reduxjs/toolkit";
-import React, { useState } from "react";
+import PropTypes from "prop-types";
+import { useState } from "react";
 
-const CreateRoom = ({handleRoomAdded}) => {
+const CreateRoom = ({ handleRoomAdded, handleRoomShow }) => {
   const [formData, setFormData] = useState({
     id: nanoid(),
     name: "Apna Room",
@@ -14,8 +15,6 @@ const CreateRoom = ({handleRoomAdded}) => {
     maxPlayers: "20",
     image: null,
   });
-
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -64,7 +63,9 @@ const CreateRoom = ({handleRoomAdded}) => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">Start Time:</label>
+            <label className="block text-sm font-medium mb-2">
+              Start Time:
+            </label>
             <input
               type="time"
               name="startTime"
@@ -135,7 +136,9 @@ const CreateRoom = ({handleRoomAdded}) => {
             />
           </div>
           <div className="col-span-full">
-            <label className="block text-sm font-medium mb-2">Upload Image:</label>
+            <label className="block text-sm font-medium mb-2">
+              Upload Image:
+            </label>
             <input
               type="file"
               name="image"
@@ -146,6 +149,13 @@ const CreateRoom = ({handleRoomAdded}) => {
             />
           </div>
           <div className="col-span-full flex justify-end">
+            <button
+              type="button"
+              className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 mr-2"
+              onClick={() => handleRoomShow()}
+            >
+              Cancel
+            </button>
             <button
               type="submit"
               className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
@@ -158,5 +168,8 @@ const CreateRoom = ({handleRoomAdded}) => {
     </div>
   );
 };
-
+CreateRoom.propTypes = {
+  handleRoomAdded: PropTypes.func,
+  handleRoomShow: PropTypes.func,
+};
 export default CreateRoom;

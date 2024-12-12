@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 
 import {
@@ -7,10 +7,9 @@ import {
   FaMedal,
   FaSearch,
   FaTrophy,
-  FaUsers
+  FaUsers,
 } from "react-icons/fa";
 import CreateRoom from "../../Pages/Tournament/CreateRoom/CreateRoom";
-
 
 const Tournament = () => {
   const [isCreateRoomVisible, setIsCreateRoomVisible] = useState(false);
@@ -84,8 +83,6 @@ const Tournament = () => {
   const handleRoomAdded = (newRoom) => {
     setRooms([...rooms, newRoom]);
   };
-
-
 
   const filteredRooms = rooms.filter(
     (room) =>
@@ -193,13 +190,18 @@ const Tournament = () => {
           </div>
 
           <div className="flex justify-center mb-8">
-              <div onClick={handleCreateRoomClick} className="flex items-center cursor-pointer gap-2 px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white">
-                <FaPlus />
-                {activeTab === "rooms" ? "Create Room" : "Create Tournament"}
-              </div>
+            <div
+              onClick={handleCreateRoomClick}
+              className="flex items-center cursor-pointer gap-2 px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white"
+            >
+              <FaPlus />
+              {activeTab === "rooms" ? "Create Room" : "Create Tournament"}
+            </div>
           </div>
         </div>
-          {isCreateRoomVisible && <CreateRoom handleRoomAdded={handleRoomAdded} />}
+        {isCreateRoomVisible && (
+          <CreateRoom handleRoomAdded={handleRoomAdded} />
+        )}
 
         {/* Display Rooms or Tournaments based on activeTab */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -221,30 +223,32 @@ const Tournament = () => {
                 <div className="p-6">
                   <h3 className="text-xl font-bold mb-2">{room.name}</h3>
                   <div className="flex justify-start gap-x-5 items-cente flex-wrap">
-                  <div className="flex items-center gap-2 text-gray-300 mb-2">
-                    <FaUsers />
-                    <span>Date: {room.date}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300 mb-2">
-                    <FaUsers />
-                    <span>Time: {room.startTime}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300 mb-2">
-                    <FaUsers />
-                    <span>Prize Pool: {room.prize}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300 mb-2">
-                    <FaUsers />
-                    <span>Capacity: {room.maxPlayers}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300 mb-4">
-                    <FaGamepad />
-                    <span>{room.game}</span>
-                  </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaUsers />
+                      <span>Date: {room.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaUsers />
+                      <span>Time: {room.startTime}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaUsers />
+                      <span>Prize Pool: {room.prize}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaUsers />
+                      <span>Capacity: {room.maxPlayers}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-4">
+                      <FaGamepad />
+                      <span>{room.game}</span>
+                    </div>
                   </div>
                   <div
                     className={`inline-block px-3 py-1 rounded-full text-sm ${
-                      room.status === "Open" || room.status === "Registration Open" || room.status === "Coming Soon"
+                      room.status === "Open" ||
+                      room.status === "Registration Open" ||
+                      room.status === "Coming Soon"
                         ? "bg-green-500/20 text-green-500"
                         : "bg-red-500/20 text-red-500"
                     }`}

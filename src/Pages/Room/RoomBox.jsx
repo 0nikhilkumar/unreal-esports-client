@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-
+import { FaGamepad, FaUsers } from "react-icons/fa";
 const RoomBox = ({
   roomName,
   date,
@@ -9,30 +9,53 @@ const RoomBox = ({
   maxPlayers,
   image,
 }) => {
+  
   return (
-    <div className="bg-gray-800 rounded-lg shadow-lg p-6 text-white">
+    <div className="bg-gray-800 rounded-xl overflow-hidden transition-transform hover:transform hover:scale-105">
       <img
         src={image}
         alt={`${roomName} image`}
-        className="w-full h-48 object-cover rounded-t-lg"
+        className="w-full h-48 object-cover"
+        onError={(e) => {
+          e.target.src =
+            "https://images.unsplash.com/photo-1542751371-adc38448a05e";
+        }}
       />
-      <h2 className="text-2xl font-bold mb-2 text-center">{roomName}</h2>
-      <div className="p-4 grid grid-cols-2">
-        <p className="text-sm mb-1">
-          <strong>Date:</strong> {date}
-        </p>
-        <p className="text-sm mb-1">
-          <strong>Start Time:</strong> {startTime}
-        </p>
-        <p className="text-sm mb-1 ">
-          <strong>Game Name:</strong> {GameName}
-        </p>
-        <p className="text-sm mb-1">
-          <strong>Prize Pool:</strong> ${prizePool}
-        </p>
-        <p className="text-sm mb-1">
-          <strong>Max Players:</strong> {maxPlayers}
-        </p>
+      <div className="p-6">
+        <h3 className="text-xl font-bold mb-2">{roomName}</h3>
+        <div className="flex justify-start gap-x-5 items-cente flex-wrap">
+          <div className="flex items-center gap-2 text-gray-300 mb-2">
+            <FaUsers />
+            <span>Date: {date}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-300 mb-2">
+            <FaUsers />
+            <span>Time: {startTime}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-300 mb-2">
+            <FaUsers />
+            <span>Prize Pool: {prizePool}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-300 mb-2">
+            <FaUsers />
+            <span>Capacity: {maxPlayers}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-300 mb-4">
+            <FaGamepad />
+            <span>{GameName}</span>
+          </div>
+        </div>
+        {/* <div
+          className={`inline-block px-3 py-1 rounded-full text-sm ${
+            room.status === "Open" ||
+            room.status === "Registration Open" ||
+            room.status === "Coming Soon"
+              ? "bg-green-500/20 text-green-500"
+              : "bg-red-500/20 text-red-500"
+          }`}
+        >
+          {room.status}
+        </div> */}
       </div>
     </div>
   );
