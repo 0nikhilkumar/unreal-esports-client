@@ -4,12 +4,15 @@ const RoomBox = ({
   roomName,
   date,
   startTime,
+  endTime,
   prizePool,
   GameName,
   maxPlayers,
   image,
 }) => {
-  
+  const currentTime = new Date().getTime();
+  const startTimeDate = new Date(`${date} ${startTime}`).getTime();
+
   return (
     <div className="bg-gray-800 rounded-xl overflow-hidden transition-transform hover:transform hover:scale-105">
       <img
@@ -45,17 +48,15 @@ const RoomBox = ({
             <span>{GameName}</span>
           </div>
         </div>
-        {/* <div
+        <div
           className={`inline-block px-3 py-1 rounded-full text-sm ${
-            room.status === "Open" ||
-            room.status === "Registration Open" ||
-            room.status === "Coming Soon"
+            currentTime < startTimeDate
               ? "bg-green-500/20 text-green-500"
               : "bg-red-500/20 text-red-500"
           }`}
         >
-          {room.status}
-        </div> */}
+          {currentTime < startTimeDate ? "Upcoming" : "Closed"}
+        </div>
       </div>
     </div>
   );
@@ -65,6 +66,7 @@ RoomBox.propTypes = {
   roomName: PropTypes.string.isRequired,
   date: PropTypes.string.isRequired,
   startTime: PropTypes.string.isRequired,
+  endTime: PropTypes.string.isRequired,
   prizePool: PropTypes.number.isRequired,
   GameName: PropTypes.string.isRequired,
   maxPlayers: PropTypes.number.isRequired,

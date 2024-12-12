@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import RoomBox from "./RoomBox";
-import CreateRoom from "../Tournament/CreateRoom/CreateRoom";
+import CreateRoom from "./CreateRoom";
 import { FaSearch, FaPlus } from "react-icons/fa";
 
 const jsonData = [
   {
+    id: 1,
     roomName: "Room 1",
     date: "2021-10-01",
     startTime: "10:00",
+    endTime: "12:00",
     prizePool: 1000,
     GameName: "Poker",
     maxPlayers: 10,
@@ -15,9 +17,11 @@ const jsonData = [
     tier: 1,
   },
   {
+    id: 2,
     roomName: "Room 2",
     date: "2021-10-02",
     startTime: "11:00",
+    endTime: "13:00",
     prizePool: 2000,
     GameName: "Blackjack",
     maxPlayers: 8,
@@ -25,9 +29,11 @@ const jsonData = [
     tier: 2,
   },
   {
+    id: 3,
     roomName: "Room 3",
     date: "2021-10-03",
     startTime: "12:00",
+    endTime: "14:00",
     prizePool: 1500,
     GameName: "Roulette",
     maxPlayers: 12,
@@ -35,9 +41,11 @@ const jsonData = [
     tier: 3,
   },
   {
+    id: 4,
     roomName: "Room 4",
     date: "2021-10-04",
     startTime: "13:00",
+    endTime: "15:00",
     prizePool: 2500,
     GameName: "Baccarat",
     maxPlayers: 6,
@@ -45,9 +53,11 @@ const jsonData = [
     tier: 1,
   },
   {
+    id: 5,
     roomName: "Room 5",
     date: "2021-10-05",
     startTime: "14:00",
+    endTime: "16:00",
     prizePool: 3000,
     GameName: "Craps",
     maxPlayers: 10,
@@ -55,9 +65,11 @@ const jsonData = [
     tier: 2,
   },
   {
+    id: 6,
     roomName: "Room 6",
     date: "2021-10-06",
     startTime: "15:00",
+    endTime: "17:00",
     prizePool: 3500,
     GameName: "Slots",
     maxPlayers: 15,
@@ -65,9 +77,11 @@ const jsonData = [
     tier: 3,
   },
   {
+    id: 7,
     roomName: "Room 7",
     date: "2021-10-07",
     startTime: "16:00",
+    endTime: "18:00",
     prizePool: 4000,
     GameName: "Keno",
     maxPlayers: 20,
@@ -75,9 +89,11 @@ const jsonData = [
     tier: 1,
   },
   {
+    id: 8,
     roomName: "Room 8",
     date: "2021-10-08",
     startTime: "17:00",
+    endTime: "19:00",
     prizePool: 4500,
     GameName: "Bingo",
     maxPlayers: 25,
@@ -85,9 +101,11 @@ const jsonData = [
     tier: 2,
   },
   {
+    id: 9,
     roomName: "Room 9",
     date: "2021-10-09",
     startTime: "18:00",
+    endTime: "20:00",
     prizePool: 5000,
     GameName: "Texas Hold'em",
     maxPlayers: 30,
@@ -95,9 +113,11 @@ const jsonData = [
     tier: 3,
   },
   {
+    id: 10,
     roomName: "Room 10",
     date: "2021-10-10",
     startTime: "19:00",
+    endTime: "21:00",
     prizePool: 5500,
     GameName: "Omaha",
     maxPlayers: 35,
@@ -215,6 +235,7 @@ const Room = () => {
                 roomName={room.roomName}
                 date={room.date}
                 startTime={room.startTime}
+                endTime={room.endTime}
                 prizePool={room.prizePool}
                 GameName={room.GameName}
                 maxPlayers={room.maxPlayers}
