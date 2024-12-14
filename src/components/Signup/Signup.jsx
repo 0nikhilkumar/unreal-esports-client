@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { RxCross2 } from "react-icons/rx";
 import api from "../../API/Url"; // Adjust the path if needed
+import { signUpHost, signUpUser } from "../../http";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -26,20 +27,22 @@ const Signup = () => {
     e.preventDefault();
     console.log('hi1')
     try {
-      const res = await api.post(`/signup`, {
-        email: formData.email,
-        username: formData.username,
-        password: formData.password,
-      });
-      console.log('hi2')
-      if (res.data.statusCode == 201) {
+      let response;
+      if(activeForm === "user"){
+        response = await signUpUser(formData);
+      }
+      else {
+        response = await signUpHost(formData);
+      }
+      console.log(response)
+      if (response.data.statusCode == 201) {
         toast.success("Registered Successfully");
         navigate("/login");
       } else {
-        toast.error(res.data.data);
+        toast.error(response.data.data);
       }
     } catch (err) {
-      console.log(err.response.data.data,'by2')
+      console.log(err);
       // toast.error(err);
     }
   };

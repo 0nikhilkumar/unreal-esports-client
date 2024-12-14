@@ -1,9 +1,10 @@
 import { nanoid } from "@reduxjs/toolkit";
+import axios from "axios";
 import React, { useState } from "react";
+import { createRooms } from "../../../http";
 
 const CreateRoom = ({handleRoomAdded}) => {
   const [formData, setFormData] = useState({
-    id: nanoid(),
     name: "Apna Room",
     date: "",
     startTime: "14:35",
@@ -13,10 +14,10 @@ const CreateRoom = ({handleRoomAdded}) => {
     game: "BGMI",
     maxPlayers: "20",
     image: null,
+    tier: "T3"
   });
 
   
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -26,11 +27,18 @@ const CreateRoom = ({handleRoomAdded}) => {
     setFormData({ ...formData, image: e.target.files[0] });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newRoom = { ...formData, id: nanoid() };
+    // const newRoom = { ...formData, id: nanoid() };
     // setRooms([...rooms, newRoom]);
-    handleRoomAdded(newRoom);
+    // handleRoomAdded(newRoom);
+
+    try {
+      const { data } = await createRooms(formData);
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -107,7 +115,20 @@ const CreateRoom = ({handleRoomAdded}) => {
               className="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
             >
               <option value="Open">Open</option>
-              <option value="Close">Close</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Tier:</label>
+            <select
+              name="tier"
+              value={formData.tier}
+              onChange={handleInputChange}
+              className="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
+            >
+              <option value="T3">T3</option>
+              <option value="T2">T2</option>
+              <option value="T1">T1</option>
             </select>
           </div>
           <div>

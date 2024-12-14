@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { login } from "../../Store/loggedUser";
+import { loginHost, loginUser } from "../../http";
+import { socketInit } from "../../socket";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,21 +28,21 @@ const Login = () => {
     }));
   }
 
-  // async function handleSubmit(e){
-  //   e.preventDefault();
-  //   console.log(activeForm)
-  //   dispatch(login({ role: activeForm }))
-  //   // console.log("dispatch waala",dispatch({activeForm}))
-  //   // navigate('/')
-  // }
-
   async function handleSubmit(e) {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
       return toast.error("Please fill in all fields.");
     }
-    toast.success("LoggedIn Successfully");
+    let response;
+    if(activeForm === "user") {
+      response = await loginUser(formData);
+    }else{
+      response = await loginHost(formData);
+    }
+    console.log(response);
+    socketInit().emit("login", response.data.message);
+    toast.success(response.data.message);
     setIsSubmitting(true);
     dispatch(login({ role: activeForm }));
     navigate("/");

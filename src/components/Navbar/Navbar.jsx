@@ -4,6 +4,7 @@ import { HiMiniSpeakerWave, HiMiniSpeakerXMark } from "react-icons/hi2";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { logout } from "../../Store/loggedUser";
+import { logoutHost, logoutUser } from "../../http";
 
 function Navbar({ toggleAudio, isMuted }) {
   const [hamburger, setHamburger] = useState(false);
@@ -13,7 +14,16 @@ function Navbar({ toggleAudio, isMuted }) {
   const { isLoggedIn, role } = useSelector((state) => state.isLogged);
   const dispatch = useDispatch();
 
-  function handleLogout() {
+  async function handleLogout() {
+    let response;
+    if(role === "user"){
+      response = await logoutUser();
+    }
+    else {
+      console.log("logout");
+      response = await logoutHost();
+    }
+    console.log(response, role);
     dispatch(logout());
   }
 
