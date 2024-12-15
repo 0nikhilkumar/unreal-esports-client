@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Join_Now = () => {
-  const { isLoggedIn } = useSelector((state) => state.isLogged);
+  const { isAuth } = useSelector((state) => state.auth);
 
   return (
     <div>
@@ -56,7 +56,7 @@ const Join_Now = () => {
             </span>
           </h1>
 
-          {isLoggedIn ? (
+          {isAuth ? (
             <h1 className="text-black text-center tracking-wider font-semibold uppercase bg-white px-5 py-3 rounded-lg text-2xl sm:text-3xl md:text-4xl lg:text-5xl ">
               Welcome
             </h1>

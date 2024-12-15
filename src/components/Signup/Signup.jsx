@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { RxCross2 } from "react-icons/rx";
-import api from "../../API/Url"; // Adjust the path if needed
+import { Link, useNavigate } from "react-router-dom";
 import { signUpHost, signUpUser } from "../../http";
 
 const Signup = () => {
@@ -25,7 +24,6 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('hi1')
     try {
       let response;
       if(activeForm === "user"){
@@ -34,7 +32,6 @@ const Signup = () => {
       else {
         response = await signUpHost(formData);
       }
-      console.log(response)
       if (response.data.statusCode == 201) {
         toast.success("Registered Successfully");
         navigate("/login");
@@ -42,8 +39,7 @@ const Signup = () => {
         toast.error(response.data.data);
       }
     } catch (err) {
-      console.log(err);
-      // toast.error(err);
+      toast.error(err.response.data.errors[0]);
     }
   };
 

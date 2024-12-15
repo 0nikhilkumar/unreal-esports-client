@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { RxCross2 } from "react-icons/rx";
-import api from "../../API/Url";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { RxCross2 } from "react-icons/rx";
 import { useDispatch } from "react-redux";
-import { login } from "../../Store/loggedUser";
+import { Link, useNavigate } from "react-router-dom";
 import { loginHost, loginUser } from "../../http";
 import { socketInit } from "../../socket";
+import { setAuth } from "../../Store/authSlice";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -30,22 +28,23 @@ const Login = () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
-    if (!formData.email || !formData.password) {
-      return toast.error("Please fill in all fields.");
+    try {
+      let response;
+      if(activeForm === "user") {
+        response = await loginUser(formData);
+      }else{
+        response = await loginHost(formData);
+      }
+      if(response.data.statusCode===200){
+      socketInit().emit("login", response.data.message);
+      toast.success(response.data.message);
+      setIsSubmitting(true);
+      dispatch(setAuth({user: response.data, role: activeForm}));
+      navigate("/");
+      }
+    } catch (error) {
+      toast.error(error.response.data.errors[0]);
     }
-    let response;
-    if(activeForm === "user") {
-      response = await loginUser(formData);
-    }else{
-      response = await loginHost(formData);
-    }
-    console.log(response);
-    socketInit().emit("login", response.data.message);
-    toast.success(response.data.message);
-    setIsSubmitting(true);
-    dispatch(login({ role: activeForm }));
-    navigate("/");
   }
 
   return (

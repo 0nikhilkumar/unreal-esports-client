@@ -54,15 +54,15 @@ function HostingRoom() {
   const [players, setPlayers] = useState(dummyData);
 
   const [formData, setFormData] = useState({
-    roomName: "knox",
+    roomName: "",
     date: "",
     time: "",
-    maxTeam: "13",
+    maxTeam: "",
     image: "",
-    prizePool: "1000000",
-    status: "open",
-    gameName: "bgmi",
-    tier: "T3",
+    prizePool: "",
+    status: "",
+    gameName: "",
+    tier: "",
   });
 
   const handleImageChange = (e) => {
@@ -115,8 +115,8 @@ function HostingRoom() {
   return (
     <div className="min-h-screen bg-black text-white p-5 mb-20">
       <div className="text-center text-4xl font-semibold pt-10 tracking-widest mb-10">
-        <h1>Room</h1>
-        <span className="block h-1 bg-blue-500 w-16 mx-auto mt-2 rounded"></span>
+        <h1>Your Rooms</h1>
+        <span className="block h-1 bg-blue-500 w-28 mx-auto mt-2 rounded"></span>
       </div>
 
       {/* create room  */}
@@ -200,9 +200,7 @@ function HostingRoom() {
         {/* Modal */}
         {isModalOpen && (
           <div
-            className="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black bg-opacity-50"
-            onClick={toggleModal}
-          >
+            className="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black bg-opacity-50">
             <div
               className="relative w-full max-w-md bg-white rounded-lg shadow dark:bg-gray-700 overflow-hidden"
               onClick={(e) => e.stopPropagation()}
@@ -354,10 +352,12 @@ function HostingRoom() {
                       name="status"
                       value={formData.status}
                       onChange={handleInputChange}
+                      required
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     >
-                      <option value="Open">Open</option>
-                      <option value="Closed">Closed</option>
+                      <option>Select</option>
+                      <option aria-required value="Open">Open</option>
+                      <option aria-required value="Closed">Closed</option>
                     </select>
                   </div>
 
@@ -395,6 +395,7 @@ function HostingRoom() {
                       onChange={handleInputChange}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     >
+                      <option>Select</option>
                       <option value="T3">T3</option>
                       <option value="T2">T2</option>
                       <option value="T1">T1</option>

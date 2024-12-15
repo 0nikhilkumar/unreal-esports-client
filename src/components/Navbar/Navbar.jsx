@@ -3,15 +3,15 @@ import { CgProfile } from "react-icons/cg";
 import { HiMiniSpeakerWave, HiMiniSpeakerXMark } from "react-icons/hi2";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { logout } from "../../Store/loggedUser";
 import { logoutHost, logoutUser } from "../../http";
+import { setAuth } from "../../Store/authSlice";
 
 function Navbar({ toggleAudio, isMuted }) {
   const [hamburger, setHamburger] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
 
-  const { isLoggedIn, role } = useSelector((state) => state.isLogged);
+  const {isAuth, role} = useSelector((state)=> state.auth);
   const dispatch = useDispatch();
 
   async function handleLogout() {
@@ -23,8 +23,7 @@ function Navbar({ toggleAudio, isMuted }) {
       console.log("logout");
       response = await logoutHost();
     }
-    console.log(response, role);
-    dispatch(logout());
+    dispatch(setAuth({user: response.data.data}));
   }
 
   return (
@@ -65,7 +64,7 @@ function Navbar({ toggleAudio, isMuted }) {
           FAQ
         </a>
 
-        {isLoggedIn ? (
+        {isAuth ? (
           role === "user" ? (
             <div className="relative">
               <button
@@ -238,7 +237,7 @@ function Navbar({ toggleAudio, isMuted }) {
           )}
         </button>
 
-        {isLoggedIn ? (
+        {isAuth ? (
           <div className="relative">
             <button
               onClick={() => setShowDropdown(!showDropdown)}

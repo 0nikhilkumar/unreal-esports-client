@@ -29,6 +29,7 @@ export const createRooms = (data) => {
         maxTeam: data.maxPlayers,
         status: data.status,
         tier: data.tier,
+        prize: data.prize
       };
       console.log(transformedData);
     return api.post("/rooms/create-room", transformedData, {withCredentials: true});
