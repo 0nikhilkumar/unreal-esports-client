@@ -51,8 +51,7 @@ const Login = () => {
         navigate("/");
       }
     } catch (error) {
-      console.log(error.response.data.data);
-      toast.error(error.response.data.data);
+      toast.error(error.response.data.errors[0]);
     }
   }
 

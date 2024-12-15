@@ -1,12 +1,10 @@
 import Error from "@/components/Error/Error";
 import { Toaster } from "react-hot-toast";
-import { Provider } from "react-redux";
 import {
   createBrowserRouter,
-  createRoutesFromChildren,
   createRoutesFromElements,
   Route,
-  RouterProvider,
+  RouterProvider
 } from "react-router-dom";
 import Arena from "./components/Arena/Arena";
 import FeedbackForm from "./components/Feedback Form/FeedbackForm";
@@ -20,15 +18,44 @@ import Leaderboard from "./Pages/PlayArea/Leaderboard/Leaderboard";
 import Profile from "./Pages/Profile/Profile";
 import CreateRoom from "./Pages/Tournament/CreateRoom/CreateRoom";
 import Tournament from "./Pages/Tournament/Tournament";
-import store from "./Store";
 import UserRoom from "./UserRoom/UserRoom";
+
+// const ProtectedRoute = ({Component}) => {
+//   const {user, isAuth} = useSelector((state)=> state.auth);
+//   const navigate = useNavigate();  
+//   useEffect(()=> {
+//     !isAuth ? navigate("/login") : isAuth && user?.isVerified ? navigate("/") : <Component />
+//   }, [isAuth, navigate, user?.isVerified])
+//   return <Component />
+// }
+
+// const SemiProtected = ({Component}) => {
+//   const {user, isAuth} = useSelector((state)=> state.auth);
+//   const navigate = useNavigate();  
+//   useEffect(()=> {
+//     !isAuth ? navigate("/") : isAuth && user?.isVerified ? (<Component />) : navigate("/") 
+//   }, [isAuth, navigate, user?.activated])
+//   return <Component />
+// }
+
+// const GuestRoute = ({ Component }) => {
+//   const { isAuth } = useSelector((state) => state.auth);
+//   console.log(isAuth);
+//   const navigate = useNavigate();
+//   useEffect(() => {
+//     if (isAuth) {
+//       navigate("/");
+//     }
+//   }, [navigate, isAuth]);
+//   return isAuth ? null : <Component />;
+// }
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path="/" element={<HomeLayout />} errorElement={<Error />} />
+      <Route exact path="/" element={<HomeLayout />} errorElement={<Error />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
+      <Route exact path="/login" element={<Login />} />
       <Route path="/about" element={<About />} />
       <Route path="/tournament" element={<Tournament />} />
       <Route path="/feedback" element={<FeedbackForm />} />
@@ -46,12 +73,14 @@ const router = createBrowserRouter(
 const App = () => {
   return (
     <>
-      <Provider store={store}>
-        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-        <RouterProvider router={router} />
-      </Provider>
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+      <RouterProvider router={router} />
     </>
   );
 };
+
+
+
+
 
 export default App;

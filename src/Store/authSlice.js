@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     isAuth: false,
     user: null,
-    role: null
+    role: ''
 };
 
 
@@ -12,16 +12,15 @@ export const authSlice = createSlice({
     initialState,
     reducers: {
         setAuth: (state, action) => {
-            const user = action.payload?.user;
-            const role = action.payload?.role;
-            state.user = user;
-            if(user===null){
-                state.isAuth = false;
-            } 
-            else {
-                state.isAuth = true;
-                state.role = role;
-            }
+          const { user, role } = action.payload;
+          // const role = action.payload?.role;
+          state.user = user;
+          if (user === null) {
+            state.isAuth = false;
+          } else {
+            state.isAuth = true;
+            state.role = role;
+          }
         }
     }
 });

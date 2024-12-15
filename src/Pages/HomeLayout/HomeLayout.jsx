@@ -12,15 +12,17 @@ function HomeLayout() {
   return (
     <>
       {/* <CustomCursor /> */}
-      
+
       {/* Feedback Navbar */}
-      <Feedback_Navbar/>
-      <Home />
-      <Partners />
-      <TournamentComponent />
-      <Join_Now />
-      <FAQ />
-      <Footer/>
+      <div>
+        <Feedback_Navbar />
+        <Home />
+        <Partners />
+        <TournamentComponent />
+        <Join_Now />
+        <FAQ />
+        <Footer />
+      </div>
     </>
   );
 }
