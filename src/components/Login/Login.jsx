@@ -6,6 +6,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginHost, loginUser } from "../../http";
 import { socketInit } from "../../socket";
 import { setAuth } from "../../Store/authSlice";
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,10 +16,15 @@ const Login = () => {
   const [activeForm, setActiveForm] = useState("user");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showIcon, setShowIcon] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  function togglePasswordVisibility(){
+    setShowIcon(!showIcon)
+  }
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -30,20 +38,20 @@ const Login = () => {
     e.preventDefault();
     try {
       let response;
-      if(activeForm === "user") {
+      if (activeForm === "user") {
         response = await loginUser(formData);
-      }else{
+      } else {
         response = await loginHost(formData);
       }
-      if(response.data.statusCode===200){
-      socketInit().emit("login", response.data.message);
-      toast.success(response.data.message);
-      setIsSubmitting(true);
-      dispatch(setAuth({user: response.data, role: activeForm}));
-      navigate("/");
+      if (response.data.statusCode === 200) {
+        socketInit().emit("login", response.data.message);
+        toast.success(response.data.message);
+        setIsSubmitting(true);
+        dispatch(setAuth({ user: response.data, role: activeForm }));
+        navigate("/");
       }
     } catch (error) {
-      console.log(error.response.data.data)
+      console.log(error.response.data.data);
       toast.error(error.response.data.data);
     }
   }
@@ -131,7 +139,7 @@ const Login = () => {
                   />
                 </div>
               )}
-              <div>
+              <div className="relative">
                 <label
                   htmlFor="password"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -139,7 +147,7 @@ const Login = () => {
                   Password
                 </label>
                 <input
-                  type="password"
+                  type={showIcon?"text":"password"}
                   name="password"
                   id="password"
                   placeholder="••••••••"
@@ -148,6 +156,13 @@ const Login = () => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute top-7 inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 "
+                >
+                  {showIcon ? <FaRegEyeSlash className="text-white text-lg" /> : <FaRegEye className="text-white text-lg"/>}
+                </button>
               </div>
               <div className="flex items-start">
                 <div className="flex items-center h-5">

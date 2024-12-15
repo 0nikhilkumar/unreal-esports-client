@@ -20,7 +20,6 @@ function Navbar({ toggleAudio, isMuted }) {
       response = await logoutUser();
     }
     else {
-      console.log("logout");
       response = await logoutHost();
     }
     dispatch(setAuth({user: response.data.data}));

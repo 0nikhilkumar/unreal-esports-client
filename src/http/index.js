@@ -10,11 +10,11 @@ const api = axios.create({
 });
 
 
-export const signUpUser = (data) => api.post("/users/signup", data, {withCredentials: true});
+export const signUpUser = (data) => api.post("/user/signup", data, {withCredentials: true});
 export const signUpHost = (data) => api.post("/host/register", data, {withCredentials: true});
 
 
-export const loginUser = (data) => api.post("/users/login", data, {withCredentials: true});
+export const loginUser = (data) => api.post("/user/login", data, {withCredentials: true});
 export const loginHost = (data) => api.post("/host/login", data, {withCredentials: true});
 
 export const logoutUser = () => api.get("/user/logout", {withCredentials: true});

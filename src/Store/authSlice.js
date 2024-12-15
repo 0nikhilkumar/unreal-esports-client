@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { act } from "react";
 
 const initialState = {
     isAuth: false,
@@ -16,7 +15,6 @@ export const authSlice = createSlice({
             const user = action.payload?.user;
             const role = action.payload?.role;
             state.user = user;
-            console.log(user);
             if(user===null){
                 state.isAuth = false;
             } 
