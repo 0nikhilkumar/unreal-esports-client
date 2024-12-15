@@ -43,7 +43,8 @@ const Login = () => {
       navigate("/");
       }
     } catch (error) {
-      toast.error(error.response.data.errors[0]);
+      console.log(error.response.data.data)
+      toast.error(error.response.data.data);
     }
   }
 
