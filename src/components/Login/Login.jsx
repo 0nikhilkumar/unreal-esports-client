@@ -51,7 +51,7 @@ const Login = () => {
         navigate("/");
       }
     } catch (error) {
-      toast.error(error.response.data.errors[0]);
+      toast.error(error.response?.data?.errors[0]);
     }
   }
 

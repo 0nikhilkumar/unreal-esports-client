@@ -4,6 +4,8 @@ import { CiSearch } from "react-icons/ci";
 import { LuAsterisk } from "react-icons/lu";
 import { FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import { createRooms, getHostRooms } from "../../http";
+import toast from "react-hot-toast";
 
 const dummyData = [
   {
@@ -51,14 +53,13 @@ function HostingRoom() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [teamName, setTeamName] = useState("");
   const [teamCreated, setTeamCreated] = useState(false);
-  const [players, setPlayers] = useState(dummyData);
-
+  const [players, setPlayers] = useState([]);
+  const [refreshData, setRefreshData] = useState(false);
   const [formData, setFormData] = useState({
     roomName: "",
     date: "",
     time: "",
     maxTeam: "",
-    image: "",
     prizePool: "",
     status: "",
     gameName: "",
@@ -66,13 +67,14 @@ function HostingRoom() {
   });
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0]; // Get the selected file
-    if (file) {
-      setFormData((prevData) => ({
-        ...prevData,
-        image: file, // Store the file object in formData
-      }));
-    }
+    // const file = e.target.files[0]; // Get the selected file
+    // if (file) {
+    //   setFormData((prevData) => ({
+    //     ...prevData,
+    //     image: file, // Store the file object in formData
+    //   }));
+    // }
+    console.log("hi");
   };
 
   const handleInputChange = (e) => {
@@ -106,11 +108,46 @@ function HostingRoom() {
       card.tier === selectedTier &&
       card.gameName.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setPlayers((prev) => [...prev, formData]);
+    // setPlayers((prev) => [...prev, formData]);
     console.log("Form Data:", formData);
+
+    try {
+      const res = await createRooms(formData);
+      console.log("res", res);
+      // console.log(res.data);
+      toast.success(res.data.message);
+      setRefreshData(!refreshData);
+
+      setFormData({
+        roomName: "",
+        date: "",
+        time: "",
+        maxTeam: "",
+        prizePool: "",
+        status: "",
+        gameName: "",
+        tier: "",
+      });
+      toggleModal()
+    } catch (error) {
+      toast.error("Room is not created");
+    }
   };
+
+  const fetchedData = async () => {
+    const res = await getHostRooms();
+    console.log("hi");
+    console.log(res.data.message[0].roomDetails);
+    setPlayers(res.data.message[0].roomDetails);
+    console.log(players);
+  };
+
+  useEffect(() => {
+    fetchedData();
+  }, [refreshData]);
 
   return (
     <div className="min-h-screen bg-black text-white p-5 mb-20">
@@ -199,17 +236,14 @@ function HostingRoom() {
       <div>
         {/* Modal */}
         {isModalOpen && (
-          <div
-            className="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black bg-opacity-50">
+          <div className="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black bg-opacity-50">
             <div
               className="relative w-full max-w-md bg-white rounded-lg shadow dark:bg-gray-700 overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal content */}
               <div className="flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600">
-                <h3 className="tracking-wider pl-2">
-                  Create Room
-                </h3>
+                <h3 className="tracking-wider pl-2">Create Room</h3>
 
                 <button
                   type="button"
@@ -356,8 +390,12 @@ function HostingRoom() {
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     >
                       <option>Select</option>
-                      <option aria-required value="Open">Open</option>
-                      <option aria-required value="Closed">Closed</option>
+                      <option aria-required value="Open">
+                        Open
+                      </option>
+                      <option aria-required value="Closed">
+                        Closed
+                      </option>
                     </select>
                   </div>
 
@@ -411,7 +449,7 @@ function HostingRoom() {
                       Image Upload
                     </label>
                     <input
-                    onChange={handleImageChange}
+                      onChange={handleImageChange}
                       className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  focus:ring-primary-600 focus:border-primary-600  p-[6.2px]  dark:focus:ring-primary-500 dark:focus:border-primary-500"
                       aria-describedby="file_input_help"
                       id="file_input"
