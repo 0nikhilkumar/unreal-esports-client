@@ -36,3 +36,5 @@ export const createRooms = (data) => {
 }   
 
 export const getHostRooms = () => api.get("/rooms/get-host-rooms", {withCredentials: true});
+
+export const getRoom = (id) => api.get(`/rooms/get-room/${id}`,{withCredentials:true})

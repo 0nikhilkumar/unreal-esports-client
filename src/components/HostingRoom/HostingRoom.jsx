@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { GoPlus } from "react-icons/go";
 import { CiSearch } from "react-icons/ci";
 import { LuAsterisk } from "react-icons/lu";
-import { FaPlus } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { FaGamepad, FaUsers } from "react-icons/fa";
+import { Link, NavLink } from "react-router-dom";
 import { createRooms, getHostRooms } from "../../http";
 import toast from "react-hot-toast";
 
@@ -60,21 +60,21 @@ function HostingRoom() {
     date: "",
     time: "",
     maxTeam: "",
-    prizePool: "",
+    prize: "",
     status: "",
     gameName: "",
     tier: "",
   });
 
   const handleImageChange = (e) => {
-    // const file = e.target.files[0]; // Get the selected file
+    // const file = e.target.files[0] // Get the selected file
     // if (file) {
     //   setFormData((prevData) => ({
     //     ...prevData,
     //     image: file, // Store the file object in formData
     //   }));
     // }
-    console.log("hi");
+    console.log("hi2");
   };
 
   const handleInputChange = (e) => {
@@ -120,18 +120,18 @@ function HostingRoom() {
       // console.log(res.data);
       toast.success(res.data.message);
       setRefreshData(!refreshData);
-
+      console.log(formData)
       setFormData({
         roomName: "",
         date: "",
         time: "",
         maxTeam: "",
-        prizePool: "",
+        prize: "",
         status: "",
         gameName: "",
         tier: "",
       });
-      toggleModal()
+      toggleModal();
     } catch (error) {
       toast.error("Room is not created");
     }
@@ -139,6 +139,7 @@ function HostingRoom() {
 
   const fetchedData = async () => {
     const res = await getHostRooms();
+    console.log(res.data.message[0].roomDetails)
     setPlayers(res.data.message[0].roomDetails);
   };
 
@@ -146,8 +147,10 @@ function HostingRoom() {
     fetchedData();
   }, [refreshData]);
 
+
+
   return (
-    <div className="min-h-screen bg-black text-white p-5 mb-20">
+    <div className="min-h-screen bg-black text-white p-5">
       <div className="text-center text-4xl font-semibold pt-10 tracking-widest mb-10">
         <h1>Your Rooms</h1>
         <span className="block h-1 bg-blue-500 w-28 mx-auto mt-2 rounded"></span>
@@ -205,26 +208,60 @@ function HostingRoom() {
       {/* Room Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         {filteredData.map((room, index) => (
+          
           <div
             key={index}
-            className="bg-gray-800 p-5 rounded-lg shadow-lg transition-transform hover:scale-105"
+            className="bg-gray-800 rounded-xl overflow-hidden transition-transform hover:transform hover:scale-105"
           >
+            <NavLink to={`/hosting-room/${room._id}`}>
             <img
               src={room.image}
               alt={room.roomName}
-              className="w-full h-32 object-cover rounded-md mb-4"
+              className="w-full h-48 object-cover"
+              onError={(e) => {
+                e.target.src =
+                  "https://images.unsplash.com/photo-1542751371-adc38448a05e";
+              }} 
             />
-            <h2 className="text-xl font-bold mb-2">{room.roomName}</h2>
-            <p>Date: {room.date}</p>
-            <p>Start Time: {room.time}</p>
-            <p>Max Capacity: {room.maxTeam}</p>
-            <p>Prize Pool: ${room.prizePool}</p>
-            <p>Status: {room.status}</p>
-            <p>Game: {room.gameName}</p>
-            <button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded w-full">
-              Submit
-            </button>
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-2">{room.roomName}</h3>
+              <div className="flex justify-start gap-x-5 items-center flex-wrap">
+                <div className="flex items-center gap-2 text-gray-300 mb-2">
+                  <FaUsers />
+                  <span>Date: {room.date}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-300 mb-2">
+                  <FaUsers />
+                  <span>Time: {room.time}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-300 mb-2">
+                  <FaUsers />
+                  <span>Prize: {room.prize}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-300 mb-2">
+                  <FaUsers />
+                  <span>Capacity: {room.maxTeam}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-300 mb-2">
+                  <FaGamepad />
+                  <span>{room.gameName}</span>
+                </div>
+              </div>
+              <div
+                className={`inline-block px-3 py-1 rounded-full text-sm ${
+                  room.status === "Open" ||
+                  room.status === "Registration Open" ||
+                  room.status === "Coming Soon"
+                    ? "bg-green-500/20 text-green-500"
+                    : "bg-red-500/20 text-red-500"
+                }`}
+              >
+                {room.status}
+              </div>
+            </div>
+            </NavLink>
           </div>
+          
         ))}
       </div>
 
@@ -270,6 +307,7 @@ function HostingRoom() {
               <form
                 className="p-4 max-h-[70vh] overflow-hidden overflow-y-scroll no-scrollbar"
                 onSubmit={handleSubmit}
+                encType="multipart/form-data"
               >
                 {/* Form fields */}
                 <div className="grid gap-4 mb-10 grid-cols-2 ">
@@ -354,16 +392,16 @@ function HostingRoom() {
                   {/* Prize Pool */}
                   <div className="col-span-1">
                     <label
-                      htmlFor="prizePool"
+                      htmlFor="prize"
                       className="block mb-2 text-lg text-start font-medium text-gray-900 dark:text-white"
                     >
-                      Prize Pool
+                      Prize
                     </label>
                     <input
                       type="number"
-                      name="prizePool"
-                      id="prizePool"
-                      value={formData.prizePool}
+                      name="prize"
+                      id="prize"
+                      value={formData.prize}
                       onChange={handleInputChange}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                       placeholder="Enter Prize Pool"

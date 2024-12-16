@@ -19,6 +19,7 @@ import Profile from "./Pages/Profile/Profile";
 import CreateRoom from "./Pages/Tournament/CreateRoom/CreateRoom";
 import Tournament from "./Pages/Tournament/Tournament";
 import UserRoom from "./UserRoom/UserRoom";
+import HostRoom from "./components/HostRoom/HostRoom";
 
 // const ProtectedRoute = ({Component}) => {
 //   const {user, isAuth} = useSelector((state)=> state.auth);
@@ -66,6 +67,7 @@ const router = createBrowserRouter(
       <Route path="/profile" element={<Profile />} />
       <Route path="/arena" element={<Arena />} />
       <Route path="/arena/:id" element={<UserRoom />} />
+      <Route path="/hosting-room/:id" element={<HostRoom />} />
     </>
   )
 );
