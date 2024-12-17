@@ -38,3 +38,7 @@ export const createRooms = (data) => {
 export const getHostRooms = () => api.get("/rooms/get-host-rooms", {withCredentials: true});
 
 export const getRoom = (id) => api.get(`/rooms/get-room/${id}`,{withCredentials:true})
+
+export const getUpdateIdp = (id,roomId,roomPass) => api.patch(`/rooms/update-idp/${id}`,{roomId,roomPass},{withCredentials:true})
+
+export const getIdp = (id) => api.get(`/rooms/get-idp/${id}`, {withCredentials:true})

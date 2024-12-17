@@ -139,7 +139,6 @@ function HostingRoom() {
 
   const fetchedData = async () => {
     const res = await getHostRooms();
-    console.log(res.data.message[0].roomDetails)
     setPlayers(res.data.message[0].roomDetails);
   };
 
