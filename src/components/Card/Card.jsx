@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaGamepad, FaUsers } from "react-icons/fa";
 
 function Card({
@@ -12,6 +12,8 @@ function Card({
   tier,
   status,
 }) {
+  const [join, setJoin] = useState(false);
+
   return (
     <div className="bg-gray-800 rounded-xl overflow-hidden transition-transform hover:transform hover:scale-105">
       <img
@@ -42,25 +44,33 @@ function Card({
             <FaUsers />
             <span>Capacity: {capacity}</span>
           </div>
-          <div className="flex items-center gap-2 text-gray-300 mb-4">
+          <div className="flex items-center gap-2 text-gray-300 mb-2">
             <FaGamepad />
             <span>{type}</span>
           </div>
         </div>
         <div className="w-full flex justify-between items-center ">
           <div
-            className={`inline-block px-3 py-1 rounded-full text-sm mt-4 ${
-              status === "Live" ||
-              status === "Registration Open" ||
-              status === "Coming Soon"
+            className={`inline-block px-4 py-2 rounded-full text-sm mt-4 ${
+              status === "Open" || status === "Upcoming"
                 ? "bg-green-500/20 text-green-500"
+                : status === "Live"
+                ? "bg-[#D21A1A] text-white"
                 : "bg-red-500/20 text-red-500"
             }`}
           >
             {status}
           </div>
-          <button className="mt-4 bg-blue-600 text-white py-2 px-6 rounded-full hover:bg-blue-700 transition-all ">
-            Join Now
+          <button
+            disabled={join}
+            className={`mt-4 ${
+              join ? "bg-gray-600" : "bg-blue-600"
+            } text-white py-2 px-6 rounded-full hover:${
+              join ? "bg-gray-700" : "bg-blue-700"
+            } transition-all `}
+            onClick={() => setJoin(true)}
+          >
+            {join ? "Joined" : "Join Now"}
           </button>
         </div>
       </div>

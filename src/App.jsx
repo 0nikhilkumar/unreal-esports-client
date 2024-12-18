@@ -15,7 +15,7 @@ import About from "./Pages/About/About";
 import HomeLayout from "./Pages/HomeLayout/HomeLayout";
 import CreateTournament from "./Pages/PlayArea/CreateTournament/CreateTournament";
 import Leaderboard from "./Pages/PlayArea/Leaderboard/Leaderboard";
-import Profile from "./Pages/Profile/Profile";
+import Profile from "./Pages/Profile/UserProfile/Profile";
 import CreateRoom from "./Pages/Tournament/CreateRoom/CreateRoom";
 import Tournament from "./Pages/Tournament/Tournament";
 import UserRoom from "./UserRoom/UserRoom";

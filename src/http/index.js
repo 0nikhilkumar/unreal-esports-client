@@ -20,25 +20,19 @@ export const loginHost = (data) => api.post("/host/login", data, {withCredential
 export const logoutUser = () => api.get("/user/logout", {withCredentials: true});
 export const logoutHost = () => api.get("/host/logout", {withCredentials: true});
 
-export const createRooms = (data) => {
-    // const transformedData = {
-    //     roomName: data.name,
-    //     date: data.date,
-    //     time: `${data.startTime}`,
-    //     gameName: data.game,
-    //     maxTeam: data.maxPlayers,
-    //     status: data.status,
-    //     tier: data.tier,
-    //     prize: data.prize
-    //   };
-      console.log(data);
-    return api.post("/rooms/create-room", data, {withCredentials: true});
-}   
+export const createRooms = (data) => api.post("/rooms/create-room", data, {withCredentials: true});
 
 export const getHostRooms = () => api.get("/rooms/get-host-rooms", {withCredentials: true});
+
+export const getUserHostRooms = () => api.get("/rooms/getHostRoom");
 
 export const getRoom = (id) => api.get(`/rooms/get-room/${id}`,{withCredentials:true})
 
 export const getUpdateIdp = (id,roomId,roomPass) => api.patch(`/rooms/update-idp/${id}`,{roomId,roomPass},{withCredentials:true})
 
 export const getIdp = (id) => api.get(`/rooms/get-idp/${id}`, {withCredentials:true})
+
+export const getPreferredNameData = () => api.get("/rooms/get-preferredName");
+
+export const getAllRoomsOfHost = (id) => api.get(`/rooms/getAllHostRooms/${id}`);
+

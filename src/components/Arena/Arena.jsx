@@ -4,6 +4,7 @@ import { FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { dummyData } from "./dummyData";
 import { LuAsterisk } from "react-icons/lu";
+import {getPreferredNameData} from "../../http/index"
 
 const UserRoom = () => {
   // const [teamLogo, setTeamLogo] = useState(null);
@@ -11,6 +12,7 @@ const UserRoom = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [teamName, setTeamName] = useState("");
   const [teamCreated, setTeamCreated] = useState(false);
+  const [allPreferredHostData, setAllPreferredHostData] = useState([]);
   const searchInputRef = useRef(null);
   const [players, setPlayers] = useState([
     { id: 1, gameId: "", ign: "", email: "1@gmail.com" },
@@ -20,21 +22,7 @@ const UserRoom = () => {
     { id: 5, gameId: "", ign: "", email: "5@gmail.com" },
   ]);
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.ctrlKey && event.key === "k") {
-        event.preventDefault();
-        searchInputRef.current?.focus();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
-
-  const filteredData = dummyData.filter((card) =>
+  const filteredData = allPreferredHostData.filter((card) =>
     card.preferredName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -52,6 +40,7 @@ const UserRoom = () => {
     );
   };
 
+
   // const handleImageUpload = (e) => {
   //   setFormData({ ...formData, image: e.target.files[0] });
   // };
@@ -66,6 +55,30 @@ const UserRoom = () => {
   //     reader.readAsDataURL(file);
   //   }
   // };
+
+  const fetchHostRooms = async () => {
+    const res = await getPreferredNameData();
+    console.log(res.data);
+    setAllPreferredHostData(res.data.data);
+  }
+
+  useEffect(()=> {
+    fetchHostRooms();
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && event.key === "k") {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -122,7 +135,7 @@ const UserRoom = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full max-w-7xl px-4 mb-20">
         {filteredData.map((card) => (
           <div
-            key={card.id}
+            key={card._id}
             className="bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
           >
             <img
@@ -130,7 +143,7 @@ const UserRoom = () => {
               alt={card.preferredName}
               className="w-full h-40 sm:h-32 md:h-40 object-cover rounded-t-xl"
             />
-            <Link to={`/arena/${card.id}`}>
+            <Link to={`/arena/${card._id}`}>
               <div className="p-4 flex flex-col gap-2">
                 <h3 className="text-lg font-semibold">{card.preferredName}</h3>
                 <p className="text-sm text-gray-400">Game: {card.game}</p>

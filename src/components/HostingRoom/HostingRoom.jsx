@@ -430,6 +430,9 @@ function HostingRoom() {
                       <option aria-required value="Closed">
                         Closed
                       </option>
+                      <option aria-required value="Live">
+                        Live
+                      </option>
                     </select>
                   </div>
 
