@@ -36,3 +36,7 @@ export const getPreferredNameData = () => api.get("/rooms/get-preferredName");
 
 export const getAllRoomsOfHost = (id) => api.get(`/rooms/getAllHostRooms/${id}`);
 
+export const userJoinRoom = (id) => api.patch("/user/join-room", {id});
+
+export const getAllUserJoinedRooms = () => api.get("/user/joined-rooms");
+

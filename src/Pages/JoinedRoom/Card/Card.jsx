@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FaGamepad, FaUsers } from "react-icons/fa";
-import { getAllUserJoinedRooms, userJoinRoom } from "../../http";
+import { getAllUserJoinedRooms, userJoinRoom } from "../../../http";
+import { useNavigate } from "react-router-dom";
+
 
 
 
@@ -11,12 +13,13 @@ function Card({
 
   const [join, setJoin] = useState(false);
 
-  
+  const navigate = useNavigate()
   
 
   return (
-    <div className="bg-gray-800 rounded-xl overflow-hidden transition-transform hover:transform hover:scale-105">
-      <img
+    <div onClick={()=> navigate(`/joined-rooms/${room._id}`)} className="bg-gray-800 cursor-pointer rounded-xl overflow-hidden transition-transform hover:transform hover:scale-105">
+      <div className="relative">
+        <img
           src={room?.image}
           alt={room?.roomName}
           className="w-full h-48 object-cover"
@@ -25,6 +28,9 @@ function Card({
               "https://images.unsplash.com/photo-1542751371-adc38448a05e";
           }}
         />
+    
+          <div className={`absolute bottom-0 px-4 py-1 rounded-md rounded-l-none bg-white text-black`}>{room.hostId.preferredName}</div>
+      </div>
       <div className="p-6">
         <h3 className="text-xl font-bold mb-2">{room?.roomName}</h3>
         <div className="flex justify-start gap-x-5 items-center flex-wrap">
@@ -60,18 +66,9 @@ function Card({
             }`}>
             {room?.status}
           </div>
-          <button
-            disabled={join}
-            className={`mt-4 ${
-              join ? "bg-gray-600" : "bg-blue-600"
-            } text-white py-2 px-6 rounded-full hover:${
-              join ? "bg-gray-700" : "bg-blue-700"
-            } transition-all `}
-            onClick={() => joinRoom(room?._id)}>
-            {join ? "Joined" : "Join Now"}
-          </button>
         </div>
       </div>
+        <div className="h-10 bg-[#111825] w-full flex justify-center items-center"><p className="tracking-wider flex justify-center items-center font-bold ">Now you can enter the room</p></div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useParams } from "react-router-dom";
-import { getAllRoomsOfHost } from "../http/index";
+import { getAllRoomsOfHost, getAllUserJoinedRooms, userJoinRoom } from "../http/index";
 import Card from "../components/Card/Card";
 import { IoClose } from "react-icons/io5";
 
@@ -9,20 +9,34 @@ function UserRoom() {
   const [selectedButton, setSelectedButton] = useState("T3");
   const [searchQuery, setSearchQuery] = useState("");
   const [allRooms, setAllRooms] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar state
-  const [isJoinedRoomsSelected, setIsJoinedRoomsSelected] = useState(false); // Track if "Joined Rooms" is selected
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
+  const [isJoinedRoomsSelected, setIsJoinedRoomsSelected] = useState(false); 
 
   const { id } = useParams();
   const searchInputRef = useRef(null);
 
   const getAllHostRoomById = async () => {
     const res = await getAllRoomsOfHost(id);
-    console.log(res.data.data);
     setAllRooms(res.data.data);
   };
 
+  const joinRoom = async (id) => {
+    const res = await userJoinRoom(id);
+    console.log(res.data);
+    //todo -> add the toast here -> User Joined in Room
+  }
+
+  const getJoinedRooms = async () => {
+    const res = await getAllUserJoinedRooms();
+    console.log(res.data);
+  }
+
   useEffect(() => {
     getAllHostRoomById();
+  }, []);
+
+  useEffect(()=> {
+    getJoinedRooms();
   }, []);
 
   const filteredRooms = allRooms?.roomsCreated?.filter(
@@ -155,15 +169,9 @@ function UserRoom() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl px-4 mb-20">
             {filteredData?.map((room, index) => (
               <Card
-                roomName={room.roomName}
-                capacity={room.maxTeam}
-                date={room.date}
-                prize={room.prize}
-                status={room.status}
-                tier={room.tier}
-                time={room.time}
-                type={room.gameName}
-                key={index}
+              joinRoom={joinRoom}
+                room={room}
+                key={room._id}
               />
             ))}
           </div>

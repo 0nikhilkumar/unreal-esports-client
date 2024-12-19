@@ -20,6 +20,8 @@ import CreateRoom from "./Pages/Tournament/CreateRoom/CreateRoom";
 import Tournament from "./Pages/Tournament/Tournament";
 import UserRoom from "./UserRoom/UserRoom";
 import HostRoom from "./components/HostRoom/HostRoom";
+import JoinedRooms from "./Pages/JoinedRoom/JoinedRooms";
+import Room from "./Pages/JoinedRoom/Room/Room";
 
 // const ProtectedRoute = ({Component}) => {
 //   const {user, isAuth} = useSelector((state)=> state.auth);
@@ -68,6 +70,8 @@ const router = createBrowserRouter(
       <Route path="/arena" element={<Arena />} />
       <Route path="/arena/:id" element={<UserRoom />} />
       <Route path="/hosting-room/:id" element={<HostRoom />} />
+      <Route path="/joined-rooms" element={<JoinedRooms/>} />
+      <Route path="/joined-rooms/:id" element={<Room />} />
     </>
   )
 );
