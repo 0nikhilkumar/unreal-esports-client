@@ -11,7 +11,7 @@ function Card({
   joinRoom
 }) {
 
-  const [join, setJoin] = useState(false);
+//   const [join, setJoin] = useState(false);
 
   const navigate = useNavigate()
   
