@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { logoutHost, logoutUser } from "../../http";
 import { setAuth } from "../../Store/authSlice";
+import toast from "react-hot-toast";
 
 function Navbar({ toggleAudio, isMuted }) {
   const [hamburger, setHamburger] = useState(false);
@@ -18,9 +19,11 @@ function Navbar({ toggleAudio, isMuted }) {
     let response;
     if(role === "user"){
       response = await logoutUser();
+      toast.success(response.data.message)
     }
     else {
       response = await logoutHost();
+      toast.success(response.data.message)
     }
     dispatch(setAuth({user: response.data.data}));
   }

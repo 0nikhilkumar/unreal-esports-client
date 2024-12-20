@@ -4,7 +4,8 @@ import { FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { dummyData } from "./dummyData";
 import { LuAsterisk } from "react-icons/lu";
-import {getPreferredNameData} from "../../http/index"
+import {createTeam, getPreferredNameData, getUserTeam} from "../../http/index"
+import toast from "react-hot-toast";
 
 const UserRoom = () => {
   // const [teamLogo, setTeamLogo] = useState(null);
@@ -15,11 +16,11 @@ const UserRoom = () => {
   const [allPreferredHostData, setAllPreferredHostData] = useState([]);
   const searchInputRef = useRef(null);
   const [players, setPlayers] = useState([
-    { id: 1, gameId: "", ign: "", email: "1@gmail.com" },
-    { id: 2, gameId: "", ign: "", email: "2@gmail.com" },
-    { id: 3, gameId: "", ign: "", email: "3@gmail.com" },
-    { id: 4, gameId: "", ign: "", email: "4@gmail.com" },
-    { id: 5, gameId: "", ign: "", email: "5@gmail.com" },
+    { playerNumber: 1, igId: "", ign: "", email: "" },
+    { playerNumber: 2, igId: "", ign: "", email: "" },
+    { playerNumber: 3, igId: "", ign: "", email: "" },
+    { playerNumber: 4, igId: "", ign: "", email: "" },
+    { playerNumber: 5, igId: "", ign: "", email: "" },
   ]);
 
   const filteredData = allPreferredHostData.filter((card) =>
@@ -35,7 +36,7 @@ const UserRoom = () => {
 
     setPlayers((prevPlayers) =>
       prevPlayers.map((player) =>
-        player.id === id ? { ...player, [name]: value } : player
+        player.playerNumber === id ? { ...player, [name]: value } : player
       )
     );
   };
@@ -56,11 +57,14 @@ const UserRoom = () => {
   //   }
   // };
 
+  // const submitTeam = ()=> {
+  //   console.log(players);
+  // }
+
   const fetchHostRooms = async () => {
     const res = await getPreferredNameData();
-    console.log(res.data);
     setAllPreferredHostData(res.data.data);
-  }
+  };
 
   useEffect(()=> {
     fetchHostRooms();
@@ -80,11 +84,35 @@ const UserRoom = () => {
     };
   }, []);
 
+  const getTeam = async () => {
+    const res = await getUserTeam();
+    if(res.data.statusCode === 200){
+      setTeamCreated(true);
+    }
+    else setTeamCreated(false);
+  }
+
+  useEffect(()=> {
+    getTeam();
+  }, []);
+
+  const createUserTeam = async (teamName, players) => {
+    try {
+      const res = await createTeam(teamName, players);
+      console.log(res.data);
+      setTeamCreated(true);
+      isModalOpen(false);
+      toast.success(res.data.message);
+    } catch (error) {
+      console.log(error);
+      isModalOpen(true);
+      toast.error(error.response.data.data);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    setTeamCreated(true);
-    console.log("Team Name:", teamName);
-    console.log("Players Data:", players);
+    createUserTeam(teamName, players);
   };
 
   return (
@@ -224,20 +252,20 @@ const UserRoom = () => {
                   </div>
                   <div className="col-span-2">
                     {players.map((player) => (
-                      <div key={player.id}>
+                      <div key={player.playerNumber}>
                         <label
                           htmlFor={`ign`}
                           className="block mb-1 mt-4 text-lg font-medium text-gray-900 dark:text-white"
                         >
-                          {player.id === 1 ? (
+                          {player.playerNumber === 1 ? (
                             <>
                               {`Player 1 (Leader)`}
                               <LuAsterisk className="text-red-600 inline -mt-4 text-sm" />
                             </>
                           ) : (
                             <>
-                              {`Player ${player.id}`}
-                              {player.id !== 5 && (
+                              {`Player ${player.playerNumber}`}
+                              {player.playerNumber !== 5 && (
                                 <LuAsterisk className="text-red-600 inline -mt-4 text-sm" />
                               )}
                             </>
@@ -249,31 +277,31 @@ const UserRoom = () => {
                             name={`ign`}
                             id={`ign`}
                             value={player.ign}
-                            onChange={(e) => handleInputChangee(e, player.id)}
+                            onChange={(e) => handleInputChangee(e, player.playerNumber)}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder={`IGN`}
-                            required
+                            required={player.playerNumber !== 5 ? true : false}
                           />
 
                           <input
                             type="number"
-                            name={`gameId`}
-                            id={`gameId`}
-                            value={player.gameId}
-                            onChange={(e) => handleInputChangee(e, player.id)}
+                            name={`igId`}
+                            id={`igId`}
+                            value={player.igId}
+                            onChange={(e) => handleInputChangee(e, player.playerNumber)}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder={`ID`}
-                            required
+                            required={player.playerNumber !== 5 ? true : false}
                           />
                           <input
                             type="email"
                             name={`email`}
                             id={`email`}
                             value={player.email}
-                            onChange={(e) => handleInputChangee(e, player.id)}
+                            onChange={(e) => handleInputChangee(e, player.playerNumber)}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder={`Email`}
-                            required
+                            required={player.playerNumber !== 5 ? true : false}
                           />
                         </div>
                       </div>

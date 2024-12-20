@@ -40,3 +40,9 @@ export const userJoinRoom = (id) => api.patch("/user/join-room", {id});
 
 export const getAllUserJoinedRooms = () => api.get("/user/joined-rooms");
 
+export const createTeam = (teamName, players) => api.post("/user/create-team", {teamName, players});
+
+export const getUserTeam = () => api.get("/user/get-team");
+
+export const updateUserTeam = (teamName, players) => api.patch("/user/update-team", {teamName, players});
+

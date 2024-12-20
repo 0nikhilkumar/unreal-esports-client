@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { getAllRoomsOfHost, getAllUserJoinedRooms, userJoinRoom } from "../http/index";
 import Card from "../components/Card/Card";
 import { IoClose } from "react-icons/io5";
+import toast from "react-hot-toast";
 
 function UserRoom() {
   const [selectedButton, setSelectedButton] = useState("T3");
@@ -21,8 +22,16 @@ function UserRoom() {
   };
 
   const joinRoom = async (id) => {
-    const res = await userJoinRoom(id);
-    console.log(res.data);
+    try{
+      const res = await userJoinRoom(id);
+      console.log(res.data);
+      toast.success(res.data.message)
+    }
+    catch(error){
+      console.log(error);
+      toast.error(error.response.data.data);
+    }
+  
     //todo -> add the toast here -> User Joined in Room
   }
 
