@@ -67,14 +67,13 @@ function HostingRoom() {
   });
 
   const handleImageChange = (e) => {
-    // const file = e.target.files[0] // Get the selected file
-    // if (file) {
-    //   setFormData((prevData) => ({
-    //     ...prevData,
-    //     image: file, // Store the file object in formData
-    //   }));
-    // }
-    console.log("hi2");
+    const file = e.target.files[0] // Get the selected file
+    if (file) {
+      setFormData((prevData) => ({
+        ...prevData,
+        image: file, // Store the file object in formData
+      }));
+    }
   };
 
   const handleInputChange = (e) => {
@@ -128,6 +127,7 @@ function HostingRoom() {
         maxTeam: "",
         prize: "",
         status: "",
+        image: "",
         gameName: "",
         tier: "",
       });

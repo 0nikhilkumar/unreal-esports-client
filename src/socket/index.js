@@ -1,13 +1,25 @@
 import { io } from "socket.io-client";
 
-export const socketInit = ()=> {
-    const options = {
-      "force new connection": true,
-      reconnectionAttempts: "Infinity",
-      timeout: 10000,
-      transports: ["websocket"],
-    };
+let socketInstance = null;
 
-    return io("http://localhost:3000", options);
+// export const socketInit = ()=> {
+//     socketInstance = io(import.meta.env.VITE_API_URL, {
+//       auth: {
+//         token: localStorage.getItem("AccessToken"),
+//       }
+//     });
+//   return socketInstance;
+// };
+export const socketInit = (roomId)=> {
+    socketInstance = io(import.meta.env.VITE_API_URL);
+  return socketInstance;
+};
+
+export const reciveIDP = (eventName, cb) => {
+  socketInstance.on(eventName, cb);
+}
+
+export const sendIdp = (eventName, cb) => {
+  socketInstance.emit(eventName, cb);
 }
 

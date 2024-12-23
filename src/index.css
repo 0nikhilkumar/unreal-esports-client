@@ -5,14 +5,12 @@
 
 /* add the code bellow */ 
 @layer utilities {
-  /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
       display: none;
   }
- /* Hide scrollbar for IE, Edge and Firefox */
   .no-scrollbar {
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;  /* Firefox */
+      -ms-overflow-style: none; 
+      scrollbar-width: none; 
 }
 }
 
@@ -22,7 +20,6 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-/* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
 }
@@ -40,15 +37,6 @@ input[type=number] {
   --onyx: hsl(240, 5%, 26%);
 }
 
-
-/* ::-webkit-scrollbar { width: 8px; }
-
-::-webkit-scrollbar-track { background: var(--raisin-black-2); }
-
-::-webkit-scrollbar-thumb {
-  background: var(--orange);
-  border-radius: 10px;
-} */
 
 @layer utilities {
   .animation-pause {
@@ -85,4 +73,22 @@ input[type=number] {
   background: #3B82F6;
   display: inline-block;
   margin: 2px 10px;
+}
+
+
+.scrollbar-hidden {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: transparent transparent; /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  width: 0px; /* Chrome, Safari, and Edge */
+}
+
+.scrollbar-hidden::-webkit-scrollbar-thumb {
+  background: transparent; /* Chrome, Safari, and Edge */
+}
+
+.scrollbar-hidden::-webkit-scrollbar-track {
+  background: transparent; /* Chrome, Safari, and Edge */
 }

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
+    baseURL: `${import.meta.env.VITE_API_URL}/api/v1`,
     headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -20,7 +20,9 @@ export const loginHost = (data) => api.post("/host/login", data, {withCredential
 export const logoutUser = () => api.get("/user/logout", {withCredentials: true});
 export const logoutHost = () => api.get("/host/logout", {withCredentials: true});
 
-export const createRooms = (data) => api.post("/rooms/create-room", data, {withCredentials: true});
+export const createRooms = (data) => api.post("/rooms/create-room", data, {headers: {
+    "Content-Type": "multipart/form-data"
+}, withCredentials: true});
 
 export const getHostRooms = () => api.get("/rooms/get-host-rooms", {withCredentials: true});
 

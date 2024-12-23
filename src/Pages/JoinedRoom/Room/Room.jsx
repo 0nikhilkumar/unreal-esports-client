@@ -1,114 +1,81 @@
-import React, { useState } from 'react';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-
-// Mock data for demonstration
-const mockPlayers = Array.from({ length: 20 }, (_, i) => ({
-  id: i + 1,
-  name: `Team ${i + 1}`,
-  points: Math.floor(Math.random() * 1000),
-  players: Array.from({ length: 4 }, (_, j) => ({
-    ign: `Player${j + 1}`,
-    igId: `IG${j + 1}_${i + 1}`,
-  })),
-}));
+import React, { useEffect, useState } from 'react'
+import Header from '../../../components/UserInJoinedRoom/Header/Header'
+import CredentialsSection from "../../../components/UserInJoinedRoom/CredentialsSection/CredentialsSection"
+import LeaderboardSection from "../../../components/UserInJoinedRoom/LeaderboardSection/LeaderboardSection"
+import { socketInit, sendIdp, reciveIDP } from '../../../socket'
+import { useParams } from 'react-router-dom'
 
 const Room = () => {
-  const [selectedTeamIndex, setSelectedTeamIndex] = useState(null);
-  const roomId = "ABC123";
-  const roomPassword = "pass123";
 
-  const handleRowClick = (index) => {
-    setSelectedTeamIndex(prevIndex => (prevIndex === index ? null : index));
+  const [status, setStatus] = useState("Offline");
+  const [timeRemaining, setTimeRemaining] = useState(null);
+  const roomId = useParams();
+
+  // Room start time (set dynamically or via props/context)
+  const roomStartTime = new Date();
+  roomStartTime.setHours(18, 0, 0); // 6 PM
+
+  
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const currentTime = new Date();
+      const diff = roomStartTime - currentTime;
+
+      if (diff <= 0) {
+        // Room is live
+        setStatus("Live");
+        setTimeRemaining(null); // Stop showing timer
+        clearInterval(timer); // Stop interval
+      } else if (diff <= 30 * 60 * 1000) {
+        // Show countdown if within 30 minutes
+        setStatus("Room starts in:");
+        setTimeRemaining(diff);
+      } else {
+        // Default offline state
+        setStatus("Offline");
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [roomStartTime]);
+
+  // Format remaining time (mm:ss)
+  const formatTime = (ms) => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   return (
-    <div className="min-h-screen pb-5 bg-gray-900 text-gray-100">
-      {/* Header Section */}
-      <header className="bg-gray-800 py-6 px-4 shadow-lg">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-100 tracking-wider uppercase">Game Metrics</h1>
-          <p className="text-gray-400 text-sm">Competitive and Thrilling Matches</p>
+    <div className="min-h-screen w-fit sm:w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="max-w-7xl mx-auto p-8">
+        <Header />
+        <div className="grid lg:grid-cols-2 gap-8">
+          <CredentialsSection />
+          <LeaderboardSection />
         </div>
-      </header>
+      </div>
 
-      {/* Main Content Section */}
-      <main className="max-w-7xl mx-auto mt-8 flex flex-col lg:flex-row gap-6 px-4">
-        {/* Room Details Section */}
-        <section className="lg:w-1/3 bg-gray-800 shadow-lg rounded-lg p-6">
-          <h2 className="text-2xl font-bold text-gray-100 mb-4">Room Details</h2>
-          <div className="space-y-2">
-            <p className="text-sm text-gray-400">Room ID: <span className="font-semibold text-gray-200 bg-gray-700 px-2 py-1 rounded">{roomId}</span></p>
-            <p className="text-sm text-gray-400">Password: <span className="font-semibold text-gray-200 bg-gray-700 px-2 py-1 rounded">{roomPassword}</span></p>
-          </div>
-        </section>
-
-        {/* Room Point Table Section */}
-        <section className="lg:w-2/3 bg-gray-800 shadow-lg rounded-lg p-6">
-          <h2 className="text-2xl font-bold text-gray-100 mb-4">Leaderboard</h2>
-          <div
-            className="border border-gray-700 rounded-lg overflow-hidden h-[calc(100vh-300px)]"
-            style={{ overflowY: 'auto' }}
-          >
-            <table className="min-w-full divide-y divide-gray-700">
-              <thead className="bg-gray-800 sticky top-0">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Rank
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Teams
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Points
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-gray-900 divide-y divide-gray-700">
-                {mockPlayers.sort((a, b) => b.points - a.points).map((team, index) => (
-                  <React.Fragment key={team.id}>
-                    <tr 
-                      className="hover:bg-gray-800 transition-colors duration-150 ease-in-out cursor-pointer"
-                      onClick={() => handleRowClick(index)}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                        {index + 1}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-100">{team.name}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                        {team.points}
-                      </td>
-                    </tr>
-
-                    {/* Dropdown (expandable section) */}
-                    {selectedTeamIndex === index && (
-                      <tr>
-                        <td colSpan={3} className="px-6 py-4">
-                          <div className="bg-gray-800 rounded-lg shadow-inner p-4 animate-fadeIn">
-                            <h4 className="text-lg font-semibold text-gray-100 mb-2">Team Players</h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              {team.players.map((player, playerIndex) => (
-                                <div key={playerIndex} className="bg-gray-700 p-3 rounded-md">
-                                  <p className="text-sm font-medium text-gray-200">IGN: {player.ign}</p>
-                                  <p className="text-xs text-gray-400">IG ID: {player.igId}</p>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </main>
+      {/* Footer Section */}
+      <div className="fixed bottom-4 left-4 flex items-center space-x-3 bg-gray-800 text-white p-3 rounded-lg shadow-lg">
+        <div
+          className={`w-3 h-3 rounded-full ${
+            status === "Live" ? "bg-green-500" : "bg-gray-500"
+          }`}
+        ></div>
+        <div className="text-sm sm:text-base">
+          {status === "Room starts in:" && timeRemaining ? (
+            <>
+              {status} <span className="font-bold">{formatTime(timeRemaining)}</span>
+            </>
+          ) : (
+            status
+          )}
+        </div>
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default Room;
-
+export default Room

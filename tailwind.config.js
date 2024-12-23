@@ -6,6 +6,7 @@ export default {
     extend: {
       animation: {
         ["infinite-slider"]: "infiniteSlider 20s linear infinite",
+        blink: 'blink 3s infinite',
       },
       keyframes: {
         infiniteSlider: {
@@ -13,6 +14,10 @@ export default {
           "100%": {
             transform: "translateX(calc(-250px * 5))",
           },
+        },
+        blink: {
+          '0%, 75%': { opacity: 1 }, // Visible for 3 seconds (75% of 4 seconds)
+          '76%, 100%': { opacity: 0 }, // Invisible for 1 second (25% of 4 seconds)
         },
       },
       colors: {

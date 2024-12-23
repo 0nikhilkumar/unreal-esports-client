@@ -4,7 +4,7 @@ import { FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { dummyData } from "./dummyData";
 import { LuAsterisk } from "react-icons/lu";
-import {createTeam, getPreferredNameData, getUserTeam} from "../../http/index"
+import {createTeam, getPreferredNameData, getUserTeam, updateUserTeam} from "../../http/index"
 import toast from "react-hot-toast";
 
 const UserRoom = () => {
@@ -22,6 +22,9 @@ const UserRoom = () => {
     { playerNumber: 4, igId: "", ign: "", email: "" },
     { playerNumber: 5, igId: "", ign: "", email: "" },
   ]);
+  const [originalPlayers, setOriginalPlayers] = useState([]);
+  const [originalTeamName, setOriginalTeamName] = useState("");
+
 
   const filteredData = allPreferredHostData.filter((card) =>
     card.preferredName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -31,15 +34,20 @@ const UserRoom = () => {
     setIsModalOpen(!isModalOpen);
   };
 
-  const handleInputChangee = (e, id) => {
-    const { name, value } = e.target;
 
+
+  const handleInputChangee = (e, playerNumber) => {
+    const { name, value } = e.target;
+  
     setPlayers((prevPlayers) =>
       prevPlayers.map((player) =>
-        player.playerNumber === id ? { ...player, [name]: value } : player
+        player.playerNumber === playerNumber
+          ? { ...player, [name]: value }
+          : player
       )
     );
   };
+  
 
 
   // const handleImageUpload = (e) => {
@@ -84,12 +92,63 @@ const UserRoom = () => {
     };
   }, []);
 
-  const getTeam = async () => {
-    const res = await getUserTeam();
-    if(res.data.statusCode === 200){
-      setTeamCreated(true);
+  const hasChanges = () => {
+    if (teamName !== originalTeamName) return true;
+    
+    for (let i = 0; i < players.length; i++) {
+      if (
+        players[i].ign !== originalPlayers[i]?.ign ||
+        players[i].igId !== originalPlayers[i]?.igId ||
+        players[i].email !== originalPlayers[i]?.email
+      ) {
+        return true;
+      }
     }
-    else setTeamCreated(false);
+  
+    return false;
+  };
+
+  const getTeam = async () => {
+    try {
+      const res = await getUserTeam();
+      if (res.data.data !== null) {
+        console.log(res.data);
+        setTeamName(res.data.data.teamName);
+  
+        // Ensure the players array has 5 players, filling missing entries with defaults
+        const updatedPlayers = Array.from({ length: 5 }, (_, index) => {
+          const player = res.data.data.players[index];
+          return {
+            playerNumber: index + 1,
+            igId: player?.igId || "",
+            ign: player?.ign || "",
+            email: player?.email || "",
+          };
+        });
+
+        setOriginalTeamName(res.data.data.teamName);
+        setOriginalPlayers(updatedPlayers);
+  
+        setPlayers(updatedPlayers);
+        setTeamCreated(true);
+      } else {
+        setTeamCreated(false);
+      }
+    } catch (error) {
+      console.error("Error fetching team data:", error);
+    }
+  };
+
+  const handleUpdate = async () => {
+    console.log(players, teamName);
+    try {
+      const res = await updateUserTeam(teamName, players);
+      toast.success(res.data.message);
+      setIsModalOpen(false);
+    } catch (error) {
+      setIsModalOpen(true);
+      toast.error(error.response.data.message);
+    }
   }
 
   useEffect(()=> {
@@ -101,11 +160,11 @@ const UserRoom = () => {
       const res = await createTeam(teamName, players);
       console.log(res.data);
       setTeamCreated(true);
-      isModalOpen(false);
+      setIsModalOpen(false);
       toast.success(res.data.message);
     } catch (error) {
       console.log(error);
-      isModalOpen(true);
+      setIsModalOpen(true);
       toast.error(error.response.data.data);
     }
   };
@@ -145,16 +204,14 @@ const UserRoom = () => {
           {!teamCreated ? (
             <button
               onClick={toggleModal}
-              className="bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 focus:outline-none transition-colors duration-300 flex items-center"
-            >
+              className="bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 focus:outline-none transition-colors duration-300 flex items-center">
               <FaPlus className="mr-2" /> Create Team
             </button>
           ) : (
             <button
               // onClick={handleOpenPopup}
-              className="bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 focus:outline-none transition-colors duration-300 flex items-center"
-            >
-              <Link to="/profile">View Team</Link>
+              className="bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 focus:outline-none transition-colors duration-300 flex items-center">
+              <Link onClick={toggleModal}>View Team</Link>
             </button>
           )}
         </div>
@@ -164,8 +221,7 @@ const UserRoom = () => {
         {filteredData.map((card) => (
           <div
             key={card._id}
-            className="bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-          >
+            className="bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
             <img
               src={card.img}
               alt={card.preferredName}
@@ -191,12 +247,10 @@ const UserRoom = () => {
         {isModalOpen && (
           <div
             className="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black bg-opacity-50"
-            onClick={toggleModal}
-          >
+            onClick={toggleModal}>
             <div
               className="relative w-full max-w-md bg-white rounded-lg shadow dark:bg-gray-700 overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
+              onClick={(e) => e.stopPropagation()}>
               {/* Modal content */}
               <div className="flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -205,15 +259,13 @@ const UserRoom = () => {
                 <button
                   type="button"
                   className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                  onClick={toggleModal}
-                >
+                  onClick={toggleModal}>
                   <svg
                     className="w-3 h-3"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
-                    viewBox="0 0 14 14"
-                  >
+                    viewBox="0 0 14 14">
                     <path
                       stroke="currentColor"
                       strokeLinecap="round"
@@ -229,14 +281,12 @@ const UserRoom = () => {
               {/* Modal body */}
               <form
                 onSubmit={handleSubmit}
-                className="p-4 max-h-[70vh] overflow-hidden overflow-y-scroll no-scrollbar"
-              >
+                className="p-4 max-h-[70vh] overflow-hidden overflow-y-scroll no-scrollbar">
                 <div className="grid gap-4 mb-4 grid-cols-2">
                   <div className="col-span-2">
                     <label
                       htmlFor={`teamname`}
-                      className="block mb-2 text-lg text-center font-medium text-gray-900 dark:text-white"
-                    >
+                      className="block mb-2 text-lg text-center font-medium text-gray-900 dark:text-white">
                       Team Name
                     </label>
                     <input
@@ -255,8 +305,7 @@ const UserRoom = () => {
                       <div key={player.playerNumber}>
                         <label
                           htmlFor={`ign`}
-                          className="block mb-1 mt-4 text-lg font-medium text-gray-900 dark:text-white"
-                        >
+                          className="block mb-1 mt-4 text-lg font-medium text-gray-900 dark:text-white">
                           {player.playerNumber === 1 ? (
                             <>
                               {`Player 1 (Leader)`}
@@ -277,7 +326,9 @@ const UserRoom = () => {
                             name={`ign`}
                             id={`ign`}
                             value={player.ign}
-                            onChange={(e) => handleInputChangee(e, player.playerNumber)}
+                            onChange={(e) =>
+                              handleInputChangee(e, player.playerNumber)
+                            }
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder={`IGN`}
                             required={player.playerNumber !== 5 ? true : false}
@@ -288,7 +339,9 @@ const UserRoom = () => {
                             name={`igId`}
                             id={`igId`}
                             value={player.igId}
-                            onChange={(e) => handleInputChangee(e, player.playerNumber)}
+                            onChange={(e) =>
+                              handleInputChangee(e, player.playerNumber)
+                            }
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder={`ID`}
                             required={player.playerNumber !== 5 ? true : false}
@@ -298,7 +351,9 @@ const UserRoom = () => {
                             name={`email`}
                             id={`email`}
                             value={player.email}
-                            onChange={(e) => handleInputChangee(e, player.playerNumber)}
+                            onChange={(e) =>
+                              handleInputChangee(e, player.playerNumber)
+                            }
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder={`Email`}
                             required={player.playerNumber !== 5 ? true : false}
@@ -308,13 +363,22 @@ const UserRoom = () => {
                     ))}
                   </div>
                 </div>
-
-                <button
-                  type="submit"
-                  className="text-white inline-flex  items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
-                  Create Team
-                </button>
+                {teamCreated ? (
+                  <button
+                    type="button"
+                    className={`text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ${
+                      hasChanges() ? "visible" : "hidden"
+                    }`}
+                    onClick={handleUpdate}>
+                    Update
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="text-white inline-flex  items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    Create Team
+                  </button>
+                )}
               </form>
             </div>
           </div>

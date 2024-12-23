@@ -6,18 +6,50 @@ import { useNavigate } from "react-router-dom";
 
 
 
-function Card({
-  room,
-  joinRoom
-}) {
+function Card({ room, joinRoom }) {
 
-//   const [join, setJoin] = useState(false);
+  const navigate = useNavigate();
+  const [canEnter, setCanEnter] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(null);
 
-  const navigate = useNavigate()
-  
+
+  useEffect(() => {
+    const calculateTimeRemaining = () => {
+      const currentTime = new Date();
+      const startTime = new Date(2024, 11, 23, 2, 10);
+      const diff = startTime - currentTime;
+
+      if (diff <= 0) {
+        setTimeRemaining(null); // Room is live
+        setCanEnter(true);
+      } else if (diff <= 35 * 60 * 1000) {
+        setTimeRemaining(diff);
+        setCanEnter(true); // Allow entry
+      } else {
+        setTimeRemaining(null); // Too early
+        setCanEnter(false);
+      }
+    };
+
+    calculateTimeRemaining();
+
+    const interval = setInterval(calculateTimeRemaining, 1000);
+
+    return () => clearInterval(interval);
+  }, [room.startTime]);
+
+  const formatTime = (ms) => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
 
   return (
-    <div onClick={()=> navigate(`/joined-rooms/${room._id}`)} className="bg-gray-800 cursor-pointer rounded-xl overflow-hidden transition-transform hover:transform hover:scale-105">
+    <div
+      className={`bg-gray-800 cursor-pointer rounded-xl overflow-hidden transition-transform hover:scale-105 ${
+        canEnter ? "" : "opacity-50 pointer-events-none"
+      }`}
+      onClick={() => canEnter && navigate(`/joined-rooms/${room._id}`)}>
       <div className="relative">
         <img
           src={room?.image}
@@ -28,8 +60,9 @@ function Card({
               "https://images.unsplash.com/photo-1542751371-adc38448a05e";
           }}
         />
-    
-          <div className={`absolute bottom-0 px-4 py-1 rounded-md rounded-l-none bg-white text-black`}>{room.hostId.preferredName}</div>
+        <div className={`absolute bottom-0 px-4 py-1 rounded-md rounded-l-none bg-white text-black`}>
+          {room.hostId.preferredName}
+        </div>
       </div>
       <div className="p-6">
         <h3 className="text-xl font-bold mb-2">{room?.roomName}</h3>
@@ -68,7 +101,20 @@ function Card({
           </div>
         </div>
       </div>
-        <div className="h-10 bg-[#111825] w-full flex justify-center items-center"><p className="tracking-wider flex justify-center items-center font-bold ">Now you can enter the room</p></div>
+      {timeRemaining && (
+        <div className="h-10 bg-[#111825] w-full flex justify-center items-center">
+          <p className="tracking-wider flex justify-center items-center font-bold ">
+            Room starts in: {formatTime(timeRemaining)}
+          </p>
+        </div>
+      )}
+      {!timeRemaining && !canEnter && (
+        <div className="h-10 bg-[#111825] w-full flex justify-center items-center">
+          <p className="tracking-wider flex justify-center items-center font-bold ">
+            Entry not allowed
+          </p>
+        </div>
+      )}
     </div>
   );
 }

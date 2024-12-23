@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Trophy } from 'lucide-react';
 import { getIdp, getRoom, getUpdateIdp } from "../../http";
+import { TeamList } from "../Slot Management/TeamList";
+import { initialTeams } from "../Slot Management/data/teams";
 import {
   FaGamepad,
   FaUsers,
@@ -8,6 +11,8 @@ import {
   FaClock,
   FaTrophy,
   FaCircle,
+  FaEdit,
+  FaSave
 } from "react-icons/fa";
 import { TbBadgesFilled } from "react-icons/tb";
 
@@ -53,6 +58,16 @@ const animatedBorderStyle = `
   }
 `;
 
+const scrollbarHideStyle = `
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+`;
+
 function HostRoom() {
   const [data, setData] = useState({});
   const { id } = useParams();
@@ -61,10 +76,44 @@ function HostRoom() {
   const [isEdit, setIsEdit] = useState(false);
   const [getIdpData, setGetIdpData] = useState(null);
   const [getResponse, setGetResponse] =useState(false)
+  const [teams, setTeams] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [editingTeam, setEditingTeam] = useState(null);
+  const [editingLeaderboard, setEditingLeaderboard] = useState(null);
+  const [idpData, setIdpData] = useState(null)
+  const [newTeamName, setNewTeamName] = useState('');
+  const [newTeamSlots, setNewTeamSlots] = useState(0);
+  const [newLeaderboardName, setNewLeaderboardName] = useState('');
+  const [newLeaderboardPoints, setNewLeaderboardPoints] = useState(0);
+
+  const [teamss, setTeamss] = useState(initialTeams);
+
+  const handleSlotChange = (teamId, slot) => {
+    setTeamss((prevTeams) =>
+      prevTeams.map((team) =>
+        team.id === teamId ? { ...team, slot } : team
+      )
+    );
+  };
+
+
+  const handleSubmitt = (e) => {
+    e.preventDefault()
+    setIdpData({ id: roomId, password: roomPass })
+    setIsEdit(false)
+  }
+
+  const handleEdit = () => {
+    setRoomId(idpData?.id || '')
+    setRoomPass(idpData?.password || '')
+    setIsEdit(true)
+  }
 
   const fetchedData = async () => {
     const res = await getRoom(id);
     setData(res.data.message);
+    setTeams(res.data.message.teams || []);
+    setLeaderboard(res.data.message.leaderboard || []);
   };
 
   const updatedIdp = async () => {
@@ -79,6 +128,38 @@ function HostRoom() {
     setGetIdpData(res.data.data);
     setRoomId(res.data.data.id)
     setRoomPass(res.data.data.password)
+  };
+
+  const handleSlotUpdate = (teamId, newSlots) => {
+    const updatedTeams = teams.map(team => 
+      team.id === teamId ? { ...team, slots: parseInt(newSlots, 10) } : team
+    );
+    setTeams(updatedTeams);
+    // You might want to send this update to the server here
+  };
+
+  const handlePointsUpdate = (teamId, newPoints) => {
+    const updatedLeaderboard = leaderboard.map(team =>
+      team.id === teamId ? { ...team, points: parseInt(newPoints, 10) } : team
+    );
+    setLeaderboard(updatedLeaderboard);
+    // You might want to send this update to the server here
+  };
+
+  const handleAddTeam = (e) => {
+    e.preventDefault();
+    // Add your logic to add a new team here.  This would likely involve a server call.
+    setTeams([...teams, {id: teams.length +1, name: newTeamName, slots: newTeamSlots}])
+    setNewTeamName('');
+    setNewTeamSlots(0);
+  };
+
+  const handleAddLeaderboardEntry = (e) => {
+    e.preventDefault();
+    // Add your logic to add a new leaderboard entry here. This would likely involve a server call.
+    setLeaderboard([...leaderboard, {id: leaderboard.length + 1, name: newLeaderboardName, points: newLeaderboardPoints}])
+    setNewLeaderboardName('');
+    setNewLeaderboardPoints(0);
   };
 
   useEffect(()=>{
@@ -160,61 +241,174 @@ function HostRoom() {
               </div>
             </div>
           </div>
-          {!getIdpData || isEdit ? (
-            <>
-              <div className="relative my-8 border-t border-gray-700">
-                <div className="bg-gray-800 rounded-xl p-6 shadow-lg">
-                  <h3 className="text-2xl font-semibold mb-4 text-center text-blue-400">
-                    Enter Room Details
-                  </h3>
 
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <input
-                      type="text"
-                      placeholder="Room ID"
-                      value={roomId}
-                      onChange={(e) => setRoomId(e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                    <input
-                      type="text"
-                      placeholder="Room Password"
-                      value={roomPass}
-                      onChange={(e) => setRoomPass(e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
+          {/* Room IDP */}
+          <div className="bg-gray-800 rounded-lg shadow-md p-8 w-full mt-5 text-black">
+            <h2 className="text-2xl font-semibold text-center text-white mb-6">
+              {!idpData || isEdit ? "Enter Room IDP" : "Room IDP"}
+            </h2>
+            <div>
+              {!idpData || isEdit ? (
+                <form onSubmit={handleSubmitt} className="space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Room ID"
+                    value={roomId}
+                    onChange={(e) => setRoomId(e.target.value)}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Room ID"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Room Password"
+                    value={roomPass}
+                    onChange={(e) => setRoomPass(e.target.value)}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Room Password"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300">
+                    {isEdit ? "Update" : "Submit"}
+                  </button>
+                </form>
+              ) : (
+                <div className="space-y-4">
+                  <button
+                    onClick={handleEdit}
+                    className="mb-4 bg-gray-200 text-gray-800 py-1 px-3 rounded-md hover:bg-gray-300 transition-colors duration-300">
+                    Edit
+                  </button>
+                  <p className="text-lg text-white">
+                    Room ID:{" "}
+                    <span className="font-semibold text-blue-600">
+                      {idpData.id}
+                    </span>
+                  </p>
+                  <p className="text-lg text-white">
+                    Room Password:{" "}
+                    <span className="font-semibold text-blue-600">
+                      {idpData.password}
+                    </span>
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
 
-                    <button
-                      type="submit"
-                      className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300"
-                    >
-                      Submit
-                    </button>
-                  </form>
+          {/* Team Slots Section */}
+          {/* <style>{scrollbarHideStyle}</style> */}
+          <div className="bg-black rounded-lg shadow-md p-4 sm:p-6 md:p-8 w-full mt-5">
+          <h1 className="text-center text-2xl mb-4">Team Slot Management</h1>
+        <div className="w-full text-black">
+          <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="w-full h-[calc(100vh-200px)]">
+              <div className="bg-gradient-to-br from-gray-800 to-blue-900 rounded-lg shadow-lg p-4 sm:p-6 h-full flex flex-col">
+                <h2 className="text-xl font-semibold mb-6 text-white">
+                  Assign Team Slots
+                </h2>
+                <div className="overflow-y-auto scrollbar-hide scrollbar-hidden flex-grow">
+                  <TeamList teams={teamss} onSlotChange={handleSlotChange} />
                 </div>
               </div>
-            </>
-          ) : (
-            <div className="mt-8 space-y-4 bg-gray-800 rounded-xl p-6 shadow-lg">
-              <h3 className="text-2xl font-semibold mb-4 text-center text-blue-400">
-                Room Details
-              </h3>
-              <button
-                onClick={() => setIsEdit(true)}
-                className="text-sm bg-blue-600 px-3 py-1 rounded hover:bg-blue-700 transition-colors duration-300"
-              >
-                Edit
-              </button>
-              <p className="text-lg font-semibold">
-                Room ID: <span className="text-blue-300">{getIdpData.id}</span>
-              </p>
-              <p className="text-lg font-semibold">
-                Room Password: <span className="text-blue-300">{getIdpData.password}</span>
-              </p>
             </div>
-          )}
+
+            <div className="w-full h-[calc(100vh-200px)]">
+              <div className="bg-gradient-to-br from-gray-800 to-blue-900 rounded-lg shadow-lg p-4 sm:p-6 h-full flex flex-col">
+                <h2 className="text-xl font-semibold mb-4 text-white">Slot Overview</h2>
+                <div className="overflow-y-auto scrollbar-hide scrollbar-hidden flex-grow">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {Array.from({ length: initialTeams.length }, (_, i) => i + 1).map((slot) => {
+                      const teamInSlot = teamss.find(
+                        (team) => team.slot === slot
+                      );
+                      return (
+                        <div
+                          key={slot}
+                          className={`p-3 sm:p-4 rounded-lg ${
+                            teamInSlot
+                              ? "bg-blue-50 border border-blue-200"
+                              : "bg-gray-50 border border-gray-200"
+                          }`}>
+                          <div className="font-medium text-black">Slot {slot}</div>
+                          <div className="text-sm mt-1 text-gray-600">
+                            {teamInSlot ? teamInSlot.name : "Empty"}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+          {/* Leaderboard Section */}
+          <div className="bg-gray-800 rounded-lg shadow-md p-8 w-full mt-5 text-white">
+            <h2 className="text-2xl font-semibold text-center mb-6">
+              Leaderboard
+            </h2>
+            <div className="space-y-4">
+              {leaderboard.map((team) => (
+                <div
+                  key={team.id}
+                  className="flex items-center justify-between">
+                  <span>{team.name}</span>
+                  {editingLeaderboard === team.id ? (
+                    <div className="flex items-center">
+                      <input
+                        type="number"
+                        value={team.points}
+                        onChange={(e) =>
+                          handlePointsUpdate(team.id, e.target.value)
+                        }
+                        className="w-16 px-2 py-1 text-black rounded-md mr-2"
+                      />
+                      <FaSave
+                        onClick={() => setEditingLeaderboard(null)}
+                        className="cursor-pointer text-green-500 hover:text-green-600"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <span className="mr-2">{team.points} points</span>
+                      <FaEdit
+                        onClick={() => setEditingLeaderboard(team.id)}
+                        className="cursor-pointer text-blue-500 hover:text-blue-600"
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <form onSubmit={handleAddLeaderboardEntry} className="mt-6">
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={newLeaderboardName}
+                  onChange={(e) => setNewLeaderboardName(e.target.value)}
+                  placeholder="Team Name"
+                  className="flex-grow px-3 py-2 text-black rounded-md"
+                />
+                <input
+                  type="number"
+                  value={newLeaderboardPoints}
+                  onChange={(e) => setNewLeaderboardPoints(e.target.value)}
+                  placeholder="Points"
+                  className="w-20 px-3 py-2 text-black rounded-md"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                  Add Entry
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </>
@@ -254,3 +448,4 @@ function StatusBadge({ status }) {
 }
 
 export default HostRoom;
+

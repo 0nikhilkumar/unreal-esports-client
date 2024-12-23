@@ -9,6 +9,7 @@ function JoinedRooms() {
     const [selectedButton, setSelectedButton] = useState("T3");
     const [allRooms, setAllRooms] = useState(null)
 
+
     const searchInputRef = useRef(null);
 
     const filteredRooms = allRooms?.filter(
@@ -64,8 +65,7 @@ function JoinedRooms() {
                 selectedButton === "T3"
                   ? "bg-gradient-to-r from-blue-500 to-blue-700 shadow-xl"
                   : "bg-gray-600"
-              } hover:scale-105 transition duration-300`}
-            >
+              } hover:scale-105 transition duration-300`}>
               T3
             </button>
             <button
@@ -74,8 +74,7 @@ function JoinedRooms() {
                 selectedButton === "T2"
                   ? "bg-gradient-to-r from-blue-500 to-blue-700 shadow-xl"
                   : "bg-gray-600"
-              } hover:scale-105 transition duration-300`}
-            >
+              } hover:scale-105 transition duration-300`}>
               T2
             </button>
             <button
@@ -84,8 +83,7 @@ function JoinedRooms() {
                 selectedButton === "T1"
                   ? "bg-gradient-to-r from-blue-500 to-blue-700 shadow-xl"
                   : "bg-gray-600"
-              } hover:scale-105 transition duration-300`}
-            >
+              } hover:scale-105 transition duration-300`}>
               T1
             </button>
           </div>
@@ -112,17 +110,20 @@ function JoinedRooms() {
         {/* Section based on selected button */}
         <div className="mt-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl px-4 mb-20">
-            {filteredData?.map((room,) => (
+            {filteredData?.map((room) => (
               <Card
                 room={room}
                 key={room._id}
+                canEnter={
+                  new Date(room.startTime) - new Date() <= 35 * 60 * 1000
+                }
               />
             ))}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default JoinedRooms
