@@ -44,14 +44,14 @@ const Login = () => {
         response = await loginHost(formData);
       }
       if (response.data.statusCode === 200) {
-        socketInit().emit("login", response.data.message);
+        // socketInit().emit("login", response.data.message);
         toast.success(response.data.message);
         setIsSubmitting(true);
         dispatch(setAuth({ user: response.data, role: activeForm }));
         navigate("/");
       }
     } catch (error) {
-      toast.error(error.response?.data?.errors[0]);
+      toast.error(error.response?.data?.data);
     }
   }
 

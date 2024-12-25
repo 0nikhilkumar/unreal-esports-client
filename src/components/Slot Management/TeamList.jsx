@@ -1,9 +1,8 @@
 import React from 'react';
-import { TeamCard } from './TeamCard';
+import TeamCard from './TeamCard';
 
 
-
-export function TeamList({ teams, onSlotChange }) {
+function TeamList({ teams, onSlotChange }) {
   return (
     <div className="space-y-4">
       {teams.map((team) => (
@@ -16,3 +15,5 @@ export function TeamList({ teams, onSlotChange }) {
     </div>
   );
 }
+
+export default TeamList;

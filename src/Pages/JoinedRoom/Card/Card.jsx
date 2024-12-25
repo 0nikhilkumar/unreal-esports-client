@@ -1,42 +1,50 @@
 import React, { useEffect, useState } from "react";
 import { FaGamepad, FaUsers } from "react-icons/fa";
-import { getAllUserJoinedRooms, userJoinRoom } from "../../../http";
 import { useNavigate } from "react-router-dom";
 
-
-
-
-function Card({ room, joinRoom }) {
-
+function Card({ room }) {
   const navigate = useNavigate();
   const [canEnter, setCanEnter] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(null);
 
+  // Extracting date and time details from the room object
+  const [hour, minute] = room.time.split(":");
+  const [year, month, day] = room.date.split("-");
 
   useEffect(() => {
     const calculateTimeRemaining = () => {
       const currentTime = new Date();
-      const startTime = new Date(2024, 11, 23, 2, 10);
+      const startTime = new Date(year, month - 1, day, hour, minute, 0); // Adjusting month (0-indexed)
       const diff = startTime - currentTime;
 
-      if (diff <= 0) {
-        setTimeRemaining(null); // Room is live
+      if (room.status === "Closed") {
+        // Room is closed, block entry
+        setCanEnter(false);
+        setTimeRemaining(null);
+      } else if (room.status === "Live") {
+        // Room is live, allow entry
         setCanEnter(true);
-      } else if (diff <= 35 * 60 * 1000) {
+        setTimeRemaining(null);
+      } else if (diff <= 0) {
+        // Room start time has passed, allow entry
+        setTimeRemaining(null);
+        setCanEnter(true);
+      } else if (diff <= 30 * 60 * 1000) {
+        // Timer should start if it's within 30 minutes
         setTimeRemaining(diff);
-        setCanEnter(true); // Allow entry
+        setCanEnter(true);
       } else {
-        setTimeRemaining(null); // Too early
+        // Too early, block entry
+        setTimeRemaining(null);
         setCanEnter(false);
       }
     };
 
-    calculateTimeRemaining();
+    calculateTimeRemaining(); // Run initially
+    const interval = setInterval(calculateTimeRemaining, 1000); // Update every second
 
-    const interval = setInterval(calculateTimeRemaining, 1000);
-
-    return () => clearInterval(interval);
-  }, [room.startTime]);
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, [room.status, year, month, day, hour, minute]);
 
   const formatTime = (ms) => {
     const minutes = Math.floor(ms / 60000);
@@ -60,7 +68,8 @@ function Card({ room, joinRoom }) {
               "https://images.unsplash.com/photo-1542751371-adc38448a05e";
           }}
         />
-        <div className={`absolute bottom-0 px-4 py-1 rounded-md rounded-l-none bg-white text-black`}>
+        <div
+          className={`absolute bottom-0 px-4 py-1 rounded-md rounded-l-none bg-white text-black`}>
           {room.hostId.preferredName}
         </div>
       </div>
@@ -85,13 +94,13 @@ function Card({ room, joinRoom }) {
           </div>
           <div className="flex items-center gap-2 text-gray-300 mb-2">
             <FaGamepad />
-            <span>{room?.gameNam}</span>
+            <span>{room?.gameName}</span>
           </div>
         </div>
         <div className="w-full flex justify-between items-center ">
           <div
             className={`inline-block px-4 py-2 rounded-full text-sm mt-4 ${
-              room?.status === "Open" || room?.status === "Upcoming"
+              room?.status === "Open"
                 ? "bg-green-500/20 text-green-500"
                 : room?.status === "Live"
                 ? "bg-[#D21A1A] text-white"

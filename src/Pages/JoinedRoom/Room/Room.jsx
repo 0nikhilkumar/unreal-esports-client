@@ -13,7 +13,7 @@ const Room = () => {
 
   // Room start time (set dynamically or via props/context)
   const roomStartTime = new Date();
-  roomStartTime.setHours(18, 0, 0); // 6 PM
+  roomStartTime.setHours(18, 46, 0);
 
   
 

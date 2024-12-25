@@ -115,7 +115,7 @@ function JoinedRooms() {
                 room={room}
                 key={room._id}
                 canEnter={
-                  new Date(room.startTime) - new Date() <= 35 * 60 * 1000
+                  new Date(room.time) - new Date() <= 35 * 60 * 1000
                 }
               />
             ))}
