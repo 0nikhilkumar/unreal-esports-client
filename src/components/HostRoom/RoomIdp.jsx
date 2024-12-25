@@ -1,16 +1,27 @@
 import React, { useState } from "react";
 import { getUpdateIdp } from "../../http";
+import toast from "react-hot-toast";
 
- function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
+function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
   const [isEdit, setIsEdit] = useState(false);
   const [roomId, setRoomId] = useState("");
   const [roomPass, setRoomPass] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    if (
+      idpData?.id === roomId &&
+      idpData?.password === roomPass
+    ) {
+      toast.error("No Updates");
+      return;
+    }
+  
     const res = await getUpdateIdp(id, roomId, roomPass);
     if (res.data.success) {
       setGetResponse(true);
+      toast.success("Idp change successfully");
     }
     setIdpData({ id: roomId, password: roomPass });
     setIsEdit(false);

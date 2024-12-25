@@ -13,7 +13,7 @@ const Room = () => {
 
   // Room start time (set dynamically or via props/context)
   const roomStartTime = new Date();
-  roomStartTime.setHours(18, 46, 0);
+  roomStartTime.setHours(0, 18, 0);
 
   
 
@@ -51,9 +51,11 @@ const Room = () => {
     <div className="min-h-screen w-fit sm:w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="max-w-7xl mx-auto p-8">
         <Header />
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div 
+        // className="grid lg:grid-cols-2 gap-8"
+        >
           <CredentialsSection />
-          <LeaderboardSection />
+          {/* <LeaderboardSection /> */}
         </div>
       </div>
 

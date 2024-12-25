@@ -3,10 +3,13 @@ import { toast } from "react-hot-toast";
 import { RxCross2 } from "react-icons/rx";
 import { Link, useNavigate } from "react-router-dom";
 import { signUpHost, signUpUser } from "../../http";
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
 
 const Signup = () => {
   const navigate = useNavigate();
   const [activeForm, setActiveForm] = useState("user");
+  const [showIcon, setShowIcon] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -21,6 +24,10 @@ const Signup = () => {
       [name]: value,
     }));
   };
+
+  function togglePasswordVisibility(){
+    setShowIcon(!showIcon)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,7 +59,9 @@ const Signup = () => {
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                 Create an account
               </h1>
-              <RxCross2 className="text-white text-xl cursor-pointer" />
+              <Link to={"/"}>
+                <RxCross2 className="text-white text-xl cursor-pointer" />
+              </Link>
             </div>
 
             {/* Create User and Create Host Buttons */}
@@ -139,7 +148,7 @@ const Signup = () => {
                 </div>
               )}
 
-              <div>
+              <div className="relative">
                 <label
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-900 dark:text-white"
@@ -147,7 +156,7 @@ const Signup = () => {
                   Your password
                 </label>
                 <input
-                  type="password"
+                 type={showIcon?"text":"password"}
                   name="password"
                   id="password"
                   placeholder="*************"
@@ -156,6 +165,13 @@ const Signup = () => {
                   required
                   className="w-full p-2.5 mt-2 text-sm bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                 />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute top-7 inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 "
+                >
+                  {showIcon ? <FaRegEyeSlash className="text-white text-lg" /> : <FaRegEye className="text-white text-lg"/>}
+                </button>
               </div>
               <div className="flex items-start">
                 <div className="flex items-center h-5">

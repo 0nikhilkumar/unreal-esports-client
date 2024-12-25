@@ -11,7 +11,10 @@ function Card({ room }) {
   const [hour, minute] = room.time.split(":");
   const [year, month, day] = room.date.split("-");
 
+
+
   useEffect(() => {
+    console.log(room);
     const calculateTimeRemaining = () => {
       const currentTime = new Date();
       const startTime = new Date(year, month - 1, day, hour, minute, 0); // Adjusting month (0-indexed)
@@ -90,7 +93,7 @@ function Card({ room }) {
           </div>
           <div className="flex items-center gap-2 text-gray-300 mb-2">
             <FaUsers />
-            <span>Capacity: {room?.maxTeam}</span>
+            <span>Capacity: {room.joinedTeam.length}/{room?.maxTeam}</span>
           </div>
           <div className="flex items-center gap-2 text-gray-300 mb-2">
             <FaGamepad />

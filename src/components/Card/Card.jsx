@@ -3,6 +3,7 @@ import { FaGamepad, FaUsers } from "react-icons/fa";
 
 function Card({ room, joinRoom, joinedRooms }) {
   const isJoined = joinedRooms?.includes(room?._id);
+ 
 
   return (
     <div
@@ -63,7 +64,10 @@ function Card({ room, joinRoom, joinedRooms }) {
             } text-white py-2 px-6 rounded-full hover:${
               isJoined ? "bg-gray-600" : "bg-blue-700"
             } transition-all `}
-            onClick={() => joinRoom(room?._id)}
+            onClick={() => {
+              joinRoom(room?._id)
+              setJoined(true)
+            }}
           >
             {isJoined ? "Joined" : "Join Now"}
           </button>
