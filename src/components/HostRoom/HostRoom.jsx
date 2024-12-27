@@ -7,7 +7,7 @@ import TeamSlotManagement from "./TeamSlotManagement";
 import Leaderboard from "./Leaderboard";
 import { Team, LeaderboardEntry } from "./types";
 import { initialTeams } from "../Slot Management/data/teams";
-
+// import {socket} from "../../socket/index";
 
 function HostRoom() {
   const [data, setData] = useState({});
@@ -34,7 +34,8 @@ function HostRoom() {
   const fetchIdpData = async () => {
     try {
       const res = await getIdp(id);
-      setIdpData(res.data.data);
+      // console.log("IDP data:", res.data);
+      setIdpData(res.data.data.idp);
     } catch (error) {
       console.error("Error fetching IDP data:", error);
     }
@@ -47,6 +48,7 @@ function HostRoom() {
   useEffect(() => {
     fetchRoomData();
   }, []);
+
 
   return (
     <div className="min-h-screen w-full bg-gray-900 text-white flex justify-center items-center py-10">

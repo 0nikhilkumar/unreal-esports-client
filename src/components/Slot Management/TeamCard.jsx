@@ -4,7 +4,6 @@ import { GripVertical } from 'lucide-react';
 
 
  function TeamCard({ team, onSlotChange }) {
-  console.log("teams ",team);
   return (
     <div
       className={`rounded-lg shadow-md h-fit p-3 sm:p-4 flex flex-col sm:flex-row items-center gap-4 ${

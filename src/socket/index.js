@@ -1,25 +1,45 @@
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 
-let socketInstance = null;
+// let socketInstance = null;
 
-// export const socketInit = ()=> {
-//     socketInstance = io(import.meta.env.VITE_API_URL, {
-//       auth: {
-//         token: localStorage.getItem("AccessToken"),
-//       }
-//     });
+// // export const socketInit = ()=> {
+// //     socketInstance = io(import.meta.env.VITE_API_URL, {
+// //       auth: {
+// //         token: localStorage.getItem("AccessToken"),
+// //       }
+// //     });
+// //   return socketInstance;
+// // };
+
+// export const socketInit = (roomId)=> {
+//     socketInstance = io(import.meta.env.VITE_API_URL);
 //   return socketInstance;
 // };
-export const socketInit = (roomId)=> {
-    socketInstance = io(import.meta.env.VITE_API_URL);
-  return socketInstance;
+
+// export const reciveIDP = (eventName, cb) => {
+//   socketInstance.on(eventName, cb);
+// }
+
+// export const sendIdp = (eventName, cb) => {
+//   socketInstance.emit(eventName, cb);
+// }
+
+// socket.js
+import { io } from "socket.io-client";
+
+let socket;
+
+export const socketInit = () => {
+  if (!socket) {
+    socket = io("http://localhost:3000"); // Replace with your backend server URL
+  }
+  return socket;
 };
 
-export const reciveIDP = (eventName, cb) => {
-  socketInstance.on(eventName, cb);
-}
+export const sendIdp = (data) => {
+  socket?.emit("room-create", data);
+};
 
-export const sendIdp = (eventName, cb) => {
-  socketInstance.emit(eventName, cb);
-}
-
+export const receiveIdp = (callback) => {
+  socket?.on("room-update", callback);
+};

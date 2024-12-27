@@ -2,14 +2,26 @@ import React, { useEffect, useState } from 'react'
 import Header from '../../../components/UserInJoinedRoom/Header/Header'
 import CredentialsSection from "../../../components/UserInJoinedRoom/CredentialsSection/CredentialsSection"
 import LeaderboardSection from "../../../components/UserInJoinedRoom/LeaderboardSection/LeaderboardSection"
-import { socketInit, sendIdp, reciveIDP } from '../../../socket'
+import { socketInit, receiveIdp } from '../../../socket'
 import { useParams } from 'react-router-dom'
+import { getRoomDetails } from '../../../http'
 
 const Room = () => {
 
   const [status, setStatus] = useState("Offline");
   const [timeRemaining, setTimeRemaining] = useState(null);
-  const roomId = useParams();
+  const [presentRoomData, setPresentRoomData] = useState(null);
+  const roomId = useParams().id;
+  const socket = socketInit();
+
+  const getRoom = async ()=> {
+    const res = await getRoomDetails(roomId);
+    setPresentRoomData(res.data.data);
+  }
+
+  useEffect(()=> {
+    getRoom();
+  }, []);
 
   // Room start time (set dynamically or via props/context)
   const roomStartTime = new Date();
@@ -54,7 +66,7 @@ const Room = () => {
         <div 
         // className="grid lg:grid-cols-2 gap-8"
         >
-          <CredentialsSection />
+          <CredentialsSection presentRoomData={presentRoomData} />
           {/* <LeaderboardSection /> */}
         </div>
       </div>

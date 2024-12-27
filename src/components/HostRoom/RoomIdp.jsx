@@ -1,29 +1,34 @@
 import React, { useState } from "react";
 import { getUpdateIdp } from "../../http";
 import toast from "react-hot-toast";
+import {socketInit} from "../../socket";
 
 function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
   const [isEdit, setIsEdit] = useState(false);
   const [roomId, setRoomId] = useState("");
   const [roomPass, setRoomPass] = useState("");
 
+  const socket = socketInit();
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    if (
-      idpData?.id === roomId &&
-      idpData?.password === roomPass
-    ) {
+
+    if (idpData?.id === roomId && idpData?.password === roomPass) {
       toast.error("No Updates");
       return;
     }
-  
+
     const res = await getUpdateIdp(id, roomId, roomPass);
     if (res.data.success) {
       setGetResponse(true);
       toast.success("Idp change successfully");
     }
-    setIdpData({ id: roomId, password: roomPass });
+    
+    const updatedData = { id: roomId, password: roomPass };
+    setIdpData(updatedData);
+    socket.emit("room-create", updatedData); // Emit socket event
+
     setIsEdit(false);
   };
 
@@ -69,8 +74,7 @@ function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300"
-            >
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300">
               {isEdit ? "Update" : "Submit"}
             </button>
           </form>
@@ -79,8 +83,7 @@ function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
             {/* Edit Button */}
             <button
               onClick={handleEdit}
-              className="mb-4 bg-gray-200 text-gray-800 py-1 px-3 rounded-md hover:bg-gray-300 transition-colors duration-300"
-            >
+              className="mb-4 bg-gray-200 text-gray-800 py-1 px-3 rounded-md hover:bg-gray-300 transition-colors duration-300">
               Edit
             </button>
 
@@ -103,4 +106,4 @@ function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
     </div>
   );
 }
-export default RoomIdp
+export default RoomIdp;
