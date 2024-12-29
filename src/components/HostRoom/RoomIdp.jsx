@@ -1,16 +1,14 @@
 import React, { useState } from "react";
 import { getUpdateIdp } from "../../http";
 import toast from "react-hot-toast";
-import {socketInit} from "../../socket";
+import {sendIdp, socketInit} from "../../socket";
 
 function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
   const [isEdit, setIsEdit] = useState(false);
   const [roomId, setRoomId] = useState("");
   const [roomPass, setRoomPass] = useState("");
 
-  const socket = socketInit();
-
-
+  socketInit()
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -27,8 +25,8 @@ function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
     
     const updatedData = { id: roomId, password: roomPass };
     setIdpData(updatedData);
-    socket.emit("room-create", updatedData); // Emit socket event
-
+    // socket.emit("room-create", updatedData);
+    sendIdp(updatedData)
     setIsEdit(false);
   };
 
@@ -55,7 +53,6 @@ function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
               placeholder="Room ID"
               value={roomId}
               onChange={(e) => setRoomId(e.target.value)}
-              required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               aria-label="Room ID"
             />
@@ -66,7 +63,6 @@ function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
               placeholder="Room Password"
               value={roomPass}
               onChange={(e) => setRoomPass(e.target.value)}
-              required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               aria-label="Room Password"
             />

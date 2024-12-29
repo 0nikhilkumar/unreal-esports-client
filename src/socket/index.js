@@ -37,9 +37,17 @@ export const socketInit = () => {
 };
 
 export const sendIdp = (data) => {
-  socket?.emit("room-create", data);
+  socket.emit("room-create", data);
 };
 
-export const receiveIdp = (callback) => {
-  socket?.on("room-update", callback);
+export const receiveIdp = (data) => {
+  socket.on("room-update", data);
 };
+
+export const toggleStatus = (data)=>{
+  socket.emit("toggle-status", data);
+}
+
+export const updatedStatus = (data)=>{
+  socket.on("updated-status", data);
+}

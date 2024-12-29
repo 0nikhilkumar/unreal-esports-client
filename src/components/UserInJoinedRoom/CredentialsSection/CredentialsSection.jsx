@@ -4,15 +4,20 @@ import CredentialsCard from '../CredentailsCard/CredentailsCard';
 import { getRoomIdp } from '../../../http';
 import { useParams } from 'react-router-dom';
 import { LuReplace } from "react-icons/lu";
-import { receiveIdp } from '../../../socket';
+import { receiveIdp, socketInit, updatedStatus } from '../../../socket';
 import CryptoJS from 'crypto-js';
 
 const CredentialsSection = ({presentRoomData}) => {
   const [room, setRoom] = useState(null);
+  const [status, setStatus] = useState(presentRoomData?.status);
+  console.log(room)
+  
   const [idpData, setIdpData] = useState({
     id: "*****",
     pass: "*****",
   });
+
+  console.log(presentRoomData)
 
   const [socketIdp, setSocketIdp] = useState(null); // For storing socket updates
   const [isTimeToShow, setIsTimeToShow] = useState(false);
@@ -102,6 +107,21 @@ const CredentialsSection = ({presentRoomData}) => {
   };
 
   useEffect(() => {
+      // socketInit();
+  
+      // Listen for 'statusUpdated' event
+      const handleStatusUpdate = (data) => {
+        if (data.id === presentRoomData?._id) {
+          
+        }
+      };
+  
+      // Attach the socket listener
+      updatedStatus(handleStatusUpdate);
+  
+    }, [presentRoomData?._id]);
+
+  useEffect(() => {
     getUpdatedIdp(); 
     const interval = setInterval(() => {
       if (presentRoomData?.time) {
@@ -112,6 +132,7 @@ const CredentialsSection = ({presentRoomData}) => {
     return () => clearInterval(interval); // Cleanup interval
   }, [room?.time]); // Trigger when room time changes
 
+  socketInit()
   useEffect(() => {
     receiveIdp((data) => {
       setSocketIdp(data); // Store socket data

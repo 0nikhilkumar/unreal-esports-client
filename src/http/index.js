@@ -36,6 +36,8 @@ export const getUpdateIdp = (id,roomId,roomPass) => api.patch(`/rooms/update-idp
 
 export const getIdp = (id) => api.get(`/rooms/get-idp/${id}`, {withCredentials:true})
 
+export const updateStatus = (id,status) => api.patch(`/rooms/update-status/${id}`,{status},{withCredentials:true})
+
 export const getRoomIdp = (id) => api.get(`/rooms/user-get-idp/${id}`,{withCredentials:true})
 
 export const getPreferredNameData = () => api.get("/rooms/get-preferredName");

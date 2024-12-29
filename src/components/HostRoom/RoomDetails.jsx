@@ -7,14 +7,15 @@ import {
   FaTrophy,
   FaCircle,
   FaToggleOff,
-  FaToggleOn
+  FaToggleOn,
 } from "react-icons/fa";
 import { TbBadgesFilled } from "react-icons/tb";
 import InfoItem from "./InfoItem";
 import StatusBadge from "./StatusBadge";
 import { MdTimer } from "react-icons/md";
-
-
+import { useParams } from "react-router-dom";
+import { toggleStatus } from "../../socket";
+import { updateStatus } from "../../http";
 
 const animatedBorderStyle = `
   @keyframes rotate {
@@ -61,7 +62,22 @@ const animatedBorderStyle = `
 function RoomDetails({ data }) {
   const [timer, setTimer] = useState(null);
   const [toggleData, setToggleData] = useState(data.status || "Open");
-  console.log(toggleData);
+  const {id} = useParams()
+
+  useEffect(() => {
+    setToggleData(data.status || "Open");
+  }, [data.status]);
+
+  const handleChangeStatus = async (newStatus) => {
+    try {
+      setToggleData(newStatus);
+      const res = await updateStatus(id, newStatus);
+      // socket.emit("statusUpdated", {id,newStatus});
+      toggleStatus({id,newStatus})
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
 
   useEffect(() => {
     if (data.time && data.time <= 30 * 60) {
@@ -116,39 +132,45 @@ function RoomDetails({ data }) {
 
         {/* Info Items */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-  <InfoItem icon={<FaCalendarAlt />} label="Date" value={data.date} />
-  <InfoItem icon={<FaClock />} label="Time" value={data.time} />
-  <InfoItem icon={<FaTrophy />} label="Prize" value={data.prize} />
-  <InfoItem icon={<FaUsers />} label="Capacity" value={data.maxTeam} />
-  <InfoItem icon={<TbBadgesFilled />} label="Tier" value={data.tier} />
-  <InfoItem icon={<FaGamepad />} label="Game" value={data.gameName} />
-  
-  <InfoItem
-    icon={data.status === "Open" ? <FaToggleOn /> : <FaToggleOff />}
-    label="Toggle"
-    value={
-      <select
-        onChange={(e) => setToggleData(e.target.value)}
-        className="bg-transparent text-white border border-gray-300 rounded-md px-4 py-2 w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all duration-300 ease-in-out flex justify-center items-ce"
-      >
-        <option value="Open" className="text-black">Open</option>
-        <option value="Closed" className="text-black">Closed</option>
-        <option value="Live" className="text-black">Live</option>
-      </select>
-    }
-  />
+          <InfoItem icon={<FaCalendarAlt />} label="Date" value={data.date} />
+          <InfoItem icon={<FaClock />} label="Time" value={data.time} />
+          <InfoItem icon={<FaTrophy />} label="Prize" value={data.prize} />
+          <InfoItem icon={<FaUsers />} label="Capacity" value={data.maxTeam} />
+          <InfoItem icon={<TbBadgesFilled />} label="Tier" value={data.tier} />
+          <InfoItem icon={<FaGamepad />} label="Game" value={data.gameName} />
 
-  <InfoItem
-    icon={<MdTimer />}
-    label="Timer"
-    value={timer !== null ? formatTime(timer) : "Room start not yet"}
-  />
-</div>
+          <InfoItem
+            icon={toggleData === "Open" ? <FaToggleOn /> : <FaToggleOff />}
+            label="Status"
+            value={
+              <select
+                value={toggleData}
+                onChange={(e) => handleChangeStatus(e.target.value)}
+                className="bg-transparent text-white border border-gray-300 rounded-md px-4 py-2 w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all duration-300 ease-in-out flex justify-center items-center "
+              >
+                <option value="Open" className="text-black">
+                  Open
+                </option>
+                <option value="Live" className="text-black">
+                  Live
+                </option>
+                <option value="Closed" className="text-black">
+                  Closed
+                </option>
+              </select>
+            }
+          />
 
+          <InfoItem
+            icon={<MdTimer />}
+            label="Timer"
+            value={timer !== null ? formatTime(timer) : "Room start not yet"}
+          />
+        </div>
 
         {/* Status and Loading Dots */}
         <div className="flex justify-between items-center">
-          <StatusBadge status={data.status} />
+          <StatusBadge status={toggleData} />
           <div className="flex space-x-2">
             {[0, 1, 2].map((index) => (
               <FaCircle

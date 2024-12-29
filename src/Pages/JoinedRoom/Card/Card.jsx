@@ -1,53 +1,66 @@
 import React, { useEffect, useState } from "react";
 import { FaGamepad, FaUsers } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { socketInit, updatedStatus } from "../../../socket";
 
 function Card({ room }) {
   const navigate = useNavigate();
   const [canEnter, setCanEnter] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(null);
-
-  // Extracting date and time details from the room object
+  const [status, setStatus] = useState(room?.status);
   const [hour, minute] = room.time.split(":");
   const [year, month, day] = room.date.split("-");
 
-
-
+  // Initialize socket
   useEffect(() => {
-    console.log(room);
-    const calculateTimeRemaining = () => {
-      const currentTime = new Date();
-      const startTime = new Date(year, month - 1, day, hour, minute, 0); // Adjusting month (0-indexed)
-      const diff = startTime - currentTime;
+    socketInit();
 
-      if (room.status === "Closed") {
-        // Room is closed, block entry
-        setCanEnter(false);
-        setTimeRemaining(null);
-      } else if (room.status === "Live") {
-        // Room is live, allow entry
-        setCanEnter(true);
-        setTimeRemaining(null);
-      } else if (diff <= 0) {
-        // Room start time has passed, allow entry
-        setTimeRemaining(null);
-        setCanEnter(true);
-      } else if (diff <= 30 * 60 * 1000) {
-        // Timer should start if it's within 30 minutes
-        setTimeRemaining(diff);
-        setCanEnter(true);
-      } else {
-        // Too early, block entry
-        setTimeRemaining(null);
-        setCanEnter(false);
+    // Listen for 'statusUpdated' event
+    const handleStatusUpdate = (data) => {
+      if (data.id === room._id) {
+        setStatus(data.newStatus); // Update status
       }
     };
 
+    // Attach the socket listener
+    updatedStatus(handleStatusUpdate);
+
+    return () => {
+      // Optionally clean up socket listeners here
+    };
+  }, [room._id]);
+
+  // Function to calculate entry permissions and time remaining
+  const calculateTimeRemaining = () => {
+    const currentTime = new Date();
+    const startTime = new Date(year, month - 1, day, hour, minute, 0); // Adjusting month (0-indexed)
+    const diff = startTime - currentTime;
+
+    if (status === "Closed") {
+      setCanEnter(false);
+      setTimeRemaining(null);
+    } else if (status === "Live") {
+      setCanEnter(true);
+      setTimeRemaining(null);
+    } else if (diff <= 0) {
+      setCanEnter(true);
+      setTimeRemaining(null);
+    } else if (diff <= 30 * 60 * 1000) {
+      setCanEnter(true);
+      setTimeRemaining(diff);
+    } else {
+      setCanEnter(false);
+      setTimeRemaining(null);
+    }
+  };
+
+  // Recalculate timeRemaining when status or room details change
+  useEffect(() => {
     calculateTimeRemaining(); // Run initially
     const interval = setInterval(calculateTimeRemaining, 1000); // Update every second
 
     return () => clearInterval(interval); // Cleanup interval on unmount
-  }, [room.status, year, month, day, hour, minute]);
+  }, [status, year, month, day, hour, minute]);
 
   const formatTime = (ms) => {
     const minutes = Math.floor(ms / 60000);
@@ -60,7 +73,8 @@ function Card({ room }) {
       className={`bg-gray-800 cursor-pointer rounded-xl overflow-hidden transition-transform hover:scale-105 ${
         canEnter ? "" : "opacity-50 pointer-events-none"
       }`}
-      onClick={() => canEnter && navigate(`/joined-rooms/${room._id}`)}>
+      onClick={() => canEnter && navigate(`/joined-rooms/${room._id}`)}
+    >
       <div className="relative">
         <img
           src={room?.image}
@@ -72,7 +86,8 @@ function Card({ room }) {
           }}
         />
         <div
-          className={`absolute bottom-0 px-4 py-1 rounded-md rounded-l-none bg-white text-black`}>
+          className={`absolute bottom-0 px-4 py-1 rounded-md rounded-l-none bg-white text-black`}
+        >
           {room.hostId.preferredName}
         </div>
       </div>
@@ -93,7 +108,9 @@ function Card({ room }) {
           </div>
           <div className="flex items-center gap-2 text-gray-300 mb-2">
             <FaUsers />
-            <span>Capacity: {room.joinedTeam.length}/{room?.maxTeam}</span>
+            <span>
+              Capacity: {room.joinedTeam.length}/{room?.maxTeam}
+            </span>
           </div>
           <div className="flex items-center gap-2 text-gray-300 mb-2">
             <FaGamepad />
@@ -103,13 +120,14 @@ function Card({ room }) {
         <div className="w-full flex justify-between items-center ">
           <div
             className={`inline-block px-4 py-2 rounded-full text-sm mt-4 ${
-              room?.status === "Open"
+              status === "Open"
                 ? "bg-green-500/20 text-green-500"
-                : room?.status === "Live"
+                : status === "Live"
                 ? "bg-[#D21A1A] text-white"
                 : "bg-red-500/20 text-red-500"
-            }`}>
-            {room?.status}
+            }`}
+          >
+            {status}
           </div>
         </div>
       </div>

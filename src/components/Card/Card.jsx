@@ -1,9 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaGamepad, FaUsers } from "react-icons/fa";
+import { socketInit, updatedStatus } from "../../socket";
 
 function Card({ room, joinRoom, joinedRooms }) {
+  const [status, setStatus] = useState(room?.status); // Local state for room status
   const isJoined = joinedRooms?.includes(room?._id);
- 
+
+  // useEffect(()=> {
+
+  // }, [status]);
+
+  socketInit(); // Initialize socket once
+  useEffect(() => {
+
+    // Listen for 'statusUpdated' event
+    const handleStatusUpdate = (data) => {
+      if (data.id === room._id) {
+        setStatus(data.newStatus); // Update status for specific room
+      }
+    };
+
+    // Attach the socket listener
+    updatedStatus(handleStatusUpdate)
+  }, [room._id ,status]);
 
   return (
     <div
@@ -11,7 +30,11 @@ function Card({ room, joinRoom, joinedRooms }) {
         isJoined ? "bg-gray-900 grayscale hover:grayscale-0" : "bg-gray-800 grayscale-0"
       }`}
     >
-    {isJoined && <div className="absolute top-1/3 w-full h-8 bg-black text-white flex justify-center items-center">For Room, Click On Side bar</div>}
+      {isJoined && (
+        <div className="absolute top-1/3 w-full h-8 bg-black text-white flex justify-center items-center">
+          For Room, Click On Side bar
+        </div>
+      )}
       <img
         src={room?.image}
         alt={room?.roomName}
@@ -48,14 +71,14 @@ function Card({ room, joinRoom, joinedRooms }) {
         <div className="w-full flex justify-between items-center ">
           <div
             className={`inline-block px-4 py-2 rounded-full text-sm mt-4 ${
-              room?.status === "Open" || room?.status === "Upcoming"
+              status === "Open" || status === "Upcoming"
                 ? "bg-green-500/20 text-green-500"
-                : room?.status === "Live"
+                : status === "Live"
                 ? "bg-[#D21A1A] text-white"
                 : "bg-red-500/20 text-red-500"
             }`}
           >
-            {room?.status}
+            {status}
           </div>
           <button
             disabled={isJoined}
@@ -65,8 +88,7 @@ function Card({ room, joinRoom, joinedRooms }) {
               isJoined ? "bg-gray-600" : "bg-blue-700"
             } transition-all `}
             onClick={() => {
-              joinRoom(room?._id)
-              setJoined(true)
+              joinRoom(room?._id);
             }}
           >
             {isJoined ? "Joined" : "Join Now"}
