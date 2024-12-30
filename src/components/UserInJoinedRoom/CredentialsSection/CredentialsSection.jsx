@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { User, Key, Shield } from 'lucide-react';
 import CredentialsCard from '../CredentailsCard/CredentailsCard';
-import { getRoomIdp } from '../../../http';
+import { getRoomDetails, getRoomIdp } from '../../../http';
 import { useParams } from 'react-router-dom';
 import { LuReplace } from "react-icons/lu";
 import { receiveIdp, socketInit, updatedStatus } from '../../../socket';
@@ -10,14 +10,12 @@ import CryptoJS from 'crypto-js';
 const CredentialsSection = ({presentRoomData}) => {
   const [room, setRoom] = useState(null);
   const [status, setStatus] = useState(presentRoomData?.status);
-  console.log(room)
   
   const [idpData, setIdpData] = useState({
     id: "*****",
     pass: "*****",
   });
 
-  console.log(presentRoomData)
 
   const [socketIdp, setSocketIdp] = useState(null); // For storing socket updates
   const [isTimeToShow, setIsTimeToShow] = useState(false);
@@ -46,6 +44,15 @@ const CredentialsSection = ({presentRoomData}) => {
     return null;
   };
 
+  useEffect(()=> {
+    const getAllRoomData = async () => {
+      const getRoomData = await getRoomDetails(id);
+      setStatus(getRoomData.data.data.status);
+    }
+
+    getAllRoomData();
+  }, []);
+
   const getUpdatedIdp = async () => {
     try {
         const localIdp = getIdpFromLocalStorage(id);
@@ -58,7 +65,6 @@ const CredentialsSection = ({presentRoomData}) => {
             const timeDifference = (currentTime - roomTime) / 60000; // difference in minutes
             if (timeDifference >= 10) {
                 // Show password
-                console.log("Password: ", localIdp.password);
             }
         } else {
             const res = await getRoomIdp(id);
@@ -72,7 +78,6 @@ const CredentialsSection = ({presentRoomData}) => {
             const timeDifference = (currentTime - roomTime) / 60000; // difference in minutes
             if (timeDifference >= 10) {
                 // Show password
-                console.log("Password: ", roomData.idp.password);
             }
         }
     } catch (error) {
@@ -87,6 +92,7 @@ const CredentialsSection = ({presentRoomData}) => {
 
     if (timeDifference <= 10) {
       setIsTimeToShow(true);
+      setStatus('Live')
       if (socketIdp) {
         // Use socket IDP if available
         setIdpData({
@@ -107,15 +113,15 @@ const CredentialsSection = ({presentRoomData}) => {
   };
 
   useEffect(() => {
-      // socketInit();
+      socketInit();
   
       // Listen for 'statusUpdated' event
       const handleStatusUpdate = (data) => {
         if (data.id === presentRoomData?._id) {
-          
+          setStatus(data.newStatus)
+          console.log(data.newStatus)
         }
       };
-  
       // Attach the socket listener
       updatedStatus(handleStatusUpdate);
   
@@ -160,18 +166,25 @@ const CredentialsSection = ({presentRoomData}) => {
           Icon={<User />}
           label="Room Id"
           value={idpData.id || room?.idp?.id}
+          status = {status}
           isCopyEnabled={isTimeToShow}
+         
         />
         <CredentialsCard
           Icon={<Key />}
           label="Room Password"
           value={idpData.pass || room?.idp?.password} 
+          status = {status}
           isCopyEnabled={isTimeToShow}
+         
+
         />
         <CredentialsCard
           Icon={<LuReplace className="text-2xl" />}
           label="Slot"
           value={isTimeToShow ? room?.slot || "N/A" : "*****"}
+          status = {status}
+
         />
       </div>
 

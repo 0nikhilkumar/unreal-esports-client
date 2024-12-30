@@ -14,7 +14,7 @@ import InfoItem from "./InfoItem";
 import StatusBadge from "./StatusBadge";
 import { MdTimer } from "react-icons/md";
 import { useParams } from "react-router-dom";
-import { toggleStatus } from "../../socket";
+import { socketInit, toggleStatus, updatedStatus } from "../../socket";
 import { updateStatus } from "../../http";
 
 const animatedBorderStyle = `
@@ -61,6 +61,7 @@ const animatedBorderStyle = `
 
 function RoomDetails({ data }) {
   const [timer, setTimer] = useState(null);
+  // const [socketStatus, setSocketStatus] = useState("")
   const [toggleData, setToggleData] = useState(data.status || "Open");
   const {id} = useParams()
 
@@ -78,6 +79,20 @@ function RoomDetails({ data }) {
       console.error("Error updating status:", error);
     }
   };
+
+  useEffect(() => {
+    socketInit();
+
+    // Listen for 'statusUpdated' event
+    const handleStatusUpdate = (data) => {
+      if (data.roomId === id) {
+        setToggleData(data.newStatus)
+      }
+    };
+    // Attach the socket listener
+    updatedStatus(handleStatusUpdate);
+
+  }, [id]);
 
   useEffect(() => {
     if (data.time && data.time <= 30 * 60) {

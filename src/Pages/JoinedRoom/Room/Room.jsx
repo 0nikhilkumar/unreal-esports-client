@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../../../components/UserInJoinedRoom/Header/Header';
 import CredentialsSection from '../../../components/UserInJoinedRoom/CredentialsSection/CredentialsSection';
-import { socketInit, updatedStatus } from '../../../socket';
+import { socketInit, toggleStatus, updatedStatus } from '../../../socket';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getRoomDetails } from '../../../http';
 
@@ -36,7 +36,6 @@ const Room = () => {
 
   const getRoom = async () => {
     const res = await getRoomDetails(roomId);
-    console.log(res.data.data);
     setPresentRoomData(res.data.data);
   };
 
@@ -44,18 +43,21 @@ const Room = () => {
     getRoom();
   }, []);
 
-  const roomStartTime = new Date();
-  roomStartTime.setHours(0, 18, 0);
+  const dateAndTime = `${presentRoomData?.date}T${presentRoomData?.time}:00`;
+  console.log(dateAndTime);
+  const roomStartTime = new Date(dateAndTime);
+  // roomStartTime.setHours(presentRoomData?.time.split(':')[0], presentRoomData?.time.split(':')[1], 0);
 
   useEffect(() => {
     if (isRoomClosed) return; // Prevent status updates if the room is closed
-
+    socketInit()
     const timer = setInterval(() => {
       const currentTime = new Date();
       const diff = roomStartTime - currentTime;
 
       if (diff <= 0) {
         setStatus('Live');
+        toggleStatus({roomId, newStatus:"Live"})
         setTimeRemaining(null);
         clearInterval(timer);
       } else if (diff <= 30 * 60 * 1000) {

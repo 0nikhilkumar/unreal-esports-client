@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { User, Key, Clipboard, Check } from 'lucide-react';
 
 
-const CredentialsCard = ({ label, value ,Icon, isCopyEnabled}) => {
+const CredentialsCard = ({ label, value ,Icon, isCopyEnabled, status}) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {
@@ -26,7 +26,7 @@ const CredentialsCard = ({ label, value ,Icon, isCopyEnabled}) => {
           </div>
           <div>
             <p className="text-sm font-medium text-gray-400 mb-1">{label}</p>
-            <p className="text-xl text-white font-semibold tracking-wide">{value}</p>
+            <p className="text-xl text-white font-semibold tracking-wide">{ status === "Open" ? "N/A": value}</p>
           </div>
         </div>
 
