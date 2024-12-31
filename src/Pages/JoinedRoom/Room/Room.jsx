@@ -3,7 +3,7 @@ import Header from '../../../components/UserInJoinedRoom/Header/Header';
 import CredentialsSection from '../../../components/UserInJoinedRoom/CredentialsSection/CredentialsSection';
 import { socketInit, toggleStatus, updatedStatus } from '../../../socket';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getRoomDetails } from '../../../http';
+import { getRoomDetails, updateStatus } from '../../../http';
 
 const Room = () => {
   const [status, setStatus] = useState('Offline');
@@ -48,7 +48,9 @@ const Room = () => {
   const roomStartTime = new Date(dateAndTime);
   // roomStartTime.setHours(presentRoomData?.time.split(':')[0], presentRoomData?.time.split(':')[1], 0);
 
+
   useEffect(() => {
+
     if (isRoomClosed) return; // Prevent status updates if the room is closed
     socketInit()
     const timer = setInterval(() => {
@@ -57,7 +59,7 @@ const Room = () => {
 
       if (diff <= 0) {
         setStatus('Live');
-        toggleStatus({roomId, newStatus:"Live"})
+        // toggleStatus({id:roomId, newStatus:"Live"})
         setTimeRemaining(null);
         clearInterval(timer);
       } else if (diff <= 30 * 60 * 1000) {

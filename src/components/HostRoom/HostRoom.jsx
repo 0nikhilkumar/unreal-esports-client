@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getIdp, getRoom } from "../../http";
+import { getIdp, getRoom, updateStatus } from "../../http";
 import RoomDetails from "./RoomDetails";
 import RoomIdp from "./RoomIdp";
 import TeamSlotManagement from "./TeamSlotManagement";
 import Leaderboard from "./Leaderboard";
 import { Team, LeaderboardEntry } from "./types";
 import { initialTeams } from "../Slot Management/data/teams";
+import { socketInit, toggleStatus } from "../../socket";
 // import {socket} from "../../socket/index";
 
 function HostRoom() {
@@ -48,8 +49,7 @@ function HostRoom() {
   useEffect(() => {
     fetchRoomData();
   }, []);
-
-
+ 
   return (
     <div className="min-h-screen w-full bg-gray-900 text-white flex justify-center items-center py-10">
       <div className="w-full max-w-7xl space-y-6 px-6 py-8 bg-gray-800 rounded-lg shadow-md">
