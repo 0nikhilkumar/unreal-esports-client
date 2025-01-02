@@ -41,7 +41,7 @@ const Room = () => {
 
   useEffect(() => {
     getRoom();
-  }, []);
+  }, [roomId]);
 
   const dateAndTime = `${presentRoomData?.date}T${presentRoomData?.time}:00`;
   console.log(dateAndTime);

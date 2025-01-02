@@ -101,16 +101,9 @@ function RoomIdp({ idpData, setIdpData, setGetResponse }) {
             <p className="text-lg">
               Room Password: <span className="font-semibold text-blue-500">{idpData.password}</span>
             </p>
-            <button
-              onClick={handleToggleStatus}
-              className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-300"
-            >
-              Toggle Status ({idpData.status})
-            </button>
           </div>
         )}
       </div>
-      <p className="mt-4 text-lg">Online Users in this room: {onlineUserCount}</p>
     </div>
   );
 }

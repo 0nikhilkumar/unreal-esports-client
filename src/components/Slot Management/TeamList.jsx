@@ -1,14 +1,18 @@
 import React from 'react';
 import TeamCard from './TeamCard';
 
-
 function TeamList({ teams, onSlotChange }) {
+  if (!teams || teams.length === 0) {
+    return <div className="text-white text-center">No teams available.</div>;
+  }
+
   return (
     <div className="space-y-4">
-      {teams.map((team) => (
+      {teams.map((team,index) => (
         <TeamCard
-          key={team.id}
+          key={team._id}
           team={team}
+          index= {index+1}
           onSlotChange={onSlotChange}
         />
       ))}
@@ -17,3 +21,4 @@ function TeamList({ teams, onSlotChange }) {
 }
 
 export default TeamList;
+

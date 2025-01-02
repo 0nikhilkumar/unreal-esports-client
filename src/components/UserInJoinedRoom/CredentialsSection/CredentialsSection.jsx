@@ -45,10 +45,11 @@ const CredentialsSection = ({presentRoomData}) => {
   useEffect(() => {
     const getAllRoomData = async () => {
       const getRoomData = await getRoomDetails(id);
+      console.log(getRoomData.data.data.status)
       setStatus(getRoomData.data.data.status);
     }
     getAllRoomData();
-  }, [id]);
+  }, []);
 
   const roomDateAndTime = `${presentRoomData?.date}T${presentRoomData?.time}:00`;
 
@@ -77,10 +78,10 @@ const CredentialsSection = ({presentRoomData}) => {
   const checkTimeRemaining = (startTime) => {
     const now = new Date();
     const timeDifference = (new Date(startTime) - now) / 1000 / 60;
-
-    if (timeDifference <= 10) {
+  
+    if (status === "Live") { // Check if status is "Live"
       setIsTimeToShow(true);
-      setStatus('Live')
+      setStatus("Live")
       if (socketIdp) {
         setIdpData({
           id: socketIdp.id || "N/A",

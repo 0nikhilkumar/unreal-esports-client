@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getIdp, getRoom, updateStatus } from "../../http";
+import { getIdp, getRoom } from "../../http";
+import { initialTeams } from "../Slot Management/data/teams";
+import Leaderboard from "./Leaderboard";
 import RoomDetails from "./RoomDetails";
 import RoomIdp from "./RoomIdp";
 import TeamSlotManagement from "./TeamSlotManagement";
-import Leaderboard from "./Leaderboard";
-import { Team, LeaderboardEntry } from "./types";
-import { initialTeams } from "../Slot Management/data/teams";
-import { socketInit, toggleStatus } from "../../socket";
 // import {socket} from "../../socket/index";
 
 function HostRoom() {
@@ -17,13 +15,16 @@ function HostRoom() {
   const [getResponse, setGetResponse] = useState(false);
   const [teams, setTeams] = useState(initialTeams);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [inRoomTeam, setInRoomTeam] = useState([]);
 
   // Fetch room data
   const fetchRoomData = async () => {
     try {
       const res = await getRoom(id);
       const roomData = res.data.message;
+      console.log(res.data);
       setData(roomData);
+      setInRoomTeam(roomData.joinedTeam);
       setTeams(roomData.teams || []);
       setLeaderboard(roomData.leaderboard || []);
     } catch (error) {
@@ -42,6 +43,12 @@ function HostRoom() {
     }
   };
 
+  
+
+  useEffect(()=>{
+
+  })
+
   useEffect(() => {
     fetchIdpData();
   }, [getResponse]);
@@ -59,8 +66,10 @@ function HostRoom() {
           setIdpData={setIdpData}
           id={id}
           setGetResponse={setGetResponse}
+          inRoomTeam={inRoomTeam}
+          setInRoomTeam={setInRoomTeam}
         />
-        <TeamSlotManagement teams={teams} setTeams={setTeams} />
+        <TeamSlotManagement inRoomTeam={inRoomTeam} setInRoomTeam={setInRoomTeam} teams={teams} setTeams={setTeams} />
         <Leaderboard leaderboard={leaderboard} setLeaderboard={setLeaderboard} />
       </div>
     </div>

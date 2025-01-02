@@ -1,48 +1,62 @@
-import {useState,useEffect,useRef} from 'react'
+import { useState, useEffect, useRef } from "react";
 import Card from "./Card/Card";
 import { CiSearch } from "react-icons/ci";
-import { getAllUserJoinedRooms } from '../../http';
-
+import { getAllUserJoinedRooms } from "../../http";
+import { socketInit, updatedStatus } from "../../socket";
 
 function JoinedRooms() {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedButton, setSelectedButton] = useState("T3");
-    const [allRooms, setAllRooms] = useState(null)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedButton, setSelectedButton] = useState("T3");
+  const [allRooms, setAllRooms] = useState(null);
+  const [status, setStatus] = useState();
 
+  const searchInputRef = useRef(null);
 
-    const searchInputRef = useRef(null);
+  const filteredRooms = allRooms?.filter(
+    (room) => room.tier === selectedButton
+  );
 
-    const filteredRooms = allRooms?.filter(
-        (room) => room.tier === selectedButton
+  const filteredData = filteredRooms?.filter((room) =>
+    room.roomName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  async function userJoinedRoom() {
+    const res = await getAllUserJoinedRooms();
+    setAllRooms(res.data.data);
+  }
+
+  useEffect(() => {
+    userJoinedRoom();
+    socketInit();
+
+    const handleStatusUpdate = (data) => {
+      setAllRooms((prevRooms) =>
+        prevRooms.map((room) =>
+          room._id === data.id ? { ...room, status: data.newStatus } : room
+        )
       );
+      console.log(data);
+    };
+    updatedStatus(handleStatusUpdate);
+  }, []);
 
-    const filteredData = filteredRooms?.filter((room) =>
-        room.roomName.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+  useEffect(() => {
+    userJoinedRoom();
+  }, []);
 
-    async function userJoinedRoom(){
-        const res = await getAllUserJoinedRooms()
-        console.log(res.data.data)
-        setAllRooms(res.data.data)
-    }
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && event.key === "k") {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
 
-    useEffect(()=>{
-        userJoinedRoom()
-    },[])
-
-    useEffect(() => {
-        const handleKeyDown = (event) => {
-          if (event.ctrlKey && event.key === "k") {
-            event.preventDefault();
-            searchInputRef.current?.focus();
-          }
-        };
-    
-        window.addEventListener("keydown", handleKeyDown);
-        return () => {
-          window.removeEventListener("keydown", handleKeyDown);
-        };
-      }, []);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
   return (
     <div className="min-h-screen bg-black text-white flex">
       {/* Main Content */}
@@ -114,9 +128,7 @@ function JoinedRooms() {
               <Card
                 room={room}
                 key={room._id}
-                canEnter={
-                  new Date(room.time) - new Date() <= 35 * 60 * 1000
-                }
+                canEnter={new Date(room.time) - new Date() <= 35 * 60 * 1000}
               />
             ))}
           </div>
@@ -126,4 +138,4 @@ function JoinedRooms() {
   );
 }
 
-export default JoinedRooms
+export default JoinedRooms;

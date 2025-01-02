@@ -4,7 +4,6 @@ import { User, Key, Clipboard, Check } from 'lucide-react';
 
 const CredentialsCard = ({ label, value ,Icon, isCopyEnabled, status}) => {
   const [isCopied, setIsCopied] = useState(false);
-
   const handleCopy = () => {
     navigator.clipboard.writeText(value);
     setIsCopied(true);

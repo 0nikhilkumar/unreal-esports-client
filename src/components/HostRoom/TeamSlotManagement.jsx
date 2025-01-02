@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TeamList from "../Slot Management/TeamList";
-import { initialTeams } from "../Slot Management/data/teams";
 
 const scrollbarHideStyle = `
   .scrollbar-hide::-webkit-scrollbar {
@@ -12,26 +11,23 @@ const scrollbarHideStyle = `
   }
 `;
 
-function TeamSlotManagement({ teams: propTeams, setTeams: setPropTeams }) {
-  // Ensure teams state is properly initialized
-  const [teams, setTeams] = useState(propTeams || initialTeams);
+function TeamSlotManagement({ inRoomTeam }) {
+  const [teams, setTeams] = useState([]);
+
+  useEffect(() => {
+    if (Array.isArray(inRoomTeam)) {
+      setTeams(inRoomTeam.map(team => ({ ...team, slot: null })));
+    }
+  }, [inRoomTeam]);
 
   const handleSlotChange = (teamId, slot) => {
     setTeams((prevTeams) =>
       prevTeams.map((team) =>
-        team.id === teamId ? { ...team, slot } : team
+        team._id === teamId ? { ...team, slot } : team
       )
     );
-
-    // Update parent state if provided
-    if (setPropTeams) {
-      setPropTeams((prevTeams) =>
-        prevTeams.map((team) =>
-          team.id === teamId ? { ...team, slot } : team
-        )
-      );
-    }
   };
+
 
   return (
     <>
@@ -61,7 +57,7 @@ function TeamSlotManagement({ teams: propTeams, setTeams: setPropTeams }) {
               </h2>
                <div className="overflow-y-auto flex-grow">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 gap-4">
-                  {Array.from({ length: initialTeams.length }, (_, i) => i + 1).map((slot) => {
+                  {Array.from({ length: teams.length }, (_, i) => i + 1).map((slot) => {
                     const teamInSlot = teams.find((team) => team.slot === slot);
                     return (
                       <div
@@ -74,7 +70,7 @@ function TeamSlotManagement({ teams: propTeams, setTeams: setPropTeams }) {
                       >
                         <div className="font-medium text-black">Slot {slot}</div>
                         <div className="text-sm mt-1 text-gray-600">
-                          {teamInSlot ? teamInSlot.name : "Empty"}
+                          {teamInSlot ? teamInSlot.teamName : "Empty"}
                         </div>
                       </div>
                     );
@@ -90,3 +86,4 @@ function TeamSlotManagement({ teams: propTeams, setTeams: setPropTeams }) {
 }
 
 export default TeamSlotManagement;
+
