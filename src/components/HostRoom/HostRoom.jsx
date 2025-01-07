@@ -17,12 +17,10 @@ function HostRoom() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [inRoomTeam, setInRoomTeam] = useState([]);
 
-  // Fetch room data
   const fetchRoomData = async () => {
     try {
       const res = await getRoom(id);
       const roomData = res.data.message;
-      console.log(res.data);
       setData(roomData);
       setInRoomTeam(roomData.joinedTeam);
       setTeams(roomData.teams || []);
@@ -36,18 +34,12 @@ function HostRoom() {
   const fetchIdpData = async () => {
     try {
       const res = await getIdp(id);
-      // console.log("IDP data:", res.data);
       setIdpData(res.data.data.idp);
     } catch (error) {
       console.error("Error fetching IDP data:", error);
     }
   };
 
-  
-
-  useEffect(()=>{
-
-  })
 
   useEffect(() => {
     fetchIdpData();
@@ -70,7 +62,7 @@ function HostRoom() {
           setInRoomTeam={setInRoomTeam}
         />
         <TeamSlotManagement inRoomTeam={inRoomTeam} setInRoomTeam={setInRoomTeam} teams={teams} setTeams={setTeams} />
-        <Leaderboard leaderboard={leaderboard} setLeaderboard={setLeaderboard} />
+        <Leaderboard leaderboard={leaderboard} setLeaderboard={setLeaderboard} inRoomTeam={inRoomTeam}/>
       </div>
     </div>
   );

@@ -54,3 +54,8 @@ export const getUserTeam = () => api.get("/user/get-team");
 
 export const updateUserTeam = (teamName, players) => api.patch("/user/update-team", {teamName, players});
 
+export const updateUserTeamSlot = (id, teams) => api.patch(`/host/update-slot/${id}`, {teams});
+
+export const updateLeaderboardApi = (id, leaderboardData) => api.patch(`/host/update-leaderboard/${id}`, {leaderboardData});
+
+export const hostGetLeaderboardData = (id) => api.get(`/host//get-leadboard-data/${id}`);

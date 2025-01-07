@@ -3,12 +3,14 @@ import Card from "./Card/Card";
 import { CiSearch } from "react-icons/ci";
 import { getAllUserJoinedRooms } from "../../http";
 import { socketInit, updatedStatus } from "../../socket";
+import { useNavigate } from "react-router-dom";
 
 function JoinedRooms() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedButton, setSelectedButton] = useState("T3");
   const [allRooms, setAllRooms] = useState(null);
-  const [status, setStatus] = useState();
+
+  console.log(allRooms)
 
   const searchInputRef = useRef(null);
 
@@ -20,20 +22,22 @@ function JoinedRooms() {
     room.roomName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+
   async function userJoinedRoom() {
     const res = await getAllUserJoinedRooms();
     setAllRooms(res.data.data);
   }
 
   useEffect(() => {
-    userJoinedRoom();
     socketInit();
 
     const handleStatusUpdate = (data) => {
       setAllRooms((prevRooms) =>
-        prevRooms.map((room) =>
-          room._id === data.id ? { ...room, status: data.newStatus } : room
-        )
+        prevRooms.map((room) =>{
+          if(room._id === data.id){
+            console.log(data);
+          }
+        })
       );
       console.log(data);
     };

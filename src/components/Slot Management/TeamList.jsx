@@ -1,7 +1,7 @@
 import React from 'react';
 import TeamCard from './TeamCard';
 
-function TeamList({ teams, onSlotChange }) {
+function TeamList({ teams, onSlotChange, isSubmitDisabled}) {
   if (!teams || teams.length === 0) {
     return <div className="text-white text-center">No teams available.</div>;
   }
@@ -14,6 +14,7 @@ function TeamList({ teams, onSlotChange }) {
           team={team}
           index= {index+1}
           onSlotChange={onSlotChange}
+          isSubmitDisabled={isSubmitDisabled}
         />
       ))}
     </div>

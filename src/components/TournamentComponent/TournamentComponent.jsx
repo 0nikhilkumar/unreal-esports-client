@@ -1,39 +1,79 @@
 import React from "react";
 
+const tournaments = [
+  {
+    name: "Epic Clash",
+    date: "January 15, 2025",
+    prizePool: "₹50,000",
+    image: "/images/valo1.jpeg",
+  },
+  {
+    name: "Battle Arena",
+    date: "February 10, 2025",
+    prizePool: "₹1,00,000",
+    image: "/images/valo1.jpeg",
+  },
+  {
+    name: "Ultimate Showdown",
+    date: "March 5, 2025",
+    prizePool: "₹75,000",
+    image: "/images/valo2.png",
+  },
+  {
+    name: "Victory Royale",
+    date: "April 20, 2025",
+    prizePool: "₹2,00,000",
+    image: "/images/valo2.png",
+  },
+];
+
 function TournamentComponent() {
   return (
-    <div className="relative h-[80vh] bg-black">
-      {/* Wrapper to enable group hover */}
-      <div className="relative group h-full">
-        {/* Light Effect Behind Image */}
-        {/* <div className="absolute inset-0 bg-gradient-to-r from-red-900 to-transparent opacity-70 group-hover:opacity-0 transition-all duration-500"></div> */}
-        
-        {/* Background Image */}
-        <div
-          className="absolute rounded-lg inset-0 bg-cover bg-center grayscale-[50px]"
-          style={{
-            backgroundColor: "gray",
-            backgroundImage: "url('/images/section-wrapper-bg.jpg')",
-          }}
-        ></div>
+    <div className="relative min-h-screen bg-black">
+      {/* Background Section */}
 
-        {/* Animated Gradient Overlay for Top-to-Bottom Color Reveal */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-50 "></div>
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('/images/body-bg.jpg')" }}></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-90"></div>
 
-        {/* Animated Gradient Overlay for Top-to-Bottom Color Reveal */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-100"></div>
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center items-center h-full px-5">
-          <h1 className="text-xl sm:text-5xl text-white text-center mb-5">Tournament</h1>
-          <p className="text-white text-xs sm:text-lg text-center max-w-3xl">
-            We're launching soon !
-          </p>
-          <p className="text-2xl bg-white rounded p-4 sm:text-4xl mt-5 text-black">Coming Soon...</p>
-        </div>
+      {/* Heading */}
+      <div className="relative z-10 text-center pt-10">
+        <h1 className="text-lg sm:text-3xl md:text-4xl font-bold uppercase text-white">
+          Rooms
+          <span className="block h-1 bg-blue-500 w-16 mx-auto mt-2"></span>
+        </h1>
       </div>
-      {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#100D2A] opacity-50 group-hover:animate-gradient transition-all duration-10 ease-in-out"></div> */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#100D2A] opacity-50"></div>
+
+      {/* Card Section */}
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-5 py-10 max-w-7xl mx-auto top-20">
+        {tournaments.map((tournament, index) => (
+          <div
+            key={index}
+            className="bg-gray-800 text-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transform hover:scale-105 transition-all duration-300 cursor-pointer">
+            {/* Card Image */}
+            <div className="relative">
+              <img
+                src={tournament.image}
+                alt={tournament.name}
+                className="w-full h-40 object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70"></div>
+              <p className="absolute bottom-3 left-3 bg-blue-600 text-xs px-2 py-1 rounded">
+                Prize: {tournament.prizePool}
+              </p>
+            </div>
+
+            {/* Card Content */}
+            <div className="p-5">
+              <h2 className="text-lg font-bold">{tournament.name}</h2>
+              <p className="text-gray-400 text-sm mt-2">
+                Date: {tournament.date}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -8,6 +8,8 @@ function Card({ room }) {
     const [timeRemaining, setTimeRemaining] = useState(null);
     const [hour, minute] = room.time.split(":");
     const [year, month, day] = room.date.split("-");
+    const [status, setStatus] = useState(room.status);
+
 
     // Function to calculate entry permissions and time remaining
     const calculateTimeRemaining = () => {
@@ -99,14 +101,14 @@ function Card({ room }) {
                 <div className="w-full flex justify-between items-center ">
                     <div
                         className={`inline-block px-4 py-2 rounded-full text-sm mt-4 ${
-                            room.status === "Open"
+                            status === "Open"
                                 ? "bg-green-500/20 text-green-500"
-                                : room.status === "Live"
+                                : status === "Live"
                                 ? "bg-[#D21A1A] text-white"
                                 : "bg-red-500/20 text-red-500"
                         }`}
                     >
-                        {room.status}
+                        {status}
                     </div>
                 </div>
             </div>

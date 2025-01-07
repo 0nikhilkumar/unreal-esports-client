@@ -1,9 +1,11 @@
 import React from 'react';
 
-function TeamCard({ team, onSlotChange ,index}) {
+function TeamCard({ team, onSlotChange ,index, isSubmitDisabled}) {
   if (!team) {
     return null;
   }
+
+  // const slotWithTeam = {}
 
   return (
     <div className="rounded-lg shadow-md h-fit p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white w-full">
@@ -28,6 +30,8 @@ function TeamCard({ team, onSlotChange ,index}) {
         className="border rounded border-gray-700 text-center text-black px-2 py-1 w-20 sm:w-24 lg:w-32"
         min={1}
         placeholder="Slot"
+        disabled={isSubmitDisabled ? true : false}
+        required
       />
     </div>
   </div>
