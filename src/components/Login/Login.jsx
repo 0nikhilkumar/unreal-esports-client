@@ -8,7 +8,8 @@ import { socketInit } from "../../socket";
 import { setAuth } from "../../Store/authSlice";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
-
+import CryptoJS from "crypto-js";
+import { encryptData } from "../../Store/crypto";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -34,25 +35,34 @@ const Login = () => {
     }));
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    try {
-      let response;
-      if (activeForm === "user") {
-        response = await loginUser(formData);
-      } else {
-        response = await loginHost(formData);
-      }
-      if (response.data.statusCode === 200) {
-        toast.success(response.data.message);
-        setIsSubmitting(true);
-        dispatch(setAuth({ user: response.data, role: activeForm }));
-        navigate("/");
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message);
+  
+
+async function handleSubmit(e) {
+  e.preventDefault();
+  try {
+    let response;
+    if (activeForm === "user") {
+      response = await loginUser(formData);
+    } else {
+      response = await loginHost(formData);
     }
+    if (response.data.statusCode === 200) {
+      localStorage.setItem("_unreal_esports_uuid", response.data.data.accessToken);
+      if (activeForm) {
+        // Encrypt the activeForm using AES
+        const encryptedRole = encryptData(activeForm)
+        localStorage.setItem("_unreal_esports_visibliltiy", encryptedRole);
+      }
+      toast.success(response.data.message);
+      setIsSubmitting(true);
+      dispatch(setAuth({ user: response.data, role: activeForm }));
+      navigate("/");
+    }
+  } catch (error) {
+    toast.error(error.response?.data?.message);
   }
+}
+
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900 z-[30] ">

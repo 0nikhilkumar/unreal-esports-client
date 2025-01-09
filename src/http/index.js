@@ -58,4 +58,8 @@ export const updateUserTeamSlot = (id, teams) => api.patch(`/host/update-slot/${
 
 export const updateLeaderboardApi = (id, leaderboardData) => api.patch(`/host/update-leaderboard/${id}`, {leaderboardData});
 
-export const hostGetLeaderboardData = (id) => api.get(`/host//get-leadboard-data/${id}`);
+export const hostGetLeaderboardData = (id) => api.get(`/host/get-leadboard-data/${id}`);
+
+
+export const checkUserAuthentication = () => api.get("/user/check-auth");
+export const checkHostAuthentication = () => api.get("/host/check-auth");

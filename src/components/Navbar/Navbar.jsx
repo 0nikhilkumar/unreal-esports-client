@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { CgProfile } from "react-icons/cg";
-import { HiMiniSpeakerWave, HiMiniSpeakerXMark } from "react-icons/hi2";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { logoutHost, logoutUser } from "../../http";
@@ -16,6 +15,7 @@ function Navbar() {
 
   async function handleLogout() {
     let response;
+
     if (role === "user") {
       response = await logoutUser();
       toast.success(response.data.message);
@@ -23,14 +23,19 @@ function Navbar() {
       response = await logoutHost();
       toast.success(response.data.message);
     }
-    dispatch(setAuth({ user: response.data.data }));
+    if (response.data.statusCode === 200) {
+      localStorage.removeItem("_unreal_esports_uuid");
+      localStorage.removeItem("_unreal_esports_visibliltiy")
+    }
+    dispatch(setAuth({ user: null }));
   }
 
   return (
     <nav
       className={`absolute top-0 left-0 w-full flex px-5 py-2 items-center md:hover:bg-opacity-[0.3] md:bg-black md:bg-opacity-[0] justify-between transition-all z-[1] duration-300 ${
         hamburger ? "bg-black" : "bg-transparent"
-      } text-white`}>
+      } text-white`}
+    >
       {/* Logo Section */}
       <div className="flex items-center">
         <Link to={"/"} className="flex items-center">
@@ -40,7 +45,7 @@ function Navbar() {
             className="w-12 h-12 sm:w-16 sm:h-16 rounded-e-full"
           />
           <h1 className="text-[0.8rem] sm:text-lg font-semibold uppercase -ml-2">
-            Unreal <span>Esports</span>
+            Unreal<span>Esports</span>
           </h1>
         </Link>
       </div>
@@ -67,7 +72,8 @@ function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="text-white text-2xl">
+                className="text-white text-2xl"
+              >
                 <CgProfile />
               </button>
               {showDropdown && (
@@ -75,40 +81,39 @@ function Navbar() {
                   <Link
                     to="/profile"
                     className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}>
+                    onClick={() => setShowDropdown(false)}
+                  >
                     Profile
                   </Link>
                   <Link
                     to="/arena"
                     className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}>
+                    onClick={() => setShowDropdown(false)}
+                  >
                     Rooms
                   </Link>
-                  {/* <Link
-                    to="/tournament"
-                    className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}>
-                    Tournament
-                  </Link> */}
                   <Link
                     to="/leaderboard"
                     className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}>
+                    onClick={() => setShowDropdown(false)}
+                  >
                     Leaderboard
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="block py-2 px-4 w-full text-left hover:bg-gray-700">
+                    className="block py-2 px-4 w-full text-left hover:bg-gray-700"
+                  >
                     Logout
                   </button>
                 </div>
               )}
             </div>
-          ) : (
+          ) : role === "host" ? (
             <div className="relative">
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="text-white text-2xl">
+                className="text-white text-2xl"
+              >
                 <CgProfile />
               </button>
               {showDropdown && (
@@ -116,19 +121,15 @@ function Navbar() {
                   <Link
                     to="/profile"
                     className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}>
+                    onClick={() => setShowDropdown(false)}
+                  >
                     Profile
                   </Link>
-                  {/* <Link
-                    to="/hosting-tournament"
-                    className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}>
-                    Create Tournament
-                  </Link> */}
                   <Link
                     to="/hosting-room"
                     className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}>
+                    onClick={() => setShowDropdown(false)}
+                  >
                     Create Room
                   </Link>
                   <div
@@ -136,18 +137,27 @@ function Navbar() {
                     onClick={() => {
                       setShowDropdown(false);
                       handleLogout();
-                    }}>
+                    }}
+                  >
                     Logout
                   </div>
                 </div>
               )}
             </div>
+          ) : (
+            <Link
+              to="/login"
+              className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold rounded-lg py-2 px-6 text-lg shadow-lg hover:shadow-xl transform transition-transform duration-300 hover:scale-105"
+            >
+              Login
+            </Link>
           )
         ) : (
           <Link
             to="/login"
-            className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold rounded-lg py-2 px-6 text-lg shadow-lg hover:shadow-xl transform transition-transform duration-300 hover:scale-105">
-            Login 
+            className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold rounded-lg py-2 px-6 text-lg shadow-lg hover:shadow-xl transform transition-transform duration-300 hover:scale-105"
+          >
+            Login
           </Link>
         )}
       </div>
@@ -155,7 +165,8 @@ function Navbar() {
       {/* Hamburger Button */}
       <button
         className="md:hidden text-xl sm:text-2xl focus:outline-none"
-        onClick={() => setHamburger(!hamburger)}>
+        onClick={() => setHamburger(!hamburger)}
+      >
         {hamburger ? "X" : "☰"}
       </button>
 
@@ -165,17 +176,20 @@ function Navbar() {
           hamburger ? "bg-black" : "bg-transparent"
         } bg-opacity-100 text-white flex flex-col items-center py-5 space-y-5 md:hidden z-40 transform transition-transform duration-300 ease-in-out ${
           hamburger ? "translate-y-16" : "-translate-y-full"
-        }`}>
+        }`}
+      >
         <Link
           to="/"
           className="hover:text-gray-300"
-          onClick={() => setHamburger(false)}>
+          onClick={() => setHamburger(false)}
+        >
           Home
         </Link>
         <Link
           to="/about"
           className="hover:text-gray-300"
-          onClick={() => setHamburger(false)}>
+          onClick={() => setHamburger(false)}
+        >
           About
         </Link>
         {/* <Link
@@ -187,7 +201,8 @@ function Navbar() {
         <a
           href="#faq"
           className="hover:text-gray-300"
-          onClick={() => setHamburger(false)}>
+          onClick={() => setHamburger(false)}
+        >
           FAQ
         </a>
 
@@ -195,7 +210,8 @@ function Navbar() {
           <div className="relative">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="block py-2 px-4 text-white text-2xl">
+              className="block py-2 px-4 text-white text-2xl"
+            >
               <CgProfile />
             </button>
             {showDropdown && (
@@ -203,18 +219,21 @@ function Navbar() {
                 <Link
                   to="/profile"
                   className="block py-2 px-4 hover:bg-gray-700"
-                  onClick={() => setShowDropdown(false)}>
+                  onClick={() => setShowDropdown(false)}
+                >
                   Profile
                 </Link>
                 <Link
                   to="/leaderboard"
                   className="block py-2 px-4 hover:bg-gray-700"
-                  onClick={() => setShowDropdown(false)}>
+                  onClick={() => setShowDropdown(false)}
+                >
                   Leaderboard
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="block py-2 px-4 w-full text-left hover:bg-gray-700">
+                  className="block py-2 px-4 w-full text-left hover:bg-gray-700"
+                >
                   Logout
                 </button>
               </div>
@@ -223,7 +242,8 @@ function Navbar() {
         ) : (
           <Link
             to="/login"
-            className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold rounded-lg py-2 px-6 text-lg shadow-lg hover:shadow-xl transform transition-transform duration-300 hover:scale-105">
+            className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold rounded-lg py-2 px-6 text-lg shadow-lg hover:shadow-xl transform transition-transform duration-300 hover:scale-105"
+          >
             Login
           </Link>
         )}
