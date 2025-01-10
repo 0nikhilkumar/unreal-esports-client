@@ -1,10 +1,11 @@
 import Error from "@/components/Error/Error";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   createBrowserRouter,
   createRoutesFromElements,
+  Navigate,
   Route,
   RouterProvider,
 } from "react-router-dom";
@@ -14,7 +15,11 @@ import HostingRoom from "./components/HostingRoom/HostingRoom";
 import HostRoom from "./components/HostRoom/HostRoom";
 import Login from "./components/Login/Login";
 import Signup from "./components/Signup/Signup";
-import { checkHostAuthentication, checkUserAuthentication } from "./http";
+import {
+  checkHostAuthentication,
+  checkUserAuthentication,
+  validateProtectedToken,
+} from "./http";
 import About from "./Pages/About/About";
 import HomeLayout from "./Pages/HomeLayout/HomeLayout";
 import JoinedRooms from "./Pages/JoinedRoom/JoinedRooms";
@@ -27,36 +32,15 @@ import Tournament from "./Pages/Tournament/Tournament";
 import { setAuth } from "./Store/authSlice";
 import { decryptData } from "./Store/crypto";
 import UserRoom from "./UserRoom/UserRoom";
+import StorageChangeHandler from "./AutoLogout";
+import Loader from "./components/Loader/Loader";
 
-// const ProtectedRoute = ({Component}) => {
-//   const {user, isAuth} = useSelector((state)=> state.auth);
-//   const navigate = useNavigate();
-//   useEffect(()=> {
-//     !isAuth ? navigate("/login") : isAuth && user?.isVerified ? navigate("/") : <Component />
-//   }, [isAuth, navigate, user?.isVerified])
-//   return <Component />
-// }
 
-// const SemiProtected = ({Component}) => {
-//   const {user, isAuth} = useSelector((state)=> state.auth);
-//   const navigate = useNavigate();
-//   useEffect(()=> {
-//     !isAuth ? navigate("/") : isAuth && user?.isVerified ? (<Component />) : navigate("/")
-//   }, [isAuth, navigate, user?.activated])
-//   return <Component />
-// }
+const ProtectedRoute = ({ element }) => {
+  const token = localStorage.getItem("_unreal_esports_uuid");
 
-// const GuestRoute = ({ Component }) => {
-//   const { isAuth } = useSelector((state) => state.auth);
-//   console.log(isAuth);
-//   const navigate = useNavigate();
-//   useEffect(() => {
-//     if (isAuth) {
-//       navigate("/");
-//     }
-//   }, [navigate, isAuth]);
-//   return isAuth ? null : <Component />;
-// }
+  return token ? element : <Navigate to="/" />;
+};
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -64,19 +48,53 @@ const router = createBrowserRouter(
       <Route exact path="/" element={<HomeLayout />} errorElement={<Error />} />
       <Route path="/signup" element={<Signup />} />
       <Route exact path="/login" element={<Login />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/tournament" element={<Tournament />} />
-      <Route path="/feedback" element={<FeedbackForm />} />
-      <Route path="/create-room" element={<CreateRoom />} />
-      <Route path="/hosting-room" element={<HostingRoom />} />
-      <Route path="/hosting-tournament" element={<CreateTournament />} />
-      <Route path="/leaderboard" element={<Leaderboard />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/arena" element={<Arena />} />
-      <Route path="/arena/:id" element={<UserRoom />} />
-      <Route path="/hosting-room/:id" element={<HostRoom />} />
-      <Route path="/joined-rooms" element={<JoinedRooms />} />
-      <Route path="/joined-rooms/:id" element={<Room />} />
+      <Route exact path="/loader" element={<Loader />} />
+      <Route path="/about" element={<ProtectedRoute element={<About />} />} />
+      <Route
+        path="/tournament"
+        element={<ProtectedRoute element={<Tournament />} />}
+      />
+      <Route
+        path="/feedback"
+        element={<ProtectedRoute element={<FeedbackForm />} />}
+      />
+      <Route
+        path="/create-room"
+        element={<ProtectedRoute element={<CreateRoom />} />}
+      />
+      <Route
+        path="/hosting-room"
+        element={<ProtectedRoute element={<HostingRoom />} />}
+      />
+      <Route
+        path="/hosting-tournament"
+        element={<ProtectedRoute element={<CreateTournament />} />}
+      />
+      <Route
+        path="/leaderboard"
+        element={<ProtectedRoute element={<Leaderboard />} />}
+      />
+      <Route
+        path="/profile"
+        element={<ProtectedRoute element={<Profile />} />}
+      />
+      <Route path="/arena" element={<ProtectedRoute element={<Arena />} />} />
+      <Route
+        path="/arena/:id"
+        element={<ProtectedRoute element={<UserRoom />} />}
+      />
+      <Route
+        path="/hosting-room/:id"
+        element={<ProtectedRoute element={<HostRoom />} />}
+      />
+      <Route
+        path="/joined-rooms"
+        element={<ProtectedRoute element={<JoinedRooms />} />}
+      />
+      <Route
+        path="/joined-rooms/:id"
+        element={<ProtectedRoute element={<Room />} />}
+      />
     </>
   )
 );
@@ -86,30 +104,39 @@ const App = () => {
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem("_unreal_esports_uuid");
-      const encryptVisibility = localStorage.getItem("_unreal_esports_visibliltiy")
+      const encryptVisibility = localStorage.getItem(
+        "_unreal_esports_visibliltiy"
+      );
       let decryptVisibility;
-      if(encryptVisibility){
-        decryptVisibility = decryptData(encryptVisibility)
+      if (encryptVisibility) {
+        decryptVisibility = decryptData(encryptVisibility);
       }
-      console.log(decryptVisibility)
+
       if (!token || !decryptVisibility) {
-        console.log("No token found");
         return;
       }
 
-      if(decryptVisibility === "user"){
+      if (decryptVisibility === "user") {
         const getData = await checkUserAuthentication();
         if (getData.data.isAuthenticated && getData.status === 200) {
-          dispatch(setAuth({ isAuth: getData.data.isAuthenticated , role:decryptVisibility}));
+          dispatch(
+            setAuth({
+              isAuth: getData.data.isAuthenticated,
+              role: decryptVisibility,
+            })
+          );
         }
-      }
-      else {
+      } else {
         const getData = await checkHostAuthentication();
         if (getData.data.isAuthenticated && getData.status === 200) {
-          dispatch(setAuth({ isAuth: getData.data.isAuthenticated , role:decryptVisibility}));
+          dispatch(
+            setAuth({
+              isAuth: getData.data.isAuthenticated,
+              role: decryptVisibility,
+            })
+          );
         }
       }
-      
     } catch (error) {
       console.error("Authentication check failed:", error);
     }
@@ -121,6 +148,7 @@ const App = () => {
 
   return (
     <>
+      <StorageChangeHandler />
       <Toaster position="top-right" toastOptions={{ duration: 5000 }} />
       <RouterProvider router={router} />
     </>

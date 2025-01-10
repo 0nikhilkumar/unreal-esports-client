@@ -7,6 +7,8 @@ export default {
       animation: {
         ["infinite-slider"]: "infiniteSlider 20s linear infinite",
         blink: 'blink 3s infinite',
+        'spin-slow': 'spin 3s linear infinite',
+        'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
         infiniteSlider: {
@@ -14,6 +16,10 @@ export default {
           "100%": {
             transform: "translateX(calc(-250px * 5))",
           },
+        },
+        pulse: {
+          '0%, 100%': { opacity: 1 },
+          '50%': { opacity: 0.5 },
         },
         blink: {
           '0%, 75%': { opacity: 1 }, // Visible for 3 seconds (75% of 4 seconds)
@@ -61,5 +67,6 @@ export default {
   ]
     }
   },
+  variants: {},
   plugins: [],
 };

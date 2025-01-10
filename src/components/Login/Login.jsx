@@ -55,7 +55,7 @@ async function handleSubmit(e) {
       }
       toast.success(response.data.message);
       setIsSubmitting(true);
-      dispatch(setAuth({ user: response.data, role: activeForm }));
+      dispatch(setAuth({ user: response.data.user, role: activeForm }));
       navigate("/");
     }
   } catch (error) {

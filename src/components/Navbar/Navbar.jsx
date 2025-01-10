@@ -7,11 +7,13 @@ import { setAuth } from "../../Store/authSlice";
 import toast from "react-hot-toast";
 
 function Navbar() {
+  
   const [hamburger, setHamburger] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
   const { isAuth, role } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+
 
   async function handleLogout() {
     let response;
@@ -66,7 +68,7 @@ function Navbar() {
         <a href="#faq" className="hover:text-gray-300 transition-colors">
           FAQ
         </a>
-
+        
         {isAuth ? (
           role === "user" ? (
             <div className="relative">
