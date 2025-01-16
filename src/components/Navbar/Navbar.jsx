@@ -20,10 +20,10 @@ function Navbar() {
 
     if (role === "user") {
       response = await logoutUser();
-      toast.success(response.data.message);
+      toast.success(response.data.message || "Successfully logged out");
     } else {
       response = await logoutHost();
-      toast.success(response.data.message);
+      toast.success(response.data.message || "Successfully logged out");
     }
     if (response.data.statusCode === 200) {
       localStorage.removeItem("_unreal_esports_uuid");

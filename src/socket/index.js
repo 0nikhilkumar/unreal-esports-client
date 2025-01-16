@@ -36,4 +36,10 @@ export const leaveRoom = (roomId) => {
   socket.emit('leave-room', roomId);
 };
 
+export const sendSlotUpdate = (data) => {
+  socket.emit("slot-update", data);
+};
 
+export const receiveSlotUpdate = (data) => {
+  socket.on("slot-updated", data);
+};

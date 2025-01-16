@@ -92,18 +92,4 @@ export const hostGetLeaderboardData = (id) =>
 export const checkUserAuthentication = () => api.get("/user/check-auth");
 export const checkHostAuthentication = () => api.get("/host/check-auth");
 
-export const validateProtectedToken = (token) => {
-  return api.get("/validate-token", {
-    headers: {
-      Authorization: `bearer ${token}`,
-    },
-  });
-};
-
-export const validateHostProtectedToken = (token) => {
-  return api.get("/host/validate-token", {
-    headers: {
-      Authorization: `bearer ${token}`,
-    },
-  });
-};
+export const getLeaderboardData = (roomId) => api.post("/user/get-leaderboard-data",{roomId});

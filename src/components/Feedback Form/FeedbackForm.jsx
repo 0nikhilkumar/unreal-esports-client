@@ -3,6 +3,8 @@ import { IoGameController } from "react-icons/io5";
 import { FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { RxCross2 } from "react-icons/rx";
+import { db } from "../../firebase/firebase"; 
+import { collection, addDoc } from "firebase/firestore";
 
 const FeedbackForm = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +16,7 @@ const FeedbackForm = () => {
 
   const [errors, setErrors] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
@@ -36,16 +39,33 @@ const FeedbackForm = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
     const formErrors = validateForm();
     if (Object.keys(formErrors).length === 0) {
-      console.log("Form submitted:", formData);
-      setShowModal(true);
-      setFormData({ name: "", email: "", feedbackType: "", message: "" });
+      setLoading(true);
+      try {
+        await addDoc(collection(db, "feedback"), {
+          ...formData,
+          createdAt: new Date().toISOString(),
+        });
+
+        setShowModal(true);
+        setFormData({ name: "", email: "", feedbackType: "", message: "" });
+      } catch (error) {
+        console.error("Error adding feedback:", error);
+      } finally {
+        setLoading(false);
+      }
     } else {
       setErrors(formErrors);
     }
+    gtag('event', 'click', {
+      'event_category': 'Form',
+      'event_label': 'Feedback form',
+      'value': 1
+    });
   };
 
   const handleChange = (e) => {
@@ -178,9 +198,10 @@ const FeedbackForm = () => {
 
           <button
             type="submit"
+            disabled={loading}
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transform transition-all duration-150 hover:scale-105"
           >
-            Submit Feedback
+            {loading ? "Submitting..." : "Submit Feedback"}
           </button>
         </form>
       </div>

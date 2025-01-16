@@ -7,7 +7,6 @@ import toast from 'react-hot-toast';
 const StorageChangeHandler = () => {
   const dispatch = useDispatch();
   const { role } = useSelector((state) => state.auth);
-  console.log(role)
   const handleStorageChange = async (e) => {
     if (e.key === '_unreal_esports_uuid' || e.key === '_unreal_esports_visibliltiy') {
       let response;

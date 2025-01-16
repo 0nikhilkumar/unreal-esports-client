@@ -1,27 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { getAllRoomsOfHost, getAllUserJoinedRooms, userJoinRoom } from "../http/index";
-import Card from "../components/Card/Card";
 import toast from "react-hot-toast";
+import { Link, useParams } from "react-router-dom";
+import Card from "../components/Card/Card";
+import Loader from "../components/Loader/Loader";
+import { getAllRoomsOfHost, getAllUserJoinedRooms, userJoinRoom } from "../http/index";
 
 function UserRoom() {
   const [selectedButton, setSelectedButton] = useState("T3");
   const [searchQuery, setSearchQuery] = useState("");
   const [allRooms, setAllRooms] = useState(null);
   const [joinedRooms, setJoinedRooms] = useState([]);
-  const navigate = useNavigate();
+  const [loading , setLoading] = useState(false)
+
   const { id } = useParams();
 
   const getAllHostRoomById = async () => {
+    setLoading(true)
     try {
       const res = await getAllRoomsOfHost(id);
       setAllRooms(res.data.data);
     } catch (error) {
       console.error("Error fetching host rooms:", error);
+    }finally{
+      setLoading(false)
     }
   };
 
   const fetchJoinedRooms = async () => {
+    setLoading(true)
     try {
       const res = await getAllUserJoinedRooms();
       const joinedRoomIds = res.data.data.map((room) => room._id);
@@ -29,13 +35,16 @@ function UserRoom() {
     } catch (error) {
       console.error("Error fetching joined rooms:", error);
     }
+    finally{
+      setLoading(false)
+    }
   };
 
   const joinRoom = async (roomId) => {
     try {
       const res = await userJoinRoom(roomId);
       toast.success(res.data.message);
-      fetchJoinedRooms(); // Refresh joined rooms after joining
+      fetchJoinedRooms(); 
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Failed to join room");
@@ -62,9 +71,15 @@ function UserRoom() {
       return isAJoined === isBJoined ? 0 : isAJoined ? 1 : -1;
     });
 
+    if(loading) return <Loader/>
+
   return (
     <div className="min-h-screen bg-black text-white flex">
       {/* Main Content */}
+
+      <div className="text-white ">
+        <Link to={"/joined-rooms"}>joined Room</Link>
+      </div>
       <div className="relative w-full max-w-6xl px-2 py-6 mx-auto">
         {/* Header */}
         <div className="relative w-full h-96 mb-8">

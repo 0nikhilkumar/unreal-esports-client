@@ -18,7 +18,6 @@ import Signup from "./components/Signup/Signup";
 import {
   checkHostAuthentication,
   checkUserAuthentication,
-  validateProtectedToken,
 } from "./http";
 import About from "./Pages/About/About";
 import HomeLayout from "./Pages/HomeLayout/HomeLayout";
@@ -34,6 +33,7 @@ import { decryptData } from "./Store/crypto";
 import UserRoom from "./UserRoom/UserRoom";
 import StorageChangeHandler from "./AutoLogout";
 import Loader from "./components/Loader/Loader";
+import * as Sentry from "@sentry/react";
 
 
 const ProtectedRoute = ({ element }) => {
@@ -56,7 +56,7 @@ const router = createBrowserRouter(
       />
       <Route
         path="/feedback"
-        element={<ProtectedRoute element={<FeedbackForm />} />}
+        element={<FeedbackForm />}
       />
       <Route
         path="/create-room"
@@ -147,11 +147,11 @@ const App = () => {
   }, []);
 
   return (
-    <>
+    <Sentry.ErrorBoundary fallback={<div>An error occurred!</div>}>
       <StorageChangeHandler />
       <Toaster position="top-right" toastOptions={{ duration: 5000 }} />
       <RouterProvider router={router} />
-    </>
+    </Sentry.ErrorBoundary>
   );
 };
 

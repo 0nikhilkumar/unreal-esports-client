@@ -1,11 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { User, Key, Shield } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { User, Key, Shield } from "lucide-react";
 import { LuReplace } from "react-icons/lu";
-import CredentialsCard from '../CredentailsCard/CredentailsCard';
-import { getRoomDetails, getRoomIdp } from '../../../http';
-import { receiveIdp, socketInit, updatedStatus, onlineUsers, leaveRoom } from '../../../socket';
-import CryptoJS from 'crypto-js';
+import CredentialsCard from "../CredentailsCard/CredentailsCard";
+import { getRoomDetails, getRoomIdp } from "../../../http";
+import {
+  receiveIdp,
+  socketInit,
+  updatedStatus,
+  onlineUsers,
+  leaveRoom,
+  receiveSlotUpdate,
+} from "../../../socket";
+import CryptoJS from "crypto-js";
 
 const CredentialsSection = ({ presentRoomData }) => {
   const [room, setRoom] = useState(null);
@@ -16,15 +23,22 @@ const CredentialsSection = ({ presentRoomData }) => {
   });
   const [onlineUserCount, setOnlineUserCount] = useState(0);
   const [isTimeToShow, setIsTimeToShow] = useState(false);
+  const [slotData, setSlotData] = useState({});
+  const [currentUserTeamId, setCurrentUserTeamId] = useState(null);
+  const [userSlots, setUserSlots] = useState({});
+  const [myTeamId, setMyTeamId] = useState(null);
 
   const { id } = useParams();
 
   const encryptData = (data) => {
-    return CryptoJS.AES.encrypt(JSON.stringify(data), 'your-secret-key').toString();
+    return CryptoJS.AES.encrypt(
+      JSON.stringify(data),
+      "your-secret-key"
+    ).toString();
   };
 
   const decryptData = (ciphertext) => {
-    const bytes = CryptoJS.AES.decrypt(ciphertext, 'your-secret-key');
+    const bytes = CryptoJS.AES.decrypt(ciphertext, "your-secret-key");
     return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
   };
 
@@ -65,6 +79,14 @@ const CredentialsSection = ({ presentRoomData }) => {
   };
 
   useEffect(() => {
+    console.log("Current state:", {
+      myTeamId,
+      allSlots: userSlots,
+      mySlot: myTeamId ? userSlots[myTeamId] : null
+    });
+  }, [myTeamId, userSlots]);
+
+  useEffect(() => {
     const getAllRoomData = async () => {
       try {
         const getRoomData = await getRoomDetails(id);
@@ -87,12 +109,37 @@ const CredentialsSection = ({ presentRoomData }) => {
   }, [id]);
 
   useEffect(() => {
-    const socket = socketInit(id);
-    
+    console.log(presentRoomData);
+
+    socketInit(id);
+
     receiveIdp((data) => {
       if (data.roomId === id) {
         saveIdpToLocalStorage(id, data);
         updateIdpDisplay(status, data);
+      }
+    });
+
+    receiveSlotUpdate((data) => {
+      console.log("Received slot update:", data);
+
+      if (data.roomId === id) {
+        // Store all slot assignments
+        setUserSlots((prev) => ({
+          ...prev,
+          [data.teamId]: data.slot,
+        }));
+
+        // If this is the first time we're getting a slot for one of our teams,
+        // store that team as our team
+        const isMyTeam = presentRoomData?.joinedTeam?.some(
+          (team) => team.teamId === data.teamId
+        );
+
+        if (isMyTeam && !myTeamId) {
+          console.log("Setting my team ID to:", data.teamId);
+          setMyTeamId(data.teamId);
+        }
       }
     });
 
@@ -111,7 +158,7 @@ const CredentialsSection = ({ presentRoomData }) => {
     return () => {
       leaveRoom(id);
     };
-  }, [id, status]);
+  }, [id, presentRoomData, status]);
 
   return (
     <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300">
@@ -140,7 +187,11 @@ const CredentialsSection = ({ presentRoomData }) => {
         <CredentialsCard
           Icon={<LuReplace className="text-2xl" />}
           label="Slot"
-          value={isTimeToShow ? room?.slot || "N/A" : "*****"}
+          value={
+            isTimeToShow && myTeamId
+              ? userSlots[myTeamId] || "N/A"
+              : "*****"
+          }
           status={status}
         />
       </div>
@@ -155,4 +206,3 @@ const CredentialsSection = ({ presentRoomData }) => {
 };
 
 export default CredentialsSection;
-

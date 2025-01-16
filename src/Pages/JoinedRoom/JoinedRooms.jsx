@@ -1,14 +1,15 @@
-import { useState, useEffect, useRef } from "react";
-import Card from "./Card/Card";
+import { useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { getAllUserJoinedRooms } from "../../http";
 import { socketInit, updatedStatus } from "../../socket";
-import { useNavigate } from "react-router-dom";
+import Card from "./Card/Card";
+import Loader from "../../components/Loader/Loader";
 
 function JoinedRooms() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedButton, setSelectedButton] = useState("T3");
   const [allRooms, setAllRooms] = useState(null);
+  const [loading, setLoading] = useState(false)
 
   console.log(allRooms)
 
@@ -24,8 +25,12 @@ function JoinedRooms() {
 
 
   async function userJoinedRoom() {
+    setLoading(true)
     const res = await getAllUserJoinedRooms();
-    setAllRooms(res.data.data);
+    if(res.data.statusCode === 200){
+      setAllRooms(res.data.data);
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -61,6 +66,10 @@ function JoinedRooms() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+
+  if(loading) return <Loader/>
+
   return (
     <div className="min-h-screen bg-black text-white flex">
       {/* Main Content */}

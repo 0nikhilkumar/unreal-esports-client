@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import TeamList from "../Slot Management/TeamList";
-import { useParams } from "react-router-dom";
-import { updateUserTeamSlot } from "../../http";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
+import { sendSlotUpdate, socketInit } from "../../socket";
+import TeamList from "../Slot Management/TeamList";
+import { updateUserTeamSlot } from "../../http";
 
 const scrollbarHideStyle = `
   .scrollbar-hide::-webkit-scrollbar {
@@ -20,6 +21,9 @@ function TeamSlotManagement({ inRoomTeam }) {
   const [allTeamDataWithSlot, setAllTeamDataWithSlot] = useState([]);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false); // New state for submit button
 
+  useEffect(() => {
+    socketInit(id);
+  }, [id]);
   
   const sendSlotDataToBackend = async () => {
     await updateUserTeamSlot(id, allTeamDataWithSlot);
@@ -35,9 +39,9 @@ function TeamSlotManagement({ inRoomTeam }) {
       );
 
       const preFilledData = inRoomTeam.map((team) => ({
-        teamId: team.teamId._id || team.teamId,
+        teamId: team.teamId?._id || team.teamId,
         slot: team.slot || null,
-        teamName: team.teamId.teamName,
+        teamName: team.teamId?.teamName,
       }));
       setAllTeamDataWithSlot(preFilledData);
     }
@@ -46,7 +50,7 @@ function TeamSlotManagement({ inRoomTeam }) {
   const handleSlotChange = (teamId, slot) => {
     setTeams((prevTeams) =>
       prevTeams.map((team) =>
-        team._id === teamId ? { ...team, slot: String(slot) } : team
+        team?._id === teamId ? { ...team, slot: String(slot) } : team
       )
     );
 
@@ -56,13 +60,23 @@ function TeamSlotManagement({ inRoomTeam }) {
       );
 
       if (!updatedData.find((item) => item.teamId === teamId)) {
-        const team = teams.find((team) => team._id === teamId);
+        const team = teams.find((team) => team?._id === teamId);
         updatedData.push({
           teamId,
           slot: Number(slot),
           teamName: team?.teamName || "Unknown",
         });
       }
+
+       // Emit socket event with slot update
+       updatedData.forEach(data => {
+        sendSlotUpdate({
+          roomId: id,
+          slot: data.slot,
+          teamId: data.teamId
+        });
+      });
+      
 
       return updatedData;
     });
@@ -142,7 +156,7 @@ function TeamSlotManagement({ inRoomTeam }) {
                             Slot {slot}{" "}
                           </div>
                           <div className="text-sm mt-1 text-gray-600">
-                            {teamInSlot ? teamInSlot.teamName : "Empty"}
+                            {teamInSlot ? teamInSlot?.teamName : "Empty"}
                           </div>
                         </div>
                       );

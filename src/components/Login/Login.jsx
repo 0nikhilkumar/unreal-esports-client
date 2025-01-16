@@ -53,13 +53,13 @@ async function handleSubmit(e) {
         const encryptedRole = encryptData(activeForm)
         localStorage.setItem("_unreal_esports_visibliltiy", encryptedRole);
       }
-      toast.success(response.data.message);
+      toast.success(response.data.message || "Login successful");
       setIsSubmitting(true);
       dispatch(setAuth({ user: response.data.user, role: activeForm }));
       navigate("/");
     }
   } catch (error) {
-    toast.error(error.response?.data?.message);
+    toast.error(error.response?.data?.message || "Something went wrong");
   }
 }
 

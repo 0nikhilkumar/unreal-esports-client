@@ -10,6 +10,7 @@ import {
   FaToggleOn,
 } from "react-icons/fa";
 import { TbBadgesFilled } from "react-icons/tb";
+import { BsFillMapFill } from "react-icons/bs";
 import InfoItem from "./InfoItem";
 import StatusBadge from "./StatusBadge";
 import { MdTimer } from "react-icons/md";
@@ -196,9 +197,9 @@ function RoomDetails({ data }) {
           />
 
           <InfoItem
-            icon={<MdTimer />}
-            label="Timer"
-            value={timer !== null ? formatTime(timer) : "Room start not yet"}
+            icon={<BsFillMapFill />}
+            label="Map"
+            value={data.gameMap || "Erangle"}
           />
         </div>
 

@@ -6,6 +6,7 @@ import Leaderboard from "./Leaderboard";
 import RoomDetails from "./RoomDetails";
 import RoomIdp from "./RoomIdp";
 import TeamSlotManagement from "./TeamSlotManagement";
+import Loader from "../Loader/Loader";
 // import {socket} from "../../socket/index";
 
 function HostRoom() {
@@ -16,8 +17,10 @@ function HostRoom() {
   const [teams, setTeams] = useState(initialTeams);
   const [leaderboard, setLeaderboard] = useState([]);
   const [inRoomTeam, setInRoomTeam] = useState([]);
+  const [loading , setLoading] = useState(false)
 
   const fetchRoomData = async () => {
+    setLoading(true)
     try {
       const res = await getRoom(id);
       const roomData = res.data.message;
@@ -28,15 +31,22 @@ function HostRoom() {
     } catch (error) {
       console.error("Error fetching room data:", error);
     }
+    finally{
+      setLoading(false)
+    }
   };
 
   // Fetch IDP data
   const fetchIdpData = async () => {
+    setLoading(true)
     try {
       const res = await getIdp(id);
       setIdpData(res.data.data.idp);
     } catch (error) {
       console.error("Error fetching IDP data:", error);
+    }
+    finally{
+      setLoading(false)
     }
   };
 
@@ -48,6 +58,8 @@ function HostRoom() {
   useEffect(() => {
     fetchRoomData();
   }, []);
+
+  if(loading) return <Loader/>
  
   return (
     <div className="min-h-screen w-full bg-gray-900 text-white flex justify-center items-center py-10">

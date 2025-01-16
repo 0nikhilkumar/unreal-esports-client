@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../../../components/UserInJoinedRoom/Header/Header';
 import CredentialsSection from '../../../components/UserInJoinedRoom/CredentialsSection/CredentialsSection';
-import { socketInit, toggleStatus, updatedStatus } from '../../../socket';
+import { socketInit, updatedStatus } from '../../../socket';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getRoomDetails, updateStatus } from '../../../http';
+import { getRoomDetails } from '../../../http';
+import Loader from '../../../components/Loader/Loader';
 
 const Room = () => {
   const [status, setStatus] = useState('Offline');
@@ -12,7 +13,8 @@ const Room = () => {
   const [showClosedMessage, setShowClosedMessage] = useState(false);
   const roomId = useParams().id;
   const navigate = useNavigate();
-  const [isRoomClosed, setIsRoomClosed] = useState(false); // New state to track room closure
+  const [isRoomClosed, setIsRoomClosed] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     socketInit();
@@ -35,8 +37,12 @@ const Room = () => {
   }, [roomId, navigate]);
 
   const getRoom = async () => {
+    setLoading(true)
     const res = await getRoomDetails(roomId);
-    setPresentRoomData(res.data.data);
+    if(res.data.statusCode === 200){
+      setPresentRoomData(res.data.data);
+      setLoading(false)
+    }
   };
 
   useEffect(() => {
@@ -44,7 +50,6 @@ const Room = () => {
   }, [roomId]);
 
   const dateAndTime = `${presentRoomData?.date}T${presentRoomData?.time}:00`;
-  console.log(dateAndTime);
   const roomStartTime = new Date(dateAndTime);
   // roomStartTime.setHours(presentRoomData?.time.split(':')[0], presentRoomData?.time.split(':')[1], 0);
 
@@ -78,6 +83,8 @@ const Room = () => {
     const seconds = Math.floor((ms % 60000) / 1000);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
+
+  if(loading) return <Loader/>
 
   return (
     <div className="min-h-screen w-fit sm:w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">

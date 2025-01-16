@@ -8,9 +8,9 @@ const Loader = () => {
         <div className="absolute top-0 left-0 w-24 h-24 rounded-full border-t-4 border-r-4 border-yellow-500 animate-spin-slow"></div>
         <div className="absolute inset-0 flex items-center justify-center">
           <img 
-            src="images/logo-fav.png" 
+            src="/images/logo-fav.png" 
             alt="Loading" 
-            className="w-24 h-24 object-contain animate-pulse"
+            className="w-24 h-24 object-contain animate-pulse opacity-100"
           />
         </div>
       </div>
@@ -19,3 +19,4 @@ const Loader = () => {
 };
 
 export default Loader;
+
