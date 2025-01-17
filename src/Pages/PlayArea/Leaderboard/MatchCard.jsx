@@ -13,11 +13,11 @@ export default function MatchCard({ match, isOpen, onToggle }) {
     setLoading(true);
     try {
       const res = await getLeaderboardData(match._id);
-      const apiData = res.data.data.leaderboardData;
+      const apiData = res?.data?.data?.leaderboardData;
       setLeaderboardTeamData(apiData || match.joinedTeam); 
     } catch (error) {
       // console.log("Error fetching leaderboard data:");
-      console.log("ERROR: fetching data")
+      console.log("ERROR: fetching data",error)
     } finally {
       setLoading(false);
     }

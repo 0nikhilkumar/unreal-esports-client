@@ -34,6 +34,7 @@ import UserRoom from "./UserRoom/UserRoom";
 import StorageChangeHandler from "./AutoLogout";
 import Loader from "./components/Loader/Loader";
 import * as Sentry from "@sentry/react";
+import ManageTeams from "./Pages/ManageTeams/ManageTeams";
 
 
 const ProtectedRoute = ({ element }) => {
@@ -94,6 +95,10 @@ const router = createBrowserRouter(
       <Route
         path="/joined-rooms/:id"
         element={<ProtectedRoute element={<Room />} />}
+      />
+      <Route
+        path="/manage-teams"
+        element={<ProtectedRoute element={<ManageTeams />} />}
       />
     </>
   )

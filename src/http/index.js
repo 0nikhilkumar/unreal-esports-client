@@ -93,3 +93,7 @@ export const checkUserAuthentication = () => api.get("/user/check-auth");
 export const checkHostAuthentication = () => api.get("/host/check-auth");
 
 export const getLeaderboardData = (roomId) => api.post("/user/get-leaderboard-data",{roomId});
+
+export const updateTierForHost = ({teamId, newTier}) => api.patch("/host/joined-teams",{teamId, newTier});
+
+export const getUpdateTierFor = () => api.get("/host/joined-teams");
