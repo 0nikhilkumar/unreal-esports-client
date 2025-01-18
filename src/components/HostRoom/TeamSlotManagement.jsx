@@ -19,14 +19,20 @@ function TeamSlotManagement({ inRoomTeam }) {
   const [teams, setTeams] = useState([]);
   const { id } = useParams();
   const [allTeamDataWithSlot, setAllTeamDataWithSlot] = useState([]);
-  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false); // New state for submit button
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
 
   useEffect(() => {
     socketInit(id);
   }, [id]);
   
   const sendSlotDataToBackend = async () => {
-    await updateUserTeamSlot(id, allTeamDataWithSlot);
+    try {
+      await updateUserTeamSlot(id, allTeamDataWithSlot);
+      toast.success("Team slots successfully assigned!");
+    } catch (error) {
+      console.error("Failed to submit data:", error);
+      toast.error("Failed to submit team slots. Please try again.");
+    }
   };
 
   useEffect(() => {
@@ -68,44 +74,33 @@ function TeamSlotManagement({ inRoomTeam }) {
         });
       }
 
-       // Emit socket event with slot update
-       updatedData.forEach(data => {
+      // Emit socket event with slot update
+      updatedData.forEach(data => {
         sendSlotUpdate({
           roomId: id,
           slot: data.slot,
           teamId: data.teamId
         });
       });
-      
 
       return updatedData;
     });
   };
 
   const handleSubmitDisable = () => {
-    // Check if all teams have a slot assigned
     const allTeamsHaveSlot = inRoomTeam.every((team) => team.slot !== null && team.slot !== undefined);
-  
-    // Disable the submit button if all teams have a slot, otherwise keep it enabled
-    setIsSubmitDisabled(allTeamsHaveSlot);
+    setIsSubmitDisabled(false); // Always keep the button enabled
   };
   
   useEffect(() => {
-    // Call the function to disable/enable the submit button when the component is mounted or inRoomTeam changes
     handleSubmitDisable();
-  }, [inRoomTeam]); // Re-run the function when inRoomTeam changes
-  
+  }, [inRoomTeam]);
 
   const handleSubmitData = async () => {
-    if (allTeamDataWithSlot.length === teams.length) {
-      try {
-        await sendSlotDataToBackend();
-        setIsSubmitDisabled(true); 
-        toast.success("Team slots successfully assigned!");
-      } catch (error) {
-        console.error("Failed to submit data:", error);
-        toast.error("Failed to submit team slots. Please try again.");
-      }
+    const allSlotsFilled = allTeamDataWithSlot.every(team => team.slot !== null && team.slot !== undefined);
+    if (allSlotsFilled) {
+      await sendSlotDataToBackend();
+      setIsSubmitDisabled(true);
     } else {
       toast.error("Please assign all slots before submitting.");
     }
@@ -169,13 +164,9 @@ function TeamSlotManagement({ inRoomTeam }) {
         </div>
         <div className="flex justify-center items-center pt-2">
           <button
-            className={`bg-gradient-to-r ${
-              isSubmitDisabled
-                ? "from-gray-400 to-gray-500 cursor-not-allowed"
-                : "from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 active:from-blue-700 active:to-purple-800"
-            } text-white rounded-lg px-6 py-2 tracking-wider shadow-lg transform transition duration-300 hover:scale-105 active:scale-95 font-bold`}
+            className={`bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 active:from-blue-700 active:to-purple-800 text-white rounded-lg px-6 py-2 tracking-wider shadow-lg transform transition duration-300 hover:scale-105 active:scale-95 font-bold`}
             onClick={handleSubmitData}
-            disabled={isSubmitDisabled}>
+          >
             Submit
           </button>
         </div>
@@ -185,3 +176,4 @@ function TeamSlotManagement({ inRoomTeam }) {
 }
 
 export default TeamSlotManagement;
+

@@ -32,6 +32,7 @@ const UserRoom = () => {
     card.preferredName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
@@ -121,6 +122,7 @@ const UserRoom = () => {
   const getTeam = async () => {
     try {
       const res = await getUserTeam();
+      console.log(res.data);
       if (res.data.data !== null) {
         setTeamName(res.data.data.teamName);
   

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { User, Key, Shield } from "lucide-react";
+import { User, Key, Shield } from 'lucide-react';
 import { LuReplace } from "react-icons/lu";
 import CredentialsCard from "../CredentailsCard/CredentailsCard";
 import { getRoomDetails, getRoomIdp } from "../../../http";
@@ -28,6 +28,7 @@ const CredentialsSection = ({ presentRoomData }) => {
   const [userSlots, setUserSlots] = useState({});
   const [myTeamId, setMyTeamId] = useState(null);
 
+
   const { id } = useParams();
 
   const encryptData = (data) => {
@@ -44,13 +45,23 @@ const CredentialsSection = ({ presentRoomData }) => {
 
   const saveIdpToLocalStorage = (roomId, idp) => {
     const encryptedIdp = encryptData(idp);
-    localStorage.setItem(`idp_${roomId}`, encryptedIdp);
+    const expiryTime = new Date().getTime() + 24 * 60 * 60 * 1000; // Current time + 1 day in milliseconds
+    const dataWithExpiry = {
+      encryptedIdp,
+      expiry: expiryTime,
+    };
+    localStorage.setItem(`idp_${roomId}`, JSON.stringify(dataWithExpiry));
   };
 
   const getIdpFromLocalStorage = (roomId) => {
-    const encryptedIdp = localStorage.getItem(`idp_${roomId}`);
+    let encryptedIdp = localStorage.getItem(`idp_${roomId}`);
+    encryptedIdp = JSON.parse(encryptedIdp);
+    if(encryptedIdp.expiry < new Date().getTime()){
+      localStorage.removeItem(`idp_${roomId}`);
+      return null;
+    }
     if (encryptedIdp) {
-      return decryptData(encryptedIdp);
+      return decryptData(encryptedIdp.encryptedIdp);
     }
     return null;
   };
@@ -124,10 +135,9 @@ const CredentialsSection = ({ presentRoomData }) => {
       console.log("Received slot update:", data);
 
       if (data.roomId === id) {
-        // Store all slot assignments
         setUserSlots((prev) => ({
           ...prev,
-          [data.teamId]: data.slot,
+          "slot": data.slot,
         }));
 
         // If this is the first time we're getting a slot for one of our teams,
@@ -187,11 +197,7 @@ const CredentialsSection = ({ presentRoomData }) => {
         <CredentialsCard
           Icon={<LuReplace className="text-2xl" />}
           label="Slot"
-          value={
-            isTimeToShow && myTeamId
-              ? userSlots[myTeamId] || "N/A"
-              : "*****"
-          }
+          value={userSlots.slot || "*****"}
           status={status}
         />
       </div>
@@ -206,3 +212,4 @@ const CredentialsSection = ({ presentRoomData }) => {
 };
 
 export default CredentialsSection;
+
