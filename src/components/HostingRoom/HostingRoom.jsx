@@ -1,62 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
-import { GoPlus } from "react-icons/go";
-import { CiSearch } from "react-icons/ci";
-import { LuAsterisk } from "react-icons/lu";
-import { FaGamepad, FaUsers } from "react-icons/fa";
-import { Link, NavLink } from "react-router-dom";
-import { createRooms, getHostRooms } from "../../http";
 import toast from "react-hot-toast";
+import { CiSearch } from "react-icons/ci";
+import { FaGamepad, FaUsers } from "react-icons/fa";
+import { GoPlus } from "react-icons/go";
+import { NavLink } from "react-router-dom";
+import { createRooms, deleteRoomCard, getHostRooms } from "../../http";
 import Loader from "../Loader/Loader";
-
-const dummyData = [
-  {
-    id: 1,
-    roomName: "Room 1",
-    date: "2024-12-14",
-    time: "10:00 AM",
-    maxTeam: 10,
-    image: "/images/Games/BGMI.webp",
-    prizePool: 500,
-    status: "Open",
-    gameName: "Valorant",
-    tier: "T3",
-  },
-  {
-    id: 2,
-    roomName: "Room 2",
-    date: "2024-12-15",
-    time: "12:00 PM",
-    maxTeam: 8,
-    image: "/images/Games/BGMI.webp",
-    prizePool: 300,
-    status: "Live",
-    gameName: "CS:GO",
-    tier: "T2",
-  },
-  {
-    id: 3,
-    roomName: "Room 3",
-    date: "2024-12-16",
-    time: "2:00 PM",
-    maxTeam: 12,
-    image: "/images/Games/BGMI.webp",
-    prizePool: 1000,
-    status: "Closed",
-    gameName: "Dota 2",
-    tier: "T1",
-  },
-];
+import { TiDelete } from "react-icons/ti";
+import ConfirmationDialog from './ConfirmationDialog';
 
 function HostingRoom() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTier, setSelectedTier] = useState("T3");
   const searchInputRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [teamName, setTeamName] = useState("");
-  const [teamCreated, setTeamCreated] = useState(false);
   const [players, setPlayers] = useState([]);
   const [refreshData, setRefreshData] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [roomToDelete, setRoomToDelete] = useState(null);
+  const [roomNameToDelete, setRoomNameToDelete] = useState(""); // Added state for room name
   const [formData, setFormData] = useState({
     roomName: "",
     date: "",
@@ -126,11 +89,8 @@ function HostingRoom() {
 
     try {
       const res = await createRooms(formData);
-      console.log("res", res);
-      // console.log(res.data);
       toast.success(res.data.message);
       setRefreshData(!refreshData);
-      console.log(formData);
       setFormData({
         roomName: "",
         date: "",
@@ -146,6 +106,33 @@ function HostingRoom() {
       toggleModal();
     } catch (error) {
       toast.error("Room is not created");
+    }
+  };
+
+  // Add this new function
+  const initiateDeleteRoom = (roomId, roomName) => {
+    setRoomToDelete(roomId);
+    setRoomNameToDelete(roomName);
+    setShowDeleteConfirm(true);
+  };
+
+  // Modify the existing handleDeleteRoom function
+  const handleDeleteRoom = async () => {
+    if (!roomToDelete) return;
+    
+    setLoading(true);
+    try {
+      const res = await deleteRoomCard(roomToDelete);
+      console.log(res.data);
+      setShowDeleteConfirm(false);
+      setRoomToDelete(null);
+      setRoomNameToDelete(null); //Added to clear the room name after deletion
+      setRefreshData(!refreshData);
+      toast.success("Room deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete room");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -227,56 +214,68 @@ function HostingRoom() {
             key={index}
             className="bg-gray-800 rounded-xl overflow-hidden transition-transform hover:transform hover:scale-105"
           >
-            <NavLink to={`/hosting-room/${room._id}`}>
-              <img
-                src={room.image}
-                alt={room.roomName}
-                className="w-full h-48 object-cover"
-                onError={(e) => {
-                  e.target.src =
-                    "https://images.unsplash.com/photo-1542751371-adc38448a05e";
-                }}
-              />
-              <div className="p-6">
-                <div className="flex justify-between items-center">
-                <h3 className="text-xl font-bold mb-2">{room.roomName}</h3>
-                <div className="text-sm mb-2 bg-white text-black rounded px-3 py-1">{room.gameMap || "Erangle"}</div>
+            <div className="relative">
+              <span>
+                <TiDelete
+                  className="absolute top-2 right-2 text-2xl cursor-pointer"
+                  onClick={() => initiateDeleteRoom(room._id, room.roomName)}
+                />
+              </span>
+              
+
+              <NavLink to={`/hosting-room/${room._id}`}>
+                <img
+                  src={room.image || "/placeholder.svg"}
+                  alt={room.roomName}
+                  className="w-full h-48 object-cover"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://images.unsplash.com/photo-1542751371-adc38448a05e";
+                  }}
+                />{" "}
+                <div className="p-6">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-bold mb-2">{room.roomName}</h3>
+                    <div className="text-sm mb-2 bg-white text-black rounded px-3 py-1">
+                      {room.gameMap || "Erangle"}
+                    </div>
+                  </div>
+                  <div className="flex justify-start gap-x-5 items-center flex-wrap">
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaUsers />
+                      <span>Date: {room.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaUsers />
+                      <span>Time: {room.time}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaUsers />
+                      <span>Prize: {room.prize}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaUsers />
+                      <span>Capacity: {room.maxTeam}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaGamepad />
+                      <span>{room.gameName}</span>
+                    </div>
+                  </div>
+                  <div
+                    className={`inline-block px-3 py-1 rounded-full text-sm ${
+                      room.status === "Open" ||
+                      room.status === "Registration Open" ||
+                      room.status === "Coming Soon"
+                        ? "bg-green-500/20 text-green-500"
+                        : "bg-red-500/20 text-red-500"
+                    }`}
+                  >
+                    {room.status}
+                  </div>
                 </div>
-                <div className="flex justify-start gap-x-5 items-center flex-wrap">
-                  <div className="flex items-center gap-2 text-gray-300 mb-2">
-                    <FaUsers />
-                    <span>Date: {room.date}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300 mb-2">
-                    <FaUsers />
-                    <span>Time: {room.time}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300 mb-2">
-                    <FaUsers />
-                    <span>Prize: {room.prize}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300 mb-2">
-                    <FaUsers />
-                    <span>Capacity: {room.maxTeam}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300 mb-2">
-                    <FaGamepad />
-                    <span>{room.gameName}</span>
-                  </div>
-                </div>
-                <div
-                  className={`inline-block px-3 py-1 rounded-full text-sm ${
-                    room.status === "Open" ||
-                    room.status === "Registration Open" ||
-                    room.status === "Coming Soon"
-                      ? "bg-green-500/20 text-green-500"
-                      : "bg-red-500/20 text-red-500"
-                  }`}
-                >
-                  {room.status}
-                </div>
-              </div>
-            </NavLink>
+              </NavLink>
+            </div>
           </div>
         ))}
       </div>
@@ -555,8 +554,15 @@ function HostingRoom() {
       </div>
 
       {/*  */}
+      <ConfirmationDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteRoom}
+        message={`Are you sure you want to delete the room "${roomNameToDelete}"?`}
+      />
     </div>
   );
 }
 
 export default HostingRoom;
+

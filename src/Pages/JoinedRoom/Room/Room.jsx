@@ -3,7 +3,7 @@ import Header from '../../../components/UserInJoinedRoom/Header/Header';
 import CredentialsSection from '../../../components/UserInJoinedRoom/CredentialsSection/CredentialsSection';
 import { socketInit, updatedStatus } from '../../../socket';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getRoomDetails } from '../../../http';
+import { getRoomDetails, getUserTeam } from '../../../http';
 import Loader from '../../../components/Loader/Loader';
 
 const Room = () => {

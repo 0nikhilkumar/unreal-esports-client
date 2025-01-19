@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { User, Key, Shield } from 'lucide-react';
 import { LuReplace } from "react-icons/lu";
 import CredentialsCard from "../CredentailsCard/CredentailsCard";
-import { getRoomDetails, getRoomIdp } from "../../../http";
+import { getRoomDetails, getRoomIdp, getUserTeam } from "../../../http";
 import {
   receiveIdp,
   socketInit,
@@ -23,11 +23,8 @@ const CredentialsSection = ({ presentRoomData }) => {
   });
   const [onlineUserCount, setOnlineUserCount] = useState(0);
   const [isTimeToShow, setIsTimeToShow] = useState(false);
-  const [slotData, setSlotData] = useState({});
-  const [currentUserTeamId, setCurrentUserTeamId] = useState(null);
-  const [userSlots, setUserSlots] = useState({});
+  const [userSlots, setUserSlots] = useState({}); // Keeps track of all team slots
   const [myTeamId, setMyTeamId] = useState(null);
-
 
   const { id } = useParams();
 
@@ -45,7 +42,7 @@ const CredentialsSection = ({ presentRoomData }) => {
 
   const saveIdpToLocalStorage = (roomId, idp) => {
     const encryptedIdp = encryptData(idp);
-    const expiryTime = new Date().getTime() + 24 * 60 * 60 * 1000; // Current time + 1 day in milliseconds
+    const expiryTime = new Date().getTime() + 24 * 60 * 60 * 1000; // 1 day
     const dataWithExpiry = {
       encryptedIdp,
       expiry: expiryTime,
@@ -55,12 +52,12 @@ const CredentialsSection = ({ presentRoomData }) => {
 
   const getIdpFromLocalStorage = (roomId) => {
     let encryptedIdp = localStorage.getItem(`idp_${roomId}`);
-    encryptedIdp = JSON.parse(encryptedIdp);
-    if(encryptedIdp.expiry < new Date().getTime()){
-      localStorage.removeItem(`idp_${roomId}`);
-      return null;
-    }
     if (encryptedIdp) {
+      encryptedIdp = JSON.parse(encryptedIdp);
+      if (encryptedIdp.expiry < new Date().getTime()) {
+        localStorage.removeItem(`idp_${roomId}`);
+        return null;
+      }
       return decryptData(encryptedIdp.encryptedIdp);
     }
     return null;
@@ -74,6 +71,7 @@ const CredentialsSection = ({ presentRoomData }) => {
           id: newIdp.id || "N/A",
           pass: newIdp.password || "N/A",
         });
+        
       } else {
         const localIdp = getIdpFromLocalStorage(id);
         if (localIdp) {
@@ -89,13 +87,29 @@ const CredentialsSection = ({ presentRoomData }) => {
     }
   };
 
+  const socketSlotData = async () => {
+    try {
+      const res = await getUserTeam();
+      const teamId = res.data.data._id;
+      setMyTeamId(teamId); // Ensure the user's team ID is stored
+    } catch (error) {
+      console.error("Error fetching team data:", error);
+    }
+  };
+
+  const getSlotDataFromBackend = () =>{
+    presentRoomData?.joinedTeam?.map((team)=>{
+      setUserSlots((prev)=>{
+        const updatedSlots = { ...prev, [team.teamId._id]: team.slot };
+        return updatedSlots
+      })
+    })
+  }
+
   useEffect(() => {
-    console.log("Current state:", {
-      myTeamId,
-      allSlots: userSlots,
-      mySlot: myTeamId ? userSlots[myTeamId] : null
-    });
-  }, [myTeamId, userSlots]);
+    socketSlotData();
+    getSlotDataFromBackend()
+  }, []);
 
   useEffect(() => {
     const getAllRoomData = async () => {
@@ -120,8 +134,6 @@ const CredentialsSection = ({ presentRoomData }) => {
   }, [id]);
 
   useEffect(() => {
-    console.log(presentRoomData);
-
     socketInit(id);
 
     receiveIdp((data) => {
@@ -134,21 +146,15 @@ const CredentialsSection = ({ presentRoomData }) => {
     receiveSlotUpdate((data) => {
       console.log("Received slot update:", data);
 
-      if (data.roomId === id) {
-        setUserSlots((prev) => ({
-          ...prev,
-          "slot": data.slot,
-        }));
-
-        // If this is the first time we're getting a slot for one of our teams,
-        // store that team as our team
-        const isMyTeam = presentRoomData?.joinedTeam?.some(
-          (team) => team.teamId === data.teamId
-        );
-
-        if (isMyTeam && !myTeamId) {
-          console.log("Setting my team ID to:", data.teamId);
-          setMyTeamId(data.teamId);
+      
+      if(status === "Live"){
+        if (data.roomId === id) {
+          setUserSlots((prev) => {
+            // Add or update the slot for the specific team
+            const updatedSlots = { ...prev, [data.teamId]: data.slot };
+            console.log("Updated User Slots:", updatedSlots);
+            return updatedSlots;
+          });
         }
       }
     });
@@ -168,7 +174,7 @@ const CredentialsSection = ({ presentRoomData }) => {
     return () => {
       leaveRoom(id);
     };
-  }, [id, presentRoomData, status]);
+  }, [id, status]);
 
   return (
     <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300">
@@ -197,7 +203,11 @@ const CredentialsSection = ({ presentRoomData }) => {
         <CredentialsCard
           Icon={<LuReplace className="text-2xl" />}
           label="Slot"
-          value={userSlots.slot || "*****"}
+          value={
+            userSlots[myTeamId] // Display the slot for the current user's team
+              ? `${userSlots[myTeamId]}`
+              : "*****"
+          }
           status={status}
         />
       </div>
@@ -212,4 +222,3 @@ const CredentialsSection = ({ presentRoomData }) => {
 };
 
 export default CredentialsSection;
-

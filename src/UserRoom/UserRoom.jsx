@@ -145,14 +145,20 @@ function UserRoom() {
           </div>
         </div>
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl px-4 mb-20">
-          {filteredRooms?.map((room) => (
-            <Card
-              key={room._id}
-              room={room}
-              joinRoom={joinRoom}
-              joinedRooms={joinedRooms}
-            />
-          ))}
+          {filteredRooms?.length === 0 ? (
+            <div className="col-span-full text-center text-white text-xl">
+              Room doesn't exist
+            </div>
+          ) : (
+            filteredRooms?.map((room) => (
+              <Card
+                key={room._id}
+                room={room}
+                joinRoom={joinRoom}
+                joinedRooms={joinedRooms}
+              />
+            ))
+          )}
         </div>
       </div>
     </div>

@@ -97,3 +97,5 @@ export const getLeaderboardData = (roomId) => api.post("/user/get-leaderboard-da
 export const updateTierForHost = ({teamId, newTier}) => api.patch("/host/joined-teams",{teamId, newTier});
 
 export const getUpdateTierFor = () => api.get("/host/joined-teams");
+
+export const deleteRoomCard = (id) => api.delete(`/host/delete-room/${id}`);
