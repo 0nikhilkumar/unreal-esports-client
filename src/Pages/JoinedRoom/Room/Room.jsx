@@ -14,7 +14,9 @@ const Room = () => {
   const roomId = useParams().id;
   const navigate = useNavigate();
   const [isRoomClosed, setIsRoomClosed] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  let length = 0;
+
 
   useEffect(() => {
     socketInit();

@@ -4,7 +4,7 @@ import { FaTwitch, FaYoutube, FaTwitter, FaInstagram } from 'react-icons/fa';
 import { SiRiotgames } from 'react-icons/si';
 import { FaEdit, FaSave } from 'react-icons/fa';
 
-const Profile = () => {
+const UserProfile = () => {
   const [teamMembers, setTeamMembers] = useState([
     { id: 1, name: 'PlayerOne', ign: 'player1IGN', igid: 'player1IGID', email: 'player1@example.com', isEditing: false },
     { id: 2, name: 'PlayerTwo', ign: 'player2IGN', igid: 'player2IGID', email: 'player2@example.com', isEditing: false },
@@ -297,5 +297,5 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default UserProfile;
 

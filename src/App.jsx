@@ -1,7 +1,7 @@
 import Error from "@/components/Error/Error";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -15,17 +15,13 @@ import HostingRoom from "./components/HostingRoom/HostingRoom";
 import HostRoom from "./components/HostRoom/HostRoom";
 import Login from "./components/Login/Login";
 import Signup from "./components/Signup/Signup";
-import {
-  checkHostAuthentication,
-  checkUserAuthentication,
-} from "./http";
+import { checkHostAuthentication, checkUserAuthentication } from "./http";
 import About from "./Pages/About/About";
 import HomeLayout from "./Pages/HomeLayout/HomeLayout";
 import JoinedRooms from "./Pages/JoinedRoom/JoinedRooms";
 import Room from "./Pages/JoinedRoom/Room/Room";
 import CreateTournament from "./Pages/PlayArea/CreateTournament/CreateTournament";
 import Leaderboard from "./Pages/PlayArea/Leaderboard/Leaderboard";
-import Profile from "./Pages/Profile/UserProfile/Profile";
 import CreateRoom from "./Pages/Tournament/CreateRoom/CreateRoom";
 import Tournament from "./Pages/Tournament/Tournament";
 import { setAuth } from "./Store/authSlice";
@@ -35,12 +31,23 @@ import StorageChangeHandler from "./AutoLogout";
 import Loader from "./components/Loader/Loader";
 import * as Sentry from "@sentry/react";
 import ManageTeams from "./Pages/ManageTeams/ManageTeams";
-
+import UserProfile from "./Pages/Profile/UserProfile/UserProfile";
+import HostProfile from "./Pages/Profile/HostProfile/HostProfile";
+import OTPEmail from "./components/otp";
 
 const ProtectedRoute = ({ element }) => {
   const token = localStorage.getItem("_unreal_esports_uuid");
-
   return token ? element : <Navigate to="/" />;
+};
+
+const Profile = () => {
+  const visibility = decryptData(
+    localStorage.getItem("_unreal_esports_visibliltiy")
+  );
+
+  if (visibility === "user") return <UserProfile />;
+  else if (visibility === "host") return <HostProfile />;
+  else return null;
 };
 
 const router = createBrowserRouter(
@@ -55,10 +62,7 @@ const router = createBrowserRouter(
         path="/tournament"
         element={<ProtectedRoute element={<Tournament />} />}
       />
-      <Route
-        path="/feedback"
-        element={<FeedbackForm />}
-      />
+      <Route path="/feedback" element={<FeedbackForm />} />
       <Route
         path="/create-room"
         element={<ProtectedRoute element={<CreateRoom />} />}
@@ -99,6 +103,10 @@ const router = createBrowserRouter(
       <Route
         path="/manage-teams"
         element={<ProtectedRoute element={<ManageTeams />} />}
+      />
+      <Route
+        path="/otp"
+        element={<ProtectedRoute element={<OTPEmail />} />}
       />
     </>
   )

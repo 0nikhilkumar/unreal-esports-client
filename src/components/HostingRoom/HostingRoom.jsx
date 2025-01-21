@@ -84,7 +84,6 @@ function HostingRoom() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // setPlayers((prev) => [...prev, formData]);
     console.log("Form Data:", formData);
 
     try {

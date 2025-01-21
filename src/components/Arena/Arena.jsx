@@ -120,6 +120,7 @@ const UserRoom = () => {
   };
 
   const getTeam = async () => {
+    setLoading(true)
     try {
       const res = await getUserTeam();
       console.log(res.data);
@@ -147,6 +148,9 @@ const UserRoom = () => {
       }
     } catch (error) {
       console.error("Error fetching team data:", error);
+    }
+    finally{
+      setLoading(false)
     }
   };
 

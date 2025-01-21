@@ -6,9 +6,7 @@ function Card({ room, joinRoom, joinedRooms }) {
   const [status, setStatus] = useState(room?.status); // Local state for room status
   const isJoined = joinedRooms?.includes(room?._id);
 
-  // useEffect(()=> {
 
-  // }, [status]);
 
   socketInit(); // Initialize socket once
   useEffect(() => {
