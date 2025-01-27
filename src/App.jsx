@@ -34,6 +34,7 @@ import ManageTeams from "./Pages/ManageTeams/ManageTeams";
 import UserProfile from "./Pages/Profile/UserProfile/UserProfile";
 import HostProfile from "./Pages/Profile/HostProfile/HostProfile";
 import OTPEmail from "./components/otp";
+import Wallet from "./Pages/wallet/Wallet";
 
 const ProtectedRoute = ({ element }) => {
   const token = localStorage.getItem("_unreal_esports_uuid");
@@ -108,6 +109,7 @@ const router = createBrowserRouter(
         path="/otp"
         element={<ProtectedRoute element={<OTPEmail />} />}
       />
+      <Route path="/wallet" element={<ProtectedRoute element={<Wallet />} />} />
     </>
   )
 );
@@ -140,7 +142,8 @@ const App = () => {
           );
         }
       } else {
-        const getData = await checkHostAuthentication();
+        if(decryptVisibility){
+          const getData = await checkHostAuthentication();
         if (getData.data.isAuthenticated && getData.status === 200) {
           dispatch(
             setAuth({
@@ -148,6 +151,7 @@ const App = () => {
               role: decryptVisibility,
             })
           );
+        }
         }
       }
     } catch (error) {

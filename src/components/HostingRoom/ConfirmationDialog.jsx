@@ -7,7 +7,7 @@ const ConfirmationDialog = ({ isOpen, onClose, onConfirm, message }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl transform transition-all max-w-lg w-full">
         <div className="p-6">
-          <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-3">Confirm Action</h3>
+          <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-3">Confirm Your Desicion</h3>
           <p className="text-sm text-gray-500 dark:text-gray-300">{message}</p>
         </div>
         <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">

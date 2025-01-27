@@ -33,7 +33,6 @@ function UserRoom() {
     try {
       const res = await getUserTeam();
       const userTeam = res.data.data.updateTeamTier.find((team) => team.hostId === id);
-      console.log(res.data.data);
       setTeam(userTeam); // Filter data for the current host
     } catch (error) {
       console.error("Error fetching team data:", error);
