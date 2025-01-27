@@ -99,3 +99,7 @@ export const updateTierForHost = ({teamId, newTier}) => api.patch("/host/joined-
 export const getUpdateTierFor = () => api.get("/host/joined-teams");
 
 export const deleteRoomCard = (id) => api.delete(`/host/delete-room/${id}`);
+
+export const checkUsername = (username) => api.get(`/user/check-username?username=${username}`);
+
+export const checkHostUsername = (username) => api.get(`/host/check-username?username=${username}`);

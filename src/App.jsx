@@ -29,11 +29,9 @@ import { decryptData } from "./Store/crypto";
 import UserRoom from "./UserRoom/UserRoom";
 import StorageChangeHandler from "./AutoLogout";
 import Loader from "./components/Loader/Loader";
-import * as Sentry from "@sentry/react";
 import ManageTeams from "./Pages/ManageTeams/ManageTeams";
 import UserProfile from "./Pages/Profile/UserProfile/UserProfile";
 import HostProfile from "./Pages/Profile/HostProfile/HostProfile";
-import OTPEmail from "./components/otp";
 import Wallet from "./Pages/wallet/Wallet";
 
 const ProtectedRoute = ({ element }) => {
@@ -84,6 +82,7 @@ const router = createBrowserRouter(
         path="/profile"
         element={<ProtectedRoute element={<Profile />} />}
       />
+
       <Route path="/arena" element={<ProtectedRoute element={<Arena />} />} />
       <Route
         path="/arena/:id"
@@ -105,10 +104,7 @@ const router = createBrowserRouter(
         path="/manage-teams"
         element={<ProtectedRoute element={<ManageTeams />} />}
       />
-      <Route
-        path="/otp"
-        element={<ProtectedRoute element={<OTPEmail />} />}
-      />
+
       <Route path="/wallet" element={<ProtectedRoute element={<Wallet />} />} />
     </>
   )
@@ -142,16 +138,16 @@ const App = () => {
           );
         }
       } else {
-        if(decryptVisibility){
+        if (decryptVisibility) {
           const getData = await checkHostAuthentication();
-        if (getData.data.isAuthenticated && getData.status === 200) {
-          dispatch(
-            setAuth({
-              isAuth: getData.data.isAuthenticated,
-              role: decryptVisibility,
-            })
-          );
-        }
+          if (getData.data.isAuthenticated && getData.status === 200) {
+            dispatch(
+              setAuth({
+                isAuth: getData.data.isAuthenticated,
+                role: decryptVisibility,
+              })
+            );
+          }
         }
       }
     } catch (error) {
@@ -164,11 +160,12 @@ const App = () => {
   }, []);
 
   return (
-    <Sentry.ErrorBoundary fallback={<div>An error occurred!</div>}>
+   
+      <>
       <StorageChangeHandler />
       <Toaster position="top-right" toastOptions={{ duration: 5000 }} />
       <RouterProvider router={router} />
-    </Sentry.ErrorBoundary>
+      </>
   );
 };
 
