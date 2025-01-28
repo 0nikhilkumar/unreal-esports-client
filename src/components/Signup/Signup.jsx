@@ -85,12 +85,13 @@ const Signup = () => {
     }
   };
 
-  const checkUsernameAvailability = async (username, isHost = false) => {
+  const checkUsernameAvailability = async (username) => {
     try {
+      const isHost = activeForm === "host";
       const response = isHost
         ? await checkHostUsername(username)
         : await checkUsername(username);
-
+  
       if (response.status === 200) {
         setUsernameStatus({
           message: response.data.success
@@ -122,26 +123,26 @@ const Signup = () => {
       }
     }
   };
-
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-
+  
     validateField(name, value);
-
+  
     if (name === "username") {
       setUsernameStatus((prev) => ({ ...prev, checking: true }));
-
+  
       if (typingTimeout) {
         clearTimeout(typingTimeout);
       }
-
+  
       const newTimeout = setTimeout(async () => {
         if (value.length > 0) {
-          await checkUsernameAvailability(value, activeForm === "host");
+          await checkUsernameAvailability(value);
         } else {
           setUsernameStatus({
             message: "",
@@ -150,7 +151,7 @@ const Signup = () => {
           });
         }
       }, 500);
-
+  
       setTypingTimeout(newTimeout);
     }
   };

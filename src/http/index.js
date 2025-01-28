@@ -102,4 +102,4 @@ export const deleteRoomCard = (id) => api.delete(`/host/delete-room/${id}`);
 
 export const checkUsername = (username) => api.get(`/user/check-username?username=${username}`);
 
-export const checkHostUsername = (username) => api.get(`/host/check-username?username=${username}`);
+export const checkHostUsername = (username) => api.get(`/host/check-host-username?username=${username}`);
