@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect } from "react"
 import { X, ArrowRight } from "lucide-react"
+import toast from "react-hot-toast"
+import { sendOtpToHostEmailForForgotPassword, verifyOtpForForgotPassword } from "../../../http"
+import { useSelector } from "react-redux"
 
-const OTPVerificationPopup = ({ setResetPassword, onVerify }) => {
+const OTPVerificationPopup = ({ setResetPassword, email, setOtpp }) => {
   const [otp, setOtp] = useState(["", "", "", ""])
-  const inputRefs = useRef([])
+  const inputRefs = useRef([]);
+  const {role} = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (inputRefs.current[0]) {
@@ -36,8 +40,8 @@ const OTPVerificationPopup = ({ setResetPassword, onVerify }) => {
     console.log("Resending OTP...")
   }
 
-  const handleVerify = () => {
-    onVerify(otp.join(""))
+  const handleVerify = async () => {
+    setOtpp(otp.join(""));
   }
 
   return (

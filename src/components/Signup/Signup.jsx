@@ -1,15 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { z } from "zod";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import { Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
 import {
-  signUpHost,
-  signUpUser,
-  checkUsername,
   checkHostUsername,
+  checkUsername,
+  sendOTPToEmail
 } from "../../http";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import OTPVerification from "./OTPVerification";
 
 // Zod validation schemas
@@ -87,6 +86,7 @@ const Signup = () => {
 
   const checkUsernameAvailability = async (username, isHost = false) => {
     try {
+      console.log(isHost);
       const response = isHost
         ? await checkHostUsername(username)
         : await checkUsername(username);
@@ -176,27 +176,29 @@ const Signup = () => {
         return;
       }
 
-      if (!showOTP) {
-        setEmail(formData.email);
-        setShowOTP(true);
-      } else {
+      // if (!showOTP) {
+      //   setEmail(formData.email);
+      //   setShowOTP(true);
+      // } else {
         try {
           let response;
           if (activeForm === "user") {
-            response = await signUpUser(formData);
+            response = await sendOTPToEmail(formData.email, formData.username);
+            console.log(response.data);
           } else {
-            response = await signUpHost(formData);
+            response = await sendOTPToEmail(formData.email, formData.username);
           }
-          if (response.data.statusCode == 201) {
-            toast.success("Registered Successfully");
-            navigate("/login");
+          if (response.data.statusCode == 200) {
+            toast.success("Otp Sent to your email");
+            setShowOTP(true);
           } else {
             toast.error(response.data.data);
+            navigate("/signup");
           }
         } catch (err) {
           toast.error(err.response.data.errors[0]);
         }
-      }
+      // }
     } catch (error) {
       if (error instanceof z.ZodError) {
         error.errors.forEach((err) => {
@@ -444,7 +446,7 @@ const Signup = () => {
                 </p>
               </form>
             ) : (
-              <OTPVerification email={email} onVerified={handleSubmit} setShowOTP={setShowOTP}/>
+              <OTPVerification data={formData} role={activeForm} setShowOTP={setShowOTP}/>
             )}
           </div>
         </div>

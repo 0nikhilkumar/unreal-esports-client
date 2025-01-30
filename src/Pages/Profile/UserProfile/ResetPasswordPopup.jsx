@@ -2,26 +2,61 @@ import React, { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { HiArrowSmRight } from "react-icons/hi";
 import OTPVerificationPopup from "./OTPVerificationPopup";
+import { useSelector } from "react-redux";
+import { forgotHostPassword, forgotPassword, sendOtpToEmailForForgotPassword, sendOtpToHostEmailForForgotPassword, verifyOtpForForgotPassword, verifyOtpForHostForgotPassword } from "../../../http";
+import toast from "react-hot-toast";
 
 const ResetPasswordPopup = ({ setResetPassword }) => {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [oldPassword, setOldPassword] = useState("");
+  const [otp, setOtpp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const { role } = useSelector((state) => state.auth);
+
+  const handleSubmit = async (e) => {
+    console.log("hi");
     e.preventDefault();
     if (step === 1) {
-      // TODO: Send OTP to email
-      setStep(2);
+      // Send OTP to email
+      const response = role === "user" ? await sendOtpToEmailForForgotPassword(email) : await sendOtpToHostEmailForForgotPassword(email);
+      if(response.data.statusCode === 200){
+        toast.success(response.data.message);
+        setStep(2);
+      } else {
+        toast.error(response.data.data);
+      }
+      console.log(response.data);
     } else if (step === 2) {
-      // TODO: Verify OTP
-      setStep(3);
+      // Verify OTP
+      const data = {
+        email,
+        otp
+      };
+
+      console.log(email, otp);
+      const response = await (role === "user" ? verifyOtpForForgotPassword(data) : verifyOtpForHostForgotPassword(data));
+      if(response.data.statusCode === 200){
+        toast.success(response.data.message);
+        setStep(3);
+      } else {
+        toast.error(response.data.data);
+      }
     } else {
-      // TODO: Change password
-      setResetPassword(false);
+      // Change password
+      const data = {
+        email,
+        password: newPassword,
+        confirmPassword
+      };
+      const response = await (role === "user" ? forgotPassword(data): forgotHostPassword(data));
+      if(response.data.statusCode === 200){
+        toast.success(response.data.message);
+        setResetPassword(false);
+      } else {
+        toast.error(response.data.data);
+      }
     }
   };
 
@@ -49,20 +84,10 @@ const ResetPasswordPopup = ({ setResetPassword }) => {
             </div>
           )}
           {step === 2 && (
-            <OTPVerificationPopup setResetPassword={setResetPassword}/>
+            <OTPVerificationPopup email={email} setOtpp={setOtpp} setResetPassword={setResetPassword}/>
           )}
           {step === 3 && (
             <>
-              <div>
-                <label className="block mb-2">Old Password</label>
-                <input
-                  type="password"
-                  value={oldPassword}
-                  onChange={(e) => setOldPassword(e.target.value)}
-                  className="w-full bg-gray-700 text-white p-2 rounded mb-4"
-                  required
-                />
-              </div>
               <div>
                 <label className="block mb-2">New Password</label>
                 <input

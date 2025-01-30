@@ -4,6 +4,13 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      transitionProperty: {
+        'width': 'width',
+        'spacing': 'margin, padding',
+      },
+      transitionDuration: {
+        '300': '300ms',
+      },
       animation: {
         ["infinite-slider"]: "infiniteSlider 20s linear infinite",
         blink: 'blink 3s infinite',

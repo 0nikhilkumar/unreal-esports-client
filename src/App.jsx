@@ -1,7 +1,7 @@
 import Error from "@/components/Error/Error";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -112,6 +112,7 @@ const router = createBrowserRouter(
 
 const App = () => {
   const dispatch = useDispatch();
+  const {isAuth} = useSelector((state)=> state.auth);
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem("_unreal_esports_uuid");
@@ -138,7 +139,7 @@ const App = () => {
           );
         }
       } else {
-        if (decryptVisibility) {
+        if (decryptVisibility && isAuth) {
           const getData = await checkHostAuthentication();
           if (getData.data.isAuthenticated && getData.status === 200) {
             dispatch(

@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import Card from "../components/Card/Card";
 import Loader from "../components/Loader/Loader";
 import { getAllRoomsOfHost, getAllUserJoinedRooms, getUserTeam, userJoinRoom } from "../http/index";
+import Sidebar from "./Sidebar"
 
 function UserRoom() {
   const [selectedButton, setSelectedButton] = useState("T3");
@@ -107,9 +108,11 @@ function UserRoom() {
 
   return (
     <div className="min-h-screen bg-black text-white flex">
-      <div className="text-white">
+      {/* <div className="text-white">
         <Link to={"/joined-rooms"}>Joined Rooms</Link>
-      </div>
+      </div> */}
+
+      <Sidebar/>
       <div className="relative w-full max-w-6xl px-2 py-6 mx-auto">
         <div className="relative w-full h-96 mb-8">
           <div className="absolute inset-0 bg-black opacity-40 rounded-lg"></div>
