@@ -18,8 +18,15 @@ export const signUpHost = (data) => api.post("/host/register", data, { withCrede
 export const loginUser = (data) => api.post("/user/login", data, { withCredentials: true });
 export const loginHost = (data) => api.post("/host/login", data, { withCredentials: true });
 
+
 export const logoutUser = () => api.get("/user/logout", { withCredentials: true });
 export const logoutHost = () => api.get("/host/logout", { withCredentials: true });
+
+export const getUserProfile = () => api.get("/user/get-user-profile");
+export const getHostProfile = () => api.get("/host/get-host-profile");
+
+export const updateUserProfile = (data) => api.patch("/user/update-user-profile", data)
+export const updateHostProfile = (data) => api.patch("/host/update-host-profile", data)
 
 export const createRooms = (data) => api.post("/rooms/create-room", data, {headers: {"Content-Type": "multipart/form-data"},withCredentials: true});
 
@@ -52,6 +59,12 @@ export const createTeam = (teamName, players) => api.post("/user/create-team", {
 export const getUserTeam = () => api.get("/user/get-team");
 
 export const updateUserTeam = (teamName, players) => api.patch("/user/update-team", { teamName, players });
+
+export const updateSocialMedia = (data) => api.patch("/user/update-socialMedia-links", data);
+export const getSocialMedia = () => api.get("/user/get-socialMedia-links");
+
+export const updateHostSocialMedia = (data) => api.patch("/host/update-host-socialMedia-links", data);
+export const getHostSocialMedia = () => api.get("/host/get-host-socialMedia-links");
 
 export const updateUserTeamSlot = (id, teams) => api.patch(`/host/update-slot/${id}`, { teams });
 

@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { getUserTeam } from "../../../http";
-import { FaTwitch, FaYoutube, FaTwitter, FaInstagram, FaTrash } from "react-icons/fa";
-import { SiRiotgames } from "react-icons/si";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { FaEdit, FaSave } from "react-icons/fa";
+import { getUserProfile, getUserTeam, updateUserProfile, updateUserTeam } from "../../../http";
 import ResetPasswordPopup from "./ResetPasswordPopup";
+import SocialMediaLinks from "./SocialMedia";
 
 const UserProfile = () => {
   const [teamMembers, setTeamMembers] = useState([]);
-
   const [avatar, setAvatar] = useState("/images/valo1.jpeg");
   const [editableTeamName, setEditableTeamName] = useState(false);
   const [teamName, setTeamName] = useState("");
   const [resetPassword, setResetPassword] = useState(false);
-  const [teams, setTeams] = useState(null);
   const [firstName, setFirstName] = useState("John");
   const [lastName, setLastName] = useState("Doe");
-  const [contactNo, setContactNo] = useState("+1234567890");
-  const [email, setEmail] = useState("john.doe@example.com");
+  const [contact, setContact] = useState("+1234567890");
+  const [email, setEmail] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [profile, setProfile] = useState();
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -38,7 +37,6 @@ const UserProfile = () => {
     const getTeams = async () => {
       try {
         const res = await getUserTeam();
-        console.log(res.data);
         setTeamMembers(res.data.data.players);
         setTeamName(res.data.data?.teamName || "Team Name");
       } catch (error) {
@@ -49,25 +47,63 @@ const UserProfile = () => {
   }, []);
 
   const toggleEdit = (id) => {
-    setTeamMembers(teamMembers.map(member => 
-      member.id === id ? {...member, isEditing: !member.isEditing} : member
-    ));
-  };
-
-  const handleMemberUpdate = (id, field, value) => {
     setTeamMembers(
       teamMembers.map((member) =>
-        member.id === id ? { ...member, [field]: value } : member
+        member.playerNumber === id ? { ...member, isEditing: !member.isEditing } : member
       )
     );
   };
 
-  
-  
-  // Delete member function
-  const handleDeleteMember = (id) => {
-    setTeamMembers(teamMembers.filter(member => member.id !== id));
+  const handleMemberUpdate = async(id, field, value) => {
+    setTeamMembers(
+      teamMembers.map((member) =>
+        member.playerNumber === id ? { ...member, [field]: value } : member
+      )
+    );
   };
+
+  const updatePlayerMember = async() =>{
+    const res = await updateUserTeam(teamName, teamMembers)
+    if(res.status === 201){
+      toast.success(res.data.message)
+    }
+  }
+
+  // Delete member function
+  // const handleDeleteMember = (id) => {
+  //   setTeamMembers(teamMembers.filter((member) => member.playerNumber !== id));
+  // };
+
+  // Get Profile Details
+
+  const profileDetails = async () => {
+    const res = await getUserProfile();
+    setProfile(res.data.data);
+    setEmail(res.data.data.email);
+    setFirstName(res.data.data.firstName);
+    setLastName(res.data.data.lastName);
+    setContact(res.data.data.contact);
+  };
+
+  // updateProfile
+
+  const updateProfile = async () => {
+    const res = await updateUserProfile({ firstName, lastName, contact });
+    if (res.data.statusCode === 200) {
+      toast.success(res.data.message);
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        firstName,
+        lastName,
+        contact,
+      }));
+      setIsEditing(false);
+    }
+  };
+
+  useEffect(() => {
+    profileDetails();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-800 text-white pb-12">
@@ -84,12 +120,14 @@ const UserProfile = () => {
               />
               <label
                 htmlFor="avatar-upload"
-                className="absolute bottom-0 right-0 bg-indigo-600 p-2 rounded-full cursor-pointer hover:bg-indigo-700 transition-colors shadow-lg">
+                className="absolute bottom-0 right-0 bg-indigo-600 p-2 rounded-full cursor-pointer hover:bg-indigo-700 transition-colors shadow-lg"
+              >
                 <svg
                   className="w-5 h-5"
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor">
+                  stroke="currentColor"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -108,10 +146,15 @@ const UserProfile = () => {
             </div>
             <div>
               <h1 className="text-5xl font-bold tracking-tight mb-2">
-                {firstName} {lastName}
+                {profile?.firstName && profile?.lastName
+                  ? `${profile?.firstName} ${profile?.lastName}`
+                  : profile?.username || "unknown"}
               </h1>
+
               <h1 className="text-lg font-bold tracking-tight mb-2">
-                PlayerName123
+                {profile?.firstName && profile?.lastName
+                  ? profile?.username || "unknown"
+                  : ""}
               </h1>
               <p className="text-md text-indigo-300 mb-4">
                 Professional Valorant Player | Team Captain
@@ -119,7 +162,8 @@ const UserProfile = () => {
               <div className="flex gap-4">
                 <button
                   className="bg-indigo-600 px-6 py-3 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors"
-                  onClick={() => handlePasswordReset()}>
+                  onClick={() => handlePasswordReset()}
+                >
                   Change Password
                 </button>
               </div>
@@ -138,11 +182,27 @@ const UserProfile = () => {
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-700 shadow-xl mb-12">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">Personal Information</h2>
-            <button
+            {/* <button
               onClick={() => setIsEditing(!isEditing)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors">
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
               {isEditing ? "Save" : "Edit"}
-            </button>
+            </button> */}
+            {isEditing ? (
+              <button
+                onClick={() => updateProfile()}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Save
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsEditing(!isEditing)}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Edit
+              </button>
+            )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -183,9 +243,9 @@ const UserProfile = () => {
               </label>
               <input
                 type="tel"
-                value={contactNo}
+                value={contact}
                 readOnly={!isEditing}
-                onChange={(e) => setContactNo(e.target.value)}
+                onChange={(e) => setContact(e.target.value)}
                 className={`w-full p-3 rounded-lg focus:outline-none ${
                   isEditing
                     ? "bg-gray-700 text-white focus:ring-2 focus:ring-indigo-500"
@@ -200,7 +260,7 @@ const UserProfile = () => {
               <input
                 type="email"
                 value={email}
-                readOnly={!isEditing}
+                readOnly
                 onChange={(e) => setEmail(e.target.value)}
                 className={`w-full p-3 rounded-lg focus:outline-none ${
                   isEditing
@@ -255,160 +315,190 @@ const UserProfile = () => {
               </li>
             </ul>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700 shadow-xl">
+          {/* <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700 shadow-xl">
             <h3 className="text-xl font-semibold mb-4">Social Media</h3>
             <div className="grid grid-cols-2 gap-4">
               <a
                 href="#"
-                className="flex items-center text-indigo-300 hover:text-indigo-100 transition-colors">
+                className="flex items-center text-indigo-300 hover:text-indigo-100 transition-colors"
+              >
                 <FaTwitch className="mr-2" /> Twitch
               </a>
               <a
                 href="#"
-                className="flex items-center text-indigo-300 hover:text-indigo-100 transition-colors">
+                className="flex items-center text-indigo-300 hover:text-indigo-100 transition-colors"
+              >
                 <FaYoutube className="mr-2" /> YouTube
               </a>
               <a
                 href="#"
-                className="flex items-center text-indigo-300 hover:text-indigo-100 transition-colors">
+                className="flex items-center text-indigo-300 hover:text-indigo-100 transition-colors"
+              >
                 <FaTwitter className="mr-2" /> Twitter
               </a>
               <a
                 href="#"
-                className="flex items-center text-indigo-300 hover:text-indigo-100 transition-colors">
+                className="flex items-center text-indigo-300 hover:text-indigo-100 transition-colors"
+              >
                 <FaInstagram className="mr-2" /> Instagram
               </a>
               <a
                 href="#"
-                className="flex items-center text-indigo-300 hover:text-indigo-100 transition-colors">
+                className="flex items-center text-indigo-300 hover:text-indigo-100 transition-colors"
+              >
                 <SiRiotgames className="mr-2" /> Riot ID
               </a>
             </div>
-          </div>
+          </div> */}
+          <SocialMediaLinks/>
         </div>
 
         {/* Team Section */}
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-700 shadow-xl">
-  <div className="flex justify-between items-center mb-8">
-    <div className="flex items-center gap-4">
-      {editableTeamName ? (
-        <input
-          type="text"
-          value={teamName}
-          onChange={(e) => setTeamName(e.target.value)}
-          className="bg-gray-700 text-white p-3 rounded-lg text-2xl font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          autoFocus
-        />
-      ) : (
-        <h2 className="text-2xl font-bold">{teamName}</h2>
-      )}
-    </div>
-    <button
-      onClick={() => setEditableTeamName(!editableTeamName)}
-      className={`p-2 rounded transition-colors ${
-        editableTeamName 
-          ? "bg-green-600 hover:bg-green-700" 
-          : "bg-indigo-600 hover:bg-indigo-700"
-      }`}
-    >
-      {editableTeamName ? <FaSave className="w-5 h-5" /> : <FaEdit className="w-5 h-5" />}
-    </button>
-  </div>
-
-  <div className="overflow-x-auto">
-    <table className="w-full">
-      <thead>
-        <tr className="border-b border-gray-700">
-        </tr>
-      </thead>
-      <tbody>
-        {teamMembers.map((member) => (
-          <>
-          {console.log(member)}
-          <tr
-            key={member._id}
-            className="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors">
-            {/* Name Column */}
-            <td className="py-4 px-6">
-              {member.isEditing ? (
+          <div className="flex justify-between items-center mb-8">
+            <div className="flex items-center gap-4">
+              {editableTeamName ? (
                 <input
                   type="text"
-                  value={member.name || ''}
-                  onChange={(e) => handleMemberUpdate(member.id, "name", e.target.value)}
-                  className="bg-gray-700 text-white p-2 rounded w-full"
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                  className="bg-gray-700 text-white p-3 rounded-lg text-2xl font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  autoFocus
                 />
               ) : (
-                member.name || '-'
+                <h2 className="text-2xl font-bold">{teamName}</h2>
               )}
-            </td>
-
-            {/* IGN Column */}
-            <td className="py-4 px-6">
-              {member.isEditing ? (
-                <input
-                  type="text"
-                  value={member.ign || ''}
-                  onChange={(e) => handleMemberUpdate(member.id, "ign", e.target.value)}
-                  className="bg-gray-700 text-white p-2 rounded w-full"
-                />
+            </div>
+            <button
+              onClick={() => setEditableTeamName(!editableTeamName)}
+              className={`p-2 rounded transition-colors ${
+                editableTeamName
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-indigo-600 hover:bg-indigo-700"
+              }`}
+            >
+              {editableTeamName ? (
+                <FaSave className="w-5 h-5" onClick={ ()=>updatePlayerMember()} />
               ) : (
-                member.ign || '-'
+                <FaEdit className="w-5 h-5" />
               )}
-            </td>
+            </button>
+          </div>
 
-            {/* IGID Column */}
-            <td className="py-4 px-6">
-              {member.isEditing ? (
-                <input
-                  type="text"
-                  value={member.igid || ''}
-                  onChange={(e) => handleMemberUpdate(member.id, "igid", e.target.value)}
-                  className="bg-gray-700 text-white p-2 rounded w-full"
-                />
-              ) : (
-                member.igid || '-'
-              )}
-            </td>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-700"></tr>
+              </thead>
+              <tbody>
+                {teamMembers.map((member) => (
+                  <tr
+                    key={member.playerNumber}
+                    className="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors"
+                  >
+                    {/* Name Column */}
+                    <td className="py-4 px-6">
+                      {member.isEditing ? (
+                        <input
+                          type="text"
+                          value={member.playerNumber || ""}
+                          onChange={(e) =>
+                            handleMemberUpdate(
+                              member.playerNumber,
+                              "playerNumber",
+                              e.target.value
+                            )
+                          }
+                          className="bg-gray-700 text-white p-2 rounded w-full"
+                        />
+                      ) : (
+                        member.playerNumber || "-"
+                      )}
+                    </td>
 
-            {/* Email Column */}
-            <td className="py-4 px-6">
-              {member.isEditing ? (
-                <input
-                  type="email"
-                  value={member.email || ''}
-                  onChange={(e) => handleMemberUpdate(member.id, "email", e.target.value)}
-                  className="bg-gray-700 text-white p-2 rounded w-full"
-                />
-              ) : (
-                member.email || '-'
-              )}
-            </td>
+                    {/* IGN Column */}
+                    <td className="py-4 px-6">
+                      {member.isEditing ? (
+                        <input
+                          type="text"
+                          value={member.ign || ""}
+                          onChange={(e) =>
+                            handleMemberUpdate(member.playerNumber, "ign", e.target.value)
+                          }
+                          className="bg-gray-700 text-white p-2 rounded w-full"
+                        />
+                      ) : (
+                        member.ign || "-"
+                      )}
+                    </td>
+                    {/* IGID Column */}
+                    <td className="py-4 px-6">
+                      {member.isEditing ? (
+                        <input
+                          type="text"
+                          value={member.igId || ""}
+                          onChange={(e) =>
+                            handleMemberUpdate(
+                              member.playerNumber,
+                              "igId",
+                              e.target.value
+                            )
+                          }
+                          className="bg-gray-700 text-white p-2 rounded w-full"
+                        />
+                      ) : (
+                        member.igId || "-"
+                      )}
+                    </td>
 
-            <td className="py-4 px-6 flex gap-2">
-              <button
-                onClick={() => toggleEdit(member.id)}
-                className={`p-2 rounded ${
-                  member.isEditing
-                    ? "bg-green-600 hover:bg-green-700"
-                    : "bg-indigo-600 hover:bg-indigo-700"
-                } transition-colors`}
-              >
-                {member.isEditing ? <FaSave className="w-5 h-5" /> : <FaEdit className="w-5 h-5" />}
-              </button>
-              <button
-                onClick={() => handleDeleteMember(member._id)}
-                className="p-2 rounded bg-red-600 hover:bg-red-700 transition-colors"
-              >
-                <FaTrash className="w-5 h-5" />
-              </button>
-            </td>
-          </tr>
-          </>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</div>
+                    {/* Email Column */}
+                    <td className="py-4 px-6">
+                      {member.isEditing ? (
+                        <input
+                          type="email"
+                          value={member.email || ""}
+                          onChange={(e) =>
+                            handleMemberUpdate(
+                              member.playerNumber,
+                              "email",
+                              e.target.value
+                            )
+                          }
+                          className="bg-gray-700 text-white p-2 rounded w-full"
+                        />
+                      ) : (
+                        member.email || "-"
+                      )}
+                    </td>
+
+                    <td className="py-4 px-6 flex gap-2">
+                      <button
+                        onClick={() => toggleEdit(member.playerNumber)}
+                        className={`p-2 rounded ${
+                          member.isEditing
+                            ? "bg-green-600 hover:bg-green-700"
+                            : "bg-indigo-600 hover:bg-indigo-700"
+                        } transition-colors`}
+                      >
+                        {member.isEditing ? (
+                          <FaSave className="w-5 h-5" onClick={ ()=>updatePlayerMember()} />
+                        ) : (
+                          <FaEdit className="w-5 h-5" />
+                        )}
+                      </button>
+                      {/* <button
+                        onClick={() => handleDeleteMember(member.playerNumber)}
+                        className="p-2 rounded bg-red-600 hover:bg-red-700 transition-colors"
+                      >
+                        <FaTrash className="w-5 h-5" />
+                      </button> */}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
