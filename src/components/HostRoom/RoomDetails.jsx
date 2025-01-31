@@ -10,11 +10,18 @@ import {
   FaToggleOn,
 } from "react-icons/fa";
 import { TbBadgesFilled } from "react-icons/tb";
+import { BsFillMapFill } from "react-icons/bs";
 import InfoItem from "./InfoItem";
 import StatusBadge from "./StatusBadge";
 import { MdTimer } from "react-icons/md";
 import { useParams } from "react-router-dom";
-import { toggleStatus } from "../../socket";
+import {
+  leaveRoom,
+  onlineUsers,
+  socketInit,
+  toggleStatus,
+  updatedStatus,
+} from "../../socket";
 import { updateStatus } from "../../http";
 
 const animatedBorderStyle = `
@@ -61,8 +68,22 @@ const animatedBorderStyle = `
 
 function RoomDetails({ data }) {
   const [timer, setTimer] = useState(null);
+  // const [socketStatus, setSocketStatus] = useState("")
   const [toggleData, setToggleData] = useState(data.status || "Open");
-  const {id} = useParams()
+  const [onlineUserCount, setOnlineUserCount] = useState(0);
+  const { id } = useParams();
+  const socket = socketInit();
+
+  useEffect(() => {
+    const socket = socketInit(id);
+    onlineUsers((count) => {
+      setOnlineUserCount(count);
+    });
+
+    return () => {
+      leaveRoom(id);
+    };
+  }, [id]);
 
   useEffect(() => {
     setToggleData(data.status || "Open");
@@ -72,12 +93,26 @@ function RoomDetails({ data }) {
     try {
       setToggleData(newStatus);
       const res = await updateStatus(id, newStatus);
-      // socket.emit("statusUpdated", {id,newStatus});
-      toggleStatus({id,newStatus})
+      socket.emit("statusUpdated", { id, newStatus });
+      toggleStatus({ id, newStatus });
     } catch (error) {
       console.error("Error updating status:", error);
     }
   };
+
+  useEffect(() => {
+    socketInit();
+
+    // Listen for 'statusUpdated' event
+    const handleStatusUpdate = (data) => {
+      if (data.id === id) {
+        setToggleData(data.newStatus);
+      }
+      console.log("room details", data);
+    };
+    // Attach the socket listener
+    updatedStatus(handleStatusUpdate);
+  }, [id]);
 
   useEffect(() => {
     if (data.time && data.time <= 30 * 60) {
@@ -162,15 +197,18 @@ function RoomDetails({ data }) {
           />
 
           <InfoItem
-            icon={<MdTimer />}
-            label="Timer"
-            value={timer !== null ? formatTime(timer) : "Room start not yet"}
+            icon={<BsFillMapFill />}
+            label="Map"
+            value={data.gameMap || "Erangle"}
           />
         </div>
 
         {/* Status and Loading Dots */}
         <div className="flex justify-between items-center">
+          <div className="flex gap-2">
           <StatusBadge status={toggleData} />
+          <StatusBadge onlineUserCount={onlineUserCount} />
+          </div>
           <div className="flex space-x-2">
             {[0, 1, 2].map((index) => (
               <FaCircle

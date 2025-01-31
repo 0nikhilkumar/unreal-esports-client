@@ -1,31 +1,35 @@
 import React, { useState } from "react";
 import { CgProfile } from "react-icons/cg";
-import { HiMiniSpeakerWave, HiMiniSpeakerXMark } from "react-icons/hi2";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { logoutHost, logoutUser } from "../../http";
 import { setAuth } from "../../Store/authSlice";
 import toast from "react-hot-toast";
 
-function Navbar({ toggleAudio, isMuted }) {
+function Navbar() {
+  
   const [hamburger, setHamburger] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
-
-  const {isAuth, role} = useSelector((state)=> state.auth);
+  const { isAuth, role } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+
 
   async function handleLogout() {
     let response;
-    if(role === "user"){
+
+    if (role === "user") {
       response = await logoutUser();
-      toast.success(response.data.message)
-    }
-    else {
+      toast.success(response.data.message || "Successfully logged out");
+    } else {
       response = await logoutHost();
-      toast.success(response.data.message)
+      toast.success(response.data.message || "Successfully logged out");
     }
-    dispatch(setAuth({user: response.data.data}));
+    if (response.data.statusCode === 200) {
+      localStorage.removeItem("_unreal_esports_uuid");
+      localStorage.removeItem("_unreal_esports_visibliltiy")
+    }
+    dispatch(setAuth({ user: null }));
   }
 
   return (
@@ -43,7 +47,7 @@ function Navbar({ toggleAudio, isMuted }) {
             className="w-12 h-12 sm:w-16 sm:h-16 rounded-e-full"
           />
           <h1 className="text-[0.8rem] sm:text-lg font-semibold uppercase -ml-2">
-            Unreal <span>Esports</span>
+            Unreal<span>Esports</span>
           </h1>
         </Link>
       </div>
@@ -56,16 +60,15 @@ function Navbar({ toggleAudio, isMuted }) {
         <Link to="/about" className="hover:text-gray-300 transition-colors">
           About
         </Link>
-        <Link
+        {/* <Link
           to="/tournament"
-          className="hover:text-gray-300 transition-colors"
-        >
+          className="hover:text-gray-300 transition-colors">
           Tournament
-        </Link>
+        </Link> */}
         <a href="#faq" className="hover:text-gray-300 transition-colors">
           FAQ
         </a>
-
+        
         {isAuth ? (
           role === "user" ? (
             <div className="relative">
@@ -92,13 +95,6 @@ function Navbar({ toggleAudio, isMuted }) {
                     Rooms
                   </Link>
                   <Link
-                    to="/tournament"
-                    className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}
-                  >
-                    Tournament
-                  </Link>
-                  <Link
                     to="/leaderboard"
                     className="block py-2 px-4 hover:bg-gray-700"
                     onClick={() => setShowDropdown(false)}
@@ -114,7 +110,7 @@ function Navbar({ toggleAudio, isMuted }) {
                 </div>
               )}
             </div>
-          ) : (
+          ) : role === "host" ? (
             <div className="relative">
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
@@ -132,24 +128,24 @@ function Navbar({ toggleAudio, isMuted }) {
                     Profile
                   </Link>
                   <Link
-                    to="/hosting-tournament"
-                    className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}
-                  >
-                    Create Tournament
-                  </Link>
-                  <Link
                     to="/hosting-room"
                     className="block py-2 px-4 hover:bg-gray-700"
                     onClick={() => setShowDropdown(false)}
                   >
                     Create Room
                   </Link>
+                  <Link
+                    to="/manage-teams"
+                    className="block py-2 px-4 hover:bg-gray-700"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Manage Teams
+                  </Link>
                   <div
                     className="block py-2 px-4 hover:bg-gray-700 cursor-pointer"
                     onClick={() => {
                       setShowDropdown(false);
-                      handleLogout()
+                      handleLogout();
                     }}
                   >
                     Logout
@@ -157,27 +153,22 @@ function Navbar({ toggleAudio, isMuted }) {
                 </div>
               )}
             </div>
+          ) : (
+            <Link
+              to="/login"
+              className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold rounded-lg py-2 px-6 text-lg shadow-lg hover:shadow-xl transform transition-transform duration-300 hover:scale-105"
+            >
+              Login
+            </Link>
           )
         ) : (
           <Link
             to="/login"
-            className="cursor-pointer bg-blue-600 rounded py-2 px-4 text-lg"
+            className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold rounded-lg py-2 px-6 text-lg shadow-lg hover:shadow-xl transform transition-transform duration-300 hover:scale-105"
           >
             Login
           </Link>
         )}
-
-
-        <div
-          className="cursor-pointer bg-blue-600 rounded py-2 px-3 text-2xl"
-          onClick={toggleAudio}
-        >
-          {isMuted ? (
-            <HiMiniSpeakerWave />
-          ) : (
-            <HiMiniSpeakerXMark className="text-white" />
-          )}
-        </div>
       </div>
 
       {/* Hamburger Button */}
@@ -210,13 +201,12 @@ function Navbar({ toggleAudio, isMuted }) {
         >
           About
         </Link>
-        <Link
+        {/* <Link
           to="/tournament"
           className="hover:text-gray-300"
-          onClick={() => setHamburger(false)}
-        >
+          onClick={() => setHamburger(false)}>
           Tournament
-        </Link>
+        </Link> */}
         <a
           href="#faq"
           className="hover:text-gray-300"
@@ -224,20 +214,6 @@ function Navbar({ toggleAudio, isMuted }) {
         >
           FAQ
         </a>
-
-        <button
-          onClick={() => {
-            toggleAudio();
-            setHamburger(false);
-          }}
-          className="hover:text-gray-300 cursor-pointer bg-blue-600 rounded py-[0.4rem] px-7 text-xl"
-        >
-          {isMuted ? (
-            <HiMiniSpeakerWave />
-          ) : (
-            <HiMiniSpeakerXMark className="text-white" />
-          )}
-        </button>
 
         {isAuth ? (
           <div className="relative">
@@ -273,7 +249,10 @@ function Navbar({ toggleAudio, isMuted }) {
             )}
           </div>
         ) : (
-          <Link to="/login" className="block py-2 px-4 bg-blue-600 rounded">
+          <Link
+            to="/login"
+            className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold rounded-lg py-2 px-6 text-lg shadow-lg hover:shadow-xl transform transition-transform duration-300 hover:scale-105"
+          >
             Login
           </Link>
         )}

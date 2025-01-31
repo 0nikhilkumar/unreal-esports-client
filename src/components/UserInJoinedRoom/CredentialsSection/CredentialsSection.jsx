@@ -1,104 +1,85 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { User, Key, Shield } from 'lucide-react';
-import CredentialsCard from '../CredentailsCard/CredentailsCard';
-import { getRoomIdp } from '../../../http';
-import { useParams } from 'react-router-dom';
 import { LuReplace } from "react-icons/lu";
-import { receiveIdp, socketInit, updatedStatus } from '../../../socket';
-import CryptoJS from 'crypto-js';
+import CredentialsCard from "../CredentailsCard/CredentailsCard";
+import { getRoomDetails, getRoomIdp, getUserTeam } from "../../../http";
+import {
+  receiveIdp,
+  socketInit,
+  updatedStatus,
+  onlineUsers,
+  leaveRoom,
+  receiveSlotUpdate,
+} from "../../../socket";
+import CryptoJS from "crypto-js";
 
-const CredentialsSection = ({presentRoomData}) => {
+const CredentialsSection = ({ presentRoomData }) => {
   const [room, setRoom] = useState(null);
   const [status, setStatus] = useState(presentRoomData?.status);
-  console.log(room)
-  
   const [idpData, setIdpData] = useState({
     id: "*****",
     pass: "*****",
   });
-
-  console.log(presentRoomData)
-
-  const [socketIdp, setSocketIdp] = useState(null); // For storing socket updates
+  const [onlineUserCount, setOnlineUserCount] = useState(0);
   const [isTimeToShow, setIsTimeToShow] = useState(false);
+  const [userSlots, setUserSlots] = useState({}); // Keeps track of all team slots
+  const [myTeamId, setMyTeamId] = useState(null);
 
   const { id } = useParams();
 
   const encryptData = (data) => {
-    return CryptoJS.AES.encrypt(JSON.stringify(data), 'your-secret-key').toString();
+    return CryptoJS.AES.encrypt(
+      JSON.stringify(data),
+      "your-secret-key"
+    ).toString();
   };
 
   const decryptData = (ciphertext) => {
-    const bytes = CryptoJS.AES.decrypt(ciphertext, 'your-secret-key');
+    const bytes = CryptoJS.AES.decrypt(ciphertext, "your-secret-key");
     return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
   };
 
   const saveIdpToLocalStorage = (roomId, idp) => {
     const encryptedIdp = encryptData(idp);
-    localStorage.setItem(`idp_${roomId}`, encryptedIdp);
+    const expiryTime = new Date().getTime() + 24 * 60 * 60 * 1000; // 1 day
+    const dataWithExpiry = {
+      encryptedIdp,
+      expiry: expiryTime,
+    };
+    localStorage.setItem(`idp_${roomId}`, JSON.stringify(dataWithExpiry));
   };
 
   const getIdpFromLocalStorage = (roomId) => {
-    const encryptedIdp = localStorage.getItem(`idp_${roomId}`);
+    let encryptedIdp = localStorage.getItem(`idp_${roomId}`);
     if (encryptedIdp) {
-      return decryptData(encryptedIdp);
+      encryptedIdp = JSON.parse(encryptedIdp);
+      if (encryptedIdp.expiry < new Date().getTime()) {
+        localStorage.removeItem(`idp_${roomId}`);
+        return null;
+      }
+      return decryptData(encryptedIdp.encryptedIdp);
     }
     return null;
   };
 
-  const getUpdatedIdp = async () => {
-    try {
+  const updateIdpDisplay = (newStatus, newIdp = null) => {
+    if (newStatus === "Live") {
+      setIsTimeToShow(true);
+      if (newIdp) {
+        setIdpData({
+          id: newIdp.id || "N/A",
+          pass: newIdp.password || "N/A",
+        });
+        
+      } else {
         const localIdp = getIdpFromLocalStorage(id);
         if (localIdp) {
-            setIdpData(localIdp);
-            setRoom({ ...room, idp: localIdp });
-            const currentTime = new Date();
-            const roomTime = new Date();
-            roomTime.setHours(presentRoomData?.time.split(':')[0], presentRoomData?.time.split(':')[1], 0);
-            const timeDifference = (currentTime - roomTime) / 60000; // difference in minutes
-            if (timeDifference >= 10) {
-                // Show password
-                console.log("Password: ", localIdp.password);
-            }
-        } else {
-            const res = await getRoomIdp(id);
-            const roomData = res.data.data;
-            setRoom(roomData);
-            saveIdpToLocalStorage(id, roomData.idp);
-            checkTimeRemaining(new Date().setHours(roomData?.time.split(':')[0], roomData?.time.split(':')[1], 0));
-            const currentTime = new Date();
-            const roomTime = new Date();
-            roomTime.setHours(roomData?.time.split(':')[0], roomData?.time.split(':')[1], 0);
-            const timeDifference = (currentTime - roomTime) / 60000; // difference in minutes
-            if (timeDifference >= 10) {
-                // Show password
-                console.log("Password: ", roomData.idp.password);
-            }
+          setIdpData({
+            id: localIdp.id || "N/A",
+            pass: localIdp.password || "N/A",
+          });
         }
-    } catch (error) {
-        console.error(error);
-    }
-};
-
-
-  const checkTimeRemaining = (startTime) => {
-    const now = new Date();
-    const timeDifference = (new Date(startTime) - now) / 1000 / 60;
-
-    if (timeDifference <= 10) {
-      setIsTimeToShow(true);
-      if (socketIdp) {
-        // Use socket IDP if available
-        setIdpData({
-          id: socketIdp.id || "N/A",
-          pass: socketIdp.password || "N/A",
-        });
-      } else if (room?.idp) {
-        // Fallback to room IDP
-        setIdpData({
-          id: room.idp.id || "N/A",
-          pass: room.idp.password || "N/A",
-        });
       }
     } else {
       setIsTimeToShow(false);
@@ -106,45 +87,94 @@ const CredentialsSection = ({presentRoomData}) => {
     }
   };
 
+  const socketSlotData = async () => {
+    try {
+      const res = await getUserTeam();
+      const teamId = res.data.data._id;
+      setMyTeamId(teamId); // Ensure the user's team ID is stored
+    } catch (error) {
+      console.error("Error fetching team data:", error);
+    }
+  };
+
+  const getSlotDataFromBackend = () =>{
+    presentRoomData?.joinedTeam?.map((team)=>{
+      setUserSlots((prev)=>{
+        const updatedSlots = { ...prev, [team.teamId._id]: team.slot };
+        return updatedSlots
+      })
+    })
+  }
+
   useEffect(() => {
-      // socketInit();
-  
-      // Listen for 'statusUpdated' event
-      const handleStatusUpdate = (data) => {
-        if (data.id === presentRoomData?._id) {
-          
+    socketSlotData();
+    getSlotDataFromBackend()
+  }, []);
+
+  useEffect(() => {
+    const getAllRoomData = async () => {
+      try {
+        const getRoomData = await getRoomDetails(id);
+        const newStatus = getRoomData.data.data.status;
+        setStatus(newStatus);
+        updateIdpDisplay(newStatus);
+
+        if (newStatus !== "Live") {
+          const res = await getRoomIdp(id);
+          const roomData = res.data.data;
+          setRoom(roomData);
+          saveIdpToLocalStorage(id, roomData.idp);
         }
-      };
-  
-      // Attach the socket listener
-      updatedStatus(handleStatusUpdate);
-  
-    }, [presentRoomData?._id]);
-
-  useEffect(() => {
-    getUpdatedIdp(); 
-    const interval = setInterval(() => {
-      if (presentRoomData?.time) {
-        checkTimeRemaining(new Date().setHours(presentRoomData.time.split(':')[0], room.time.split(':')[1], 0));
+      } catch (error) {
+        console.error("Error fetching room data:", error);
       }
-    }, 60000); // Check every 1 minute
+    };
 
-    return () => clearInterval(interval); // Cleanup interval
-  }, [room?.time]); // Trigger when room time changes
+    getAllRoomData();
+  }, [id]);
 
-  socketInit()
   useEffect(() => {
+    socketInit(id);
+
     receiveIdp((data) => {
-      setSocketIdp(data); // Store socket data
-      if (data) {
-        setIdpData({
-          id: data.id || "N/A",
-          pass: data.password || "N/A",
-        });
+      if (data.roomId === id) {
         saveIdpToLocalStorage(id, data);
+        updateIdpDisplay(status, data);
       }
     });
-  }, []); // Run only once when the component mounts
+
+    receiveSlotUpdate((data) => {
+      console.log("Received slot update:", data);
+
+      
+      if(status === "Live"){
+        if (data.roomId === id) {
+          setUserSlots((prev) => {
+            // Add or update the slot for the specific team
+            const updatedSlots = { ...prev, [data.teamId]: data.slot };
+            console.log("Updated User Slots:", updatedSlots);
+            return updatedSlots;
+          });
+        }
+      }
+    });
+
+    updatedStatus((data) => {
+      if (data.id === id) {
+        const newStatus = data.newStatus;
+        setStatus(newStatus);
+        updateIdpDisplay(newStatus);
+      }
+    });
+
+    onlineUsers((count) => {
+      setOnlineUserCount(count);
+    });
+
+    return () => {
+      leaveRoom(id);
+    };
+  }, [id, status]);
 
   return (
     <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300">
@@ -159,19 +189,26 @@ const CredentialsSection = ({presentRoomData}) => {
         <CredentialsCard
           Icon={<User />}
           label="Room Id"
-          value={idpData.id || room?.idp?.id}
+          value={idpData.id}
+          status={status}
           isCopyEnabled={isTimeToShow}
         />
         <CredentialsCard
           Icon={<Key />}
           label="Room Password"
-          value={idpData.pass || room?.idp?.password} 
+          value={idpData.pass}
+          status={status}
           isCopyEnabled={isTimeToShow}
         />
         <CredentialsCard
           Icon={<LuReplace className="text-2xl" />}
           label="Slot"
-          value={isTimeToShow ? room?.slot || "N/A" : "*****"}
+          value={
+            userSlots[myTeamId] // Display the slot for the current user's team
+              ? `${userSlots[myTeamId]}`
+              : "*****"
+          }
+          status={status}
         />
       </div>
 

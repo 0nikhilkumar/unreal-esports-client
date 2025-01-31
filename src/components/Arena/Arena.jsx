@@ -6,6 +6,7 @@ import { dummyData } from "./dummyData";
 import { LuAsterisk } from "react-icons/lu";
 import {createTeam, getPreferredNameData, getUserTeam, updateUserTeam} from "../../http/index"
 import toast from "react-hot-toast";
+import Loader from "../Loader/Loader";
 
 const UserRoom = () => {
   // const [teamLogo, setTeamLogo] = useState(null);
@@ -15,6 +16,7 @@ const UserRoom = () => {
   const [teamCreated, setTeamCreated] = useState(false);
   const [allPreferredHostData, setAllPreferredHostData] = useState([]);
   const searchInputRef = useRef(null);
+  const [loading , setLoading] = useState(false)
   const [players, setPlayers] = useState([
     { playerNumber: 1, igId: "", ign: "", email: "" },
     { playerNumber: 2, igId: "", ign: "", email: "" },
@@ -29,6 +31,7 @@ const UserRoom = () => {
   const filteredData = allPreferredHostData.filter((card) =>
     card.preferredName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -70,8 +73,16 @@ const UserRoom = () => {
   // }
 
   const fetchHostRooms = async () => {
-    const res = await getPreferredNameData();
-    setAllPreferredHostData(res.data.data);
+    setLoading(true)
+    try {
+      const res = await getPreferredNameData();
+      setAllPreferredHostData(res.data.data);
+    } catch (error) {
+      console.log(error)
+    }
+    finally{
+      setLoading(false)
+    }
   };
 
   useEffect(()=> {
@@ -109,10 +120,11 @@ const UserRoom = () => {
   };
 
   const getTeam = async () => {
+    setLoading(true)
     try {
       const res = await getUserTeam();
+      console.log(res.data);
       if (res.data.data !== null) {
-        console.log(res.data);
         setTeamName(res.data.data.teamName);
   
         // Ensure the players array has 5 players, filling missing entries with defaults
@@ -136,6 +148,9 @@ const UserRoom = () => {
       }
     } catch (error) {
       console.error("Error fetching team data:", error);
+    }
+    finally{
+      setLoading(false)
     }
   };
 
@@ -173,6 +188,8 @@ const UserRoom = () => {
     e.preventDefault();
     createUserTeam(teamName, players);
   };
+
+  if(loading) return <Loader/>
 
   return (
     <div className="bg-black text-white flex flex-col items-center p-8">

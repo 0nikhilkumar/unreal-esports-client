@@ -1,60 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
-import { GoPlus } from "react-icons/go";
-import { CiSearch } from "react-icons/ci";
-import { LuAsterisk } from "react-icons/lu";
-import { FaGamepad, FaUsers } from "react-icons/fa";
-import { Link, NavLink } from "react-router-dom";
-import { createRooms, getHostRooms } from "../../http";
 import toast from "react-hot-toast";
-
-const dummyData = [
-  {
-    id: 1,
-    roomName: "Room 1",
-    date: "2024-12-14",
-    time: "10:00 AM",
-    maxTeam: 10,
-    image: "/images/Games/BGMI.webp",
-    prizePool: 500,
-    status: "Open",
-    gameName: "Valorant",
-    tier: "T3",
-  },
-  {
-    id: 2,
-    roomName: "Room 2",
-    date: "2024-12-15",
-    time: "12:00 PM",
-    maxTeam: 8,
-    image: "/images/Games/BGMI.webp",
-    prizePool: 300,
-    status: "Live",
-    gameName: "CS:GO",
-    tier: "T2",
-  },
-  {
-    id: 3,
-    roomName: "Room 3",
-    date: "2024-12-16",
-    time: "2:00 PM",
-    maxTeam: 12,
-    image: "/images/Games/BGMI.webp",
-    prizePool: 1000,
-    status: "Closed",
-    gameName: "Dota 2",
-    tier: "T1",
-  },
-];
+import { CiSearch } from "react-icons/ci";
+import { FaGamepad, FaUsers } from "react-icons/fa";
+import { GoPlus } from "react-icons/go";
+import { NavLink } from "react-router-dom";
+import { createRooms, deleteRoomCard, getHostRooms } from "../../http";
+import Loader from "../Loader/Loader";
+import { TiDelete } from "react-icons/ti";
+import ConfirmationDialog from './ConfirmationDialog';
 
 function HostingRoom() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTier, setSelectedTier] = useState("T3");
   const searchInputRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [teamName, setTeamName] = useState("");
-  const [teamCreated, setTeamCreated] = useState(false);
   const [players, setPlayers] = useState([]);
   const [refreshData, setRefreshData] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [roomToDelete, setRoomToDelete] = useState(null);
+  const [roomNameToDelete, setRoomNameToDelete] = useState(""); // Added state for room name
   const [formData, setFormData] = useState({
     roomName: "",
     date: "",
@@ -63,11 +28,12 @@ function HostingRoom() {
     prize: "",
     status: "",
     gameName: "",
+    gameMap: "",
     tier: "",
   });
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0] // Get the selected file
+    const file = e.target.files[0]; // Get the selected file
     if (file) {
       setFormData((prevData) => ({
         ...prevData,
@@ -77,6 +43,14 @@ function HostingRoom() {
   };
 
   const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleMapChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
@@ -110,16 +84,12 @@ function HostingRoom() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // setPlayers((prev) => [...prev, formData]);
     console.log("Form Data:", formData);
 
     try {
       const res = await createRooms(formData);
-      console.log("res", res);
-      // console.log(res.data);
       toast.success(res.data.message);
       setRefreshData(!refreshData);
-      console.log(formData)
       setFormData({
         roomName: "",
         date: "",
@@ -129,6 +99,7 @@ function HostingRoom() {
         status: "",
         image: "",
         gameName: "",
+        gameMap: "",
         tier: "",
       });
       toggleModal();
@@ -137,16 +108,47 @@ function HostingRoom() {
     }
   };
 
+  // Add this new function
+  const initiateDeleteRoom = (roomId, roomName) => {
+    setRoomToDelete(roomId);
+    setRoomNameToDelete(roomName);
+    setShowDeleteConfirm(true);
+  };
+
+  // Modify the existing handleDeleteRoom function
+  const handleDeleteRoom = async () => {
+    if (!roomToDelete) return;
+    
+    setLoading(true);
+    try {
+      const res = await deleteRoomCard(roomToDelete);
+      console.log(res.data);
+      setShowDeleteConfirm(false);
+      setRoomToDelete(null);
+      setRoomNameToDelete(null); //Added to clear the room name after deletion
+      setRefreshData(!refreshData);
+      toast.success("Room deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete room");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchedData = async () => {
+    setLoading(true);
     const res = await getHostRooms();
-    setPlayers(res.data.message[0].roomDetails);
+    if (res.data.statusCode === 200) {
+      setPlayers(res.data.message[0].roomDetails);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchedData();
   }, [refreshData]);
 
-
+  if (loading) return <Loader />;
 
   return (
     <div className="min-h-screen bg-black text-white p-5">
@@ -207,60 +209,73 @@ function HostingRoom() {
       {/* Room Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         {filteredData.map((room, index) => (
-          
           <div
             key={index}
             className="bg-gray-800 rounded-xl overflow-hidden transition-transform hover:transform hover:scale-105"
           >
-            <NavLink to={`/hosting-room/${room._id}`}>
-            <img
-              src={room.image}
-              alt={room.roomName}
-              className="w-full h-48 object-cover"
-              onError={(e) => {
-                e.target.src =
-                  "https://images.unsplash.com/photo-1542751371-adc38448a05e";
-              }} 
-            />
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-2">{room.roomName}</h3>
-              <div className="flex justify-start gap-x-5 items-center flex-wrap">
-                <div className="flex items-center gap-2 text-gray-300 mb-2">
-                  <FaUsers />
-                  <span>Date: {room.date}</span>
+            <div className="relative">
+              <span>
+                <TiDelete
+                  className="absolute top-2 right-2 text-2xl cursor-pointer"
+                  onClick={() => initiateDeleteRoom(room._id, room.roomName)}
+                />
+              </span>
+              
+
+              <NavLink to={`/hosting-room/${room._id}`}>
+                <img
+                  src={room.image || "/placeholder.svg"}
+                  alt={room.roomName}
+                  className="w-full h-48 object-cover"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://images.unsplash.com/photo-1542751371-adc38448a05e";
+                  }}
+                />{" "}
+                <div className="p-6">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-bold mb-2">{room.roomName}</h3>
+                    <div className="text-sm mb-2 bg-white text-black rounded px-3 py-1">
+                      {room.gameMap || "Erangle"}
+                    </div>
+                  </div>
+                  <div className="flex justify-start gap-x-5 items-center flex-wrap">
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaUsers />
+                      <span>Date: {room.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaUsers />
+                      <span>Time: {room.time}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaUsers />
+                      <span>Prize: {room.prize}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaUsers />
+                      <span>Capacity: {room.maxTeam}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <FaGamepad />
+                      <span>{room.gameName}</span>
+                    </div>
+                  </div>
+                  <div
+                    className={`inline-block px-3 py-1 rounded-full text-sm ${
+                      room.status === "Open" ||
+                      room.status === "Registration Open" ||
+                      room.status === "Coming Soon"
+                        ? "bg-green-500/20 text-green-500"
+                        : "bg-red-500/20 text-red-500"
+                    }`}
+                  >
+                    {room.status}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-gray-300 mb-2">
-                  <FaUsers />
-                  <span>Time: {room.time}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-300 mb-2">
-                  <FaUsers />
-                  <span>Prize: {room.prize}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-300 mb-2">
-                  <FaUsers />
-                  <span>Capacity: {room.maxTeam}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-300 mb-2">
-                  <FaGamepad />
-                  <span>{room.gameName}</span>
-                </div>
-              </div>
-              <div
-                className={`inline-block px-3 py-1 rounded-full text-sm ${
-                  room.status === "Open" ||
-                  room.status === "Registration Open" ||
-                  room.status === "Coming Soon"
-                    ? "bg-green-500/20 text-green-500"
-                    : "bg-red-500/20 text-red-500"
-                }`}
-              >
-                {room.status}
-              </div>
+              </NavLink>
             </div>
-            </NavLink>
           </div>
-          
         ))}
       </div>
 
@@ -311,7 +326,7 @@ function HostingRoom() {
                 {/* Form fields */}
                 <div className="grid gap-4 mb-10 grid-cols-2 ">
                   {/* Room Name */}
-                  <div className="col-span-2">
+                  <div className="col-span-1">
                     <label
                       htmlFor="roomName"
                       className="block mb-2 text-lg text-start font-medium text-gray-900 dark:text-white"
@@ -328,6 +343,36 @@ function HostingRoom() {
                       placeholder="Enter Room Name"
                       required
                     />
+                  </div>
+                  {/* Map */}
+                  <div className="col-span-1">
+                    <label
+                      htmlFor="Map"
+                      className="block mb-2 text-lg text-start font-medium text-gray-900 dark:text-white"
+                    >
+                      Map
+                    </label>
+                    <select
+                      name="gameMap"
+                      value={formData.gameMap}
+                      onChange={handleMapChange}
+                      required
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    >
+                      <option>Select</option>
+                      <option aria-required value="Erangel">
+                        Erangel
+                      </option>
+                      <option aria-required value="Miramar">
+                        Miramar
+                      </option>
+                      <option aria-required value="Vikendi">
+                        Vikendi
+                      </option>
+                      <option aria-required value="Sanhok">
+                        Sanhok
+                      </option>
+                    </select>
                   </div>
 
                   {/* Date */}
@@ -508,8 +553,15 @@ function HostingRoom() {
       </div>
 
       {/*  */}
+      <ConfirmationDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteRoom}
+        message={`Are you sure you want to delete the room "${roomNameToDelete}"?`}
+      />
     </div>
   );
 }
 
 export default HostingRoom;
+

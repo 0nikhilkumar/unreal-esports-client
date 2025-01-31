@@ -1,56 +1,108 @@
-import React, { useState, useEffect } from 'react';
-import { Save } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Save } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { hostGetLeaderboardData, updateLeaderboardApi } from "../../http";
+import toast from "react-hot-toast";
 
-const INITIAL_TEAMS = Array.from({ length: 5 }, (_, index) => ({
-  id: index + 1,
-  teamName: 'Nik',
-  finishes: 0,
-  placePts: 0,
-  total: 0,
-}));
-
-function Leaderboard() {
-  const [teams, setTeams] = useState(INITIAL_TEAMS);
+const Leaderboard = ({ inRoomTeam }) => {
+  const [teams, setTeams] = useState([]);
   const [editingCell, setEditingCell] = useState(null);
+  const { id } = useParams();
 
   useEffect(() => {
-    const savedData = localStorage.getItem('leaderboardData');
-    if (savedData) {
-      setTeams(JSON.parse(savedData));
-    }
-  }, []);
+    const fetchLeaderboardData = async () => {
+      try {
+        const res = await hostGetLeaderboardData(id);
+        if (
+          res.data.leaderboard.leaderboardData &&
+          Array.isArray(res.data.leaderboard.leaderboardData)
+        ) {
+          const updatedTeams = inRoomTeam.map((team) => {
+            const backendData = res.data.leaderboard.leaderboardData.find(
+              (item) => item.teamId === team.teamId._id
+            );
+            return {
+              id: team.teamId._id,
+              teamName: team.teamId?.teamName || "Unknown Team",
+              finishes: backendData ? backendData.finishes : 0,
+              placePts: backendData ? backendData.placePts : 0,
+              total: backendData ? backendData.total : 0,
+            };
+          });
+          setTeams(updatedTeams);
+        } else {
+          // If no backend data, initialize with inRoomTeam data
+          const initialTeams = inRoomTeam.map((team) => ({
+            id: team.teamId._id,
+            teamName: team.teamId?.teamName || "Unknown Team",
+            finishes: 0,
+            placePts: 0,
+            total: 0,
+          }));
+          setTeams(initialTeams);
+        }
+      } catch (error) {
+        console.error("Error fetching leaderboard data:", error);
+        // Initialize with inRoomTeam data if fetch fails
+        const initialTeams = inRoomTeam.map((team) => ({
+          id: team.teamId._id,
+          teamName: team.teamId?.teamName || "Unknown Team",
+          finishes: 0,
+          placePts: 0,
+          total: 0,
+        }));
+        setTeams(initialTeams);
+      }
+    };
+
+    fetchLeaderboardData();
+  }, [id, inRoomTeam]);
 
   const handleScoreChange = (teamId, field, value) => {
     const numValue = parseInt(value) || 0;
-    setTeams(teams.map(team => {
-      if (team.id === teamId) {
-        const updatedTeam = { ...team, [field]: numValue };
-        updatedTeam.total = updatedTeam.finishes + updatedTeam.placePts;
-        return updatedTeam;
-      }
-      return team;
-    }));
+    setTeams(
+      teams.map((team) => {
+        if (team.id === teamId) {
+          const updatedTeam = { ...team, [field]: numValue };
+          updatedTeam.total = updatedTeam.finishes + updatedTeam.placePts;
+          return updatedTeam;
+        }
+        return team;
+      })
+    );
   };
 
-  const saveToLocalStorage = () => {
-    localStorage.setItem('leaderboardData', JSON.stringify(teams));
-  };
-
-  const handleSubmit = () => {
-    const isComplete = teams.every(team => team.teamName && (team.finishes > 0 || team.placePts > 0));
+  const handleSubmit = async () => {
+    const isComplete = teams.every(
+      (team) => team.teamName && (team.finishes > 0 || team.placePts > 0)
+    );
     if (isComplete) {
-      saveToLocalStorage();
-      alert('Leaderboard data has been saved successfully!');
-    } else {
-      alert('Please fill in all team data before submitting.');
+      // Create the array of objects with required properties
+      const leaderboardData = teams.map((team) => ({
+        teamId: team.id,
+        finishes: team.finishes,
+        placePts: team.placePts,
+        total: team.total,
+      }));
+      try {
+        // Send the data to the backend
+        const response = await updateLeaderboardApi(id, leaderboardData);
+        if (response.status === 200) {
+          toast.success("Leaderboard data has been saved successfully!");
+        }
+      } catch (error) {
+        toast.error("There was an error sending the data to the backend.");
+      }
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl sm:text-4xl font-bold text-center mb-4 sm:mb-8">Esports Leaderboard</h1>
-        
+        <h1 className="text-2xl sm:text-4xl font-bold text-center mb-4 sm:mb-8">
+          Esports Leaderboard
+        </h1>
+
         <div className="bg-gray-800 rounded-lg shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[600px]">
@@ -58,31 +110,42 @@ function Leaderboard() {
                 <tr className="bg-gray-700">
                   <th className="px-4 sm:px-6 py-4 text-left">Team Name</th>
                   <th className="px-4 sm:px-6 py-4 text-center">Finishes</th>
-                  <th className="px-4 sm:px-6 py-4 text-center">Place Points</th>
+                  <th className="px-4 sm:px-6 py-4 text-center">
+                    Place Points
+                  </th>
                   <th className="px-4 sm:px-6 py-4 text-center">Total</th>
-                  <th className="px-4 sm:px-6 py-4 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {teams.map((team) => (
                   <tr key={team.id} className="border-t border-gray-700">
                     <td className="px-4 sm:px-6 py-4 text-sm sm:text-base">
-                      <div className="bg-gray-700 rounded px-2 py-1">{team.teamName}</div>
+                      <div className="bg-gray-700 rounded px-2 py-1">
+                        {team.teamName}
+                      </div>
                     </td>
-                    {['finishes', 'placePts'].map((field) => (
-                      <td key={field} className="px-4 sm:px-6 py-4 text-center text-sm sm:text-base">
-                        {editingCell?.teamId === team.id && editingCell?.field === field ? (
+                    {["finishes", "placePts"].map((field) => (
+                      <td
+                        key={field}
+                        className="px-4 sm:px-6 py-4 text-center text-sm sm:text-base"
+                      >
+                        {editingCell?.teamId === team.id &&
+                        editingCell?.field === field ? (
                           <input
                             type="number"
                             value={team[field]}
-                            onChange={(e) => handleScoreChange(team.id, field, e.target.value)}
+                            onChange={(e) =>
+                              handleScoreChange(team.id, field, e.target.value)
+                            }
                             onBlur={() => setEditingCell(null)}
                             autoFocus
                             className="bg-gray-700 rounded px-2 py-1 w-16 sm:w-20 text-center"
                           />
                         ) : (
                           <div
-                            onClick={() => setEditingCell({ teamId: team.id, field })}
+                            onClick={() =>
+                              setEditingCell({ teamId: team.id, field })
+                            }
                             className="cursor-pointer hover:bg-gray-700 rounded py-1"
                           >
                             {team[field]}
@@ -90,15 +153,8 @@ function Leaderboard() {
                         )}
                       </td>
                     ))}
-                    <td className="px-4 sm:px-6 py-4 text-center text-sm sm:text-base">{team.total}</td>
-                    <td className="px-4 sm:px-6 py-4 text-center">
-                      <button
-                        onClick={saveToLocalStorage}
-                        className="text-blue-400 hover:text-blue-300"
-                        title="Save"
-                      >
-                        <Save size={20} />
-                      </button>
+                    <td className="px-4 sm:px-6 py-4 text-center text-sm sm:text-base">
+                      {team.total}
                     </td>
                   </tr>
                 ))}
@@ -118,6 +174,6 @@ function Leaderboard() {
       </div>
     </div>
   );
-}
+};
 
 export default Leaderboard;

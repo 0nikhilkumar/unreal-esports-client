@@ -3,7 +3,8 @@ import Header from '../../../components/UserInJoinedRoom/Header/Header';
 import CredentialsSection from '../../../components/UserInJoinedRoom/CredentialsSection/CredentialsSection';
 import { socketInit, updatedStatus } from '../../../socket';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getRoomDetails } from '../../../http';
+import { getRoomDetails, getUserTeam } from '../../../http';
+import Loader from '../../../components/Loader/Loader';
 
 const Room = () => {
   const [status, setStatus] = useState('Offline');
@@ -12,7 +13,10 @@ const Room = () => {
   const [showClosedMessage, setShowClosedMessage] = useState(false);
   const roomId = useParams().id;
   const navigate = useNavigate();
-  const [isRoomClosed, setIsRoomClosed] = useState(false); // New state to track room closure
+  const [isRoomClosed, setIsRoomClosed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  let length = 0;
+
 
   useEffect(() => {
     socketInit();
@@ -35,27 +39,34 @@ const Room = () => {
   }, [roomId, navigate]);
 
   const getRoom = async () => {
+    setLoading(true)
     const res = await getRoomDetails(roomId);
-    console.log(res.data.data);
-    setPresentRoomData(res.data.data);
+    if(res.data.statusCode === 200){
+      setPresentRoomData(res.data.data);
+      setLoading(false)
+    }
   };
 
   useEffect(() => {
     getRoom();
-  }, []);
+  }, [roomId]);
 
-  const roomStartTime = new Date();
-  roomStartTime.setHours(0, 18, 0);
+  const dateAndTime = `${presentRoomData?.date}T${presentRoomData?.time}:00`;
+  const roomStartTime = new Date(dateAndTime);
+  // roomStartTime.setHours(presentRoomData?.time.split(':')[0], presentRoomData?.time.split(':')[1], 0);
+
 
   useEffect(() => {
-    if (isRoomClosed) return; // Prevent status updates if the room is closed
 
+    if (isRoomClosed) return; // Prevent status updates if the room is closed
+    socketInit()
     const timer = setInterval(() => {
       const currentTime = new Date();
       const diff = roomStartTime - currentTime;
 
       if (diff <= 0) {
         setStatus('Live');
+        // toggleStatus({id:roomId, newStatus:"Live"})
         setTimeRemaining(null);
         clearInterval(timer);
       } else if (diff <= 30 * 60 * 1000) {
@@ -74,6 +85,8 @@ const Room = () => {
     const seconds = Math.floor((ms % 60000) / 1000);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
+
+  if(loading) return <Loader/>
 
   return (
     <div className="min-h-screen w-fit sm:w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">

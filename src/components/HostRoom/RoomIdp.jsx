@@ -1,14 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { getUpdateIdp } from "../../http";
 import toast from "react-hot-toast";
-import {sendIdp, socketInit} from "../../socket";
+import { sendIdp, socketInit, toggleStatus, onlineUsers, leaveRoom } from "../../socket";
 
-function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
+function RoomIdp({ idpData, setIdpData, setGetResponse }) {
   const [isEdit, setIsEdit] = useState(false);
   const [roomId, setRoomId] = useState("");
   const [roomPass, setRoomPass] = useState("");
+  const [onlineUserCount, setOnlineUserCount] = useState(0);
+  const { id } = useParams();
 
-  socketInit()
+  useEffect(() => {
+    const socket = socketInit(id);
+    onlineUsers((count) => {
+      setOnlineUserCount(count);
+    });
+
+    return () => {
+      leaveRoom(id);
+    };
+  }, [id]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -23,10 +36,9 @@ function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
       toast.success("Idp change successfully");
     }
     
-    const updatedData = { id: roomId, password: roomPass };
+    const updatedData = { id: roomId, password: roomPass, roomId: id };
     setIdpData(updatedData);
-    // socket.emit("room-create", updatedData);
-    sendIdp(updatedData)
+    sendIdp(updatedData);
     setIsEdit(false);
   };
 
@@ -36,18 +48,22 @@ function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
     setIsEdit(true);
   };
 
+  const handleToggleStatus = () => {
+    const newStatus = idpData.status === 'active' ? 'inactive' : 'active';
+    const statusData = { roomId: id, status: newStatus };
+    toggleStatus(statusData);
+    setIdpData({ ...idpData, status: newStatus });
+  };
+
   return (
-    <div className="bg-gray-800  rounded-lg shadow-md p-8 w-full mt-5 text-white">
-      {/* Title */}
+    <div className="bg-gray-800 rounded-lg shadow-md p-8 w-full mt-5 text-white">
       <h2 className="text-2xl font-semibold text-center mb-6">
         {!idpData || isEdit ? "Enter Room IDP" : "Room IDP"}
       </h2>
 
-      {/* Form or Display */}
       <div>
         {!idpData || isEdit ? (
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Room ID Input */}
             <input
               type="text"
               placeholder="Room ID"
@@ -56,8 +72,6 @@ function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               aria-label="Room ID"
             />
-
-            {/* Room Password Input */}
             <input
               type="text"
               placeholder="Room Password"
@@ -66,35 +80,26 @@ function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               aria-label="Room Password"
             />
-
-            {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300">
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300"
+            >
               {isEdit ? "Update" : "Submit"}
             </button>
           </form>
         ) : (
           <div className="space-y-4">
-            {/* Edit Button */}
             <button
               onClick={handleEdit}
-              className="mb-4 bg-gray-200 text-gray-800 py-1 px-3 rounded-md hover:bg-gray-300 transition-colors duration-300">
+              className="mb-4 bg-gray-200 text-gray-800 py-1 px-3 rounded-md hover:bg-gray-300 transition-colors duration-300"
+            >
               Edit
             </button>
-
-            {/* Display Room ID */}
             <p className="text-lg">
-              Room ID:{" "}
-              <span className="font-semibold text-blue-500">{idpData.id}</span>
+              Room ID: <span className="font-semibold text-blue-500">{idpData.id}</span>
             </p>
-
-            {/* Display Room Password */}
             <p className="text-lg">
-              Room Password:{" "}
-              <span className="font-semibold text-blue-500">
-                {idpData.password}
-              </span>
+              Room Password: <span className="font-semibold text-blue-500">{idpData.password}</span>
             </p>
           </div>
         )}
@@ -102,4 +107,6 @@ function RoomIdp({ idpData, setIdpData, id, setGetResponse }) {
     </div>
   );
 }
+
 export default RoomIdp;
+

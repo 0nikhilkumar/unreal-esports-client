@@ -5,14 +5,15 @@ import { socketInit, updatedStatus } from "../../socket";
 function Card({ room, joinRoom, joinedRooms }) {
   const [status, setStatus] = useState(room?.status); // Local state for room status
   const isJoined = joinedRooms?.includes(room?._id);
+  const [isRoomFull, setIsRoomFull] = useState(false);
 
-  // useEffect(()=> {
-
-  // }, [status]);
+  useEffect(()=> {
+    if(room.joinedTeam.length >= room.maxTeam) setIsRoomFull(true);
+  }, [])
 
   socketInit(); // Initialize socket once
-  useEffect(() => {
 
+  useEffect(() => {
     // Listen for 'statusUpdated' event
     const handleStatusUpdate = (data) => {
       if (data.id === room._id) {
@@ -21,8 +22,14 @@ function Card({ room, joinRoom, joinedRooms }) {
     };
 
     // Attach the socket listener
-    updatedStatus(handleStatusUpdate)
-  }, [room._id ,status]);
+    updatedStatus(handleStatusUpdate);
+
+    // Cleanup the listener
+    return () => {
+      // Detach the listener on component unmount
+      socketInit().off("statusUpdated", handleStatusUpdate);
+    };
+  }, [room._id, status]);
 
   return (
     <div
@@ -81,17 +88,23 @@ function Card({ room, joinRoom, joinedRooms }) {
             {status}
           </div>
           <button
-            disabled={isJoined}
+            disabled={isJoined || isRoomFull}
             className={`mt-4 ${
-              isJoined ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600"
+              isJoined || isRoomFull
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-blue-600"
             } text-white py-2 px-6 rounded-full hover:${
-              isJoined ? "bg-gray-600" : "bg-blue-700"
+              isJoined || isRoomFull ? "bg-gray-600" : "bg-blue-700"
             } transition-all `}
             onClick={() => {
+              if (isRoomFull) {
+                alert("Room is full. No more teams can join.");
+                return;
+              }
               joinRoom(room?._id);
             }}
           >
-            {isJoined ? "Joined" : "Join Now"}
+            {isRoomFull ? "Full" : isJoined ? "Joined" : "Join Now"}
           </button>
         </div>
       </div>
