@@ -7,7 +7,8 @@ import { NavLink } from "react-router-dom";
 import { createRooms, deleteRoomCard, getHostRooms } from "../../http";
 import Loader from "../Loader/Loader";
 import { TiDelete } from "react-icons/ti";
-import ConfirmationDialog from './ConfirmationDialog';
+import ConfirmationDialog from "./ConfirmationDialog";
+import ImageUpload from "./ImageUpload";
 
 function HostingRoom() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,6 +22,7 @@ function HostingRoom() {
   const [roomToDelete, setRoomToDelete] = useState(null);
   const [roomNameToDelete, setRoomNameToDelete] = useState(""); // Added state for room name
   const [formData, setFormData] = useState({
+    image: "",
     roomName: "",
     date: "",
     time: "",
@@ -91,6 +93,7 @@ function HostingRoom() {
       toast.success(res.data.message);
       setRefreshData(!refreshData);
       setFormData({
+        image: "",
         roomName: "",
         date: "",
         time: "",
@@ -118,7 +121,7 @@ function HostingRoom() {
   // Modify the existing handleDeleteRoom function
   const handleDeleteRoom = async () => {
     if (!roomToDelete) return;
-    
+
     setLoading(true);
     try {
       const res = await deleteRoomCard(roomToDelete);
@@ -220,7 +223,6 @@ function HostingRoom() {
                   onClick={() => initiateDeleteRoom(room._id, room.roomName)}
                 />
               </span>
-              
 
               <NavLink to={`/hosting-room/${room._id}`}>
                 <img
@@ -323,6 +325,8 @@ function HostingRoom() {
                 onSubmit={handleSubmit}
                 encType="multipart/form-data"
               >
+                <ImageUpload />
+
                 {/* Form fields */}
                 <div className="grid gap-4 mb-10 grid-cols-2 ">
                   {/* Room Name */}
@@ -564,4 +568,3 @@ function HostingRoom() {
 }
 
 export default HostingRoom;
-
