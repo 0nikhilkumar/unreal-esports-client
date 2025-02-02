@@ -93,7 +93,6 @@ function HostingRoom() {
       toast.success(res.data.message);
       setRefreshData(!refreshData);
       setFormData({
-        image: "",
         roomName: "",
         date: "",
         time: "",
