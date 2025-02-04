@@ -10,9 +10,6 @@ import Home from '../Home/Home'
 function HomeLayout() {
   return (
     <>
-      {/* <CustomCursor /> */}
-
-      {/* Feedback Navbar */}
       <div>
         <Feedback_Navbar />
         <Home />

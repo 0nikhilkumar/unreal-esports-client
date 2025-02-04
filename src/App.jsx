@@ -112,7 +112,6 @@ const router = createBrowserRouter(
 
 const App = () => {
   const dispatch = useDispatch();
-  const {isAuth} = useSelector((state)=> state.auth);
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem("_unreal_esports_uuid");
