@@ -139,7 +139,7 @@ const App = () => {
           );
         }
       } else {
-        if (decryptVisibility && isAuth) {
+        if (decryptVisibility === "host") {
           const getData = await checkHostAuthentication();
           if (getData.data.isAuthenticated && getData.status === 200) {
             dispatch(

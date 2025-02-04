@@ -7,6 +7,7 @@ const api = axios.create({
     Accept: "application/json",
   },
   withCredentials: true,
+  
 });
 
 export const sendOTPToEmail = (email, username) => api.post("/user/send-otp-to-email", { email, username });
@@ -14,9 +15,9 @@ export const signUpUser = (data) => api.post("/user/signup", data, { withCredent
 
 export const signUpHost = (data) => api.post("/host/register", data, { withCredentials: true });
 
-
-export const loginUser = (data) => api.post("/user/login", data, { withCredentials: true });
-export const loginHost = (data) => api.post("/host/login", data, { withCredentials: true });
+// credentials includes cookies
+export const loginUser = (data) => api.post("/user/login", data, { withCredentials: true, credentails: "include" });
+export const loginHost = (data) => api.post("/host/login", data, { withCredentials: true, credentails: "include" });
 
 
 export const logoutUser = () => api.get("/user/logout", { withCredentials: true });
