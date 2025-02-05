@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { loginHost, loginUser } from "../../http";
-import { socketInit } from "../../socket";
 import { setAuth } from "../../Store/authSlice";
-import { FaRegEye } from "react-icons/fa";
-import { FaRegEyeSlash } from "react-icons/fa";
-import CryptoJS from "crypto-js";
 import { encryptData } from "../../Store/crypto";
 
 const Login = () => {
@@ -142,7 +139,7 @@ async function handleSubmit(e) {
                     value={formData.email}
                     onChange={handleChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="email or username"
+                    placeholder="user@gmail.com"
                     required
                   />
                 </div>
@@ -158,7 +155,7 @@ async function handleSubmit(e) {
                   type={showIcon?"text":"password"}
                   name="password"
                   id="password"
-                  placeholder="••••••••"
+                  placeholder="••••••••••••"
                   value={formData.password}
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"

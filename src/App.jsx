@@ -1,7 +1,7 @@
 import Error from "@/components/Error/Error";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -9,10 +9,12 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
+import StorageChangeHandler from "./AutoLogout";
 import Arena from "./components/Arena/Arena";
 import FeedbackForm from "./components/Feedback Form/FeedbackForm";
 import HostingRoom from "./components/HostingRoom/HostingRoom";
 import HostRoom from "./components/HostRoom/HostRoom";
+import Loader from "./components/Loader/Loader";
 import Login from "./components/Login/Login";
 import Signup from "./components/Signup/Signup";
 import { checkHostAuthentication, checkUserAuthentication } from "./http";
@@ -20,19 +22,17 @@ import About from "./Pages/About/About";
 import HomeLayout from "./Pages/HomeLayout/HomeLayout";
 import JoinedRooms from "./Pages/JoinedRoom/JoinedRooms";
 import Room from "./Pages/JoinedRoom/Room/Room";
+import ManageTeams from "./Pages/ManageTeams/ManageTeams";
 import CreateTournament from "./Pages/PlayArea/CreateTournament/CreateTournament";
 import Leaderboard from "./Pages/PlayArea/Leaderboard/Leaderboard";
+import HostProfile from "./Pages/Profile/HostProfile/HostProfile";
+import UserProfile from "./Pages/Profile/UserProfile/UserProfile";
 import CreateRoom from "./Pages/Tournament/CreateRoom/CreateRoom";
 import Tournament from "./Pages/Tournament/Tournament";
+import Wallet from "./Pages/wallet/Wallet";
 import { setAuth } from "./Store/authSlice";
 import { decryptData } from "./Store/crypto";
 import UserRoom from "./UserRoom/UserRoom";
-import StorageChangeHandler from "./AutoLogout";
-import Loader from "./components/Loader/Loader";
-import ManageTeams from "./Pages/ManageTeams/ManageTeams";
-import UserProfile from "./Pages/Profile/UserProfile/UserProfile";
-import HostProfile from "./Pages/Profile/HostProfile/HostProfile";
-import Wallet from "./Pages/wallet/Wallet";
 
 const ProtectedRoute = ({ element }) => {
   const token = localStorage.getItem("_unreal_esports_uuid");
