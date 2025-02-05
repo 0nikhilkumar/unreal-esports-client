@@ -6,44 +6,53 @@ import { logoutHost, logoutUser } from "../../http";
 import { setAuth } from "../../Store/authSlice";
 import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
+import { decryptData } from "../../Store/crypto";
 
 function Navbar() {
-  
   const [hamburger, setHamburger] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isLoading , setIsLoading] = useState(false)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const { isAuth, role } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("_unreal_esports_uuid");
-    if (loggedIn) {
-      setIsLoading(true); 
-      setTimeout(() => setIsLoading(false), 1000); 
-    } else {
-      setIsLoading(false);
+    const encryptVisibility = localStorage.getItem(
+      "_unreal_esports_visibliltiy"
+    );
+    let decryptVisibility;
+    if (encryptVisibility) {
+      decryptVisibility = decryptData(encryptVisibility);
     }
-  }, [isAuth]);
+
+
+    if (["role","host"].includes(decryptVisibility)) {
+      setTimeout(() => {
+        setIsCheckingAuth(false);
+      },400);
+    } else {
+      setIsCheckingAuth(false);
+    }
+  }, []);
 
   async function handleLogout() {
     let response;
-
     if (role === "user") {
       response = await logoutUser();
-      toast.success(response.data.message || "Successfully logged out");
     } else {
       response = await logoutHost();
-      toast.success(response.data.message || "Successfully logged out");
     }
+
+    toast.success(response.data.message || "Successfully logged out");
+
     if (response.data.statusCode === 200) {
       localStorage.removeItem("_unreal_esports_uuid");
-      localStorage.removeItem("_unreal_esports_visibliltiy")
+      localStorage.removeItem("_unreal_esports_visibliltiy");
     }
     dispatch(setAuth({ user: null }));
   }
 
-  if(isLoading){
-    return <Loader/>
+  if (isCheckingAuth) {
+    return <Loader />;
   }
 
   return (
@@ -74,107 +83,66 @@ function Navbar() {
         <Link to="/about" className="hover:text-gray-300 transition-colors">
           About
         </Link>
-        {/* <Link
-          to="/tournament"
-          className="hover:text-gray-300 transition-colors">
-          Tournament
-        </Link> */}
         <a href="#faq" className="hover:text-gray-300 transition-colors">
           FAQ
         </a>
-        
-        {isAuth  ? (
-          role === "user"  ? (
-            <div className="relative">
-              <button
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="text-white text-2xl"
-              >
-                <CgProfile />
-              </button>
-              {showDropdown && (
-                <div className="absolute top-8 right-0 bg-black text-white rounded shadow-lg w-40">
-                  <Link
-                    to="/profile"
-                    className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    to="/arena"
-                    className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}
-                  >
-                    Rooms
-                  </Link>
-                  <Link
-                    to="/leaderboard"
-                    className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}
-                  >
-                    Leaderboard
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="block py-2 px-4 w-full text-left hover:bg-gray-700"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : role === "host"  ? (
-            <div className="relative">
-              <button
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="text-white text-2xl"
-              >
-                <CgProfile />
-              </button>
-              {showDropdown && (
-                <div className="absolute top-8 right-0 bg-black text-white rounded shadow-lg w-40">
-                  <Link
-                    to="/profile"
-                    className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    to="/hosting-room"
-                    className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}
-                  >
-                    Create Room
-                  </Link>
-                  <Link
-                    to="/manage-teams"
-                    className="block py-2 px-4 hover:bg-gray-700"
-                    onClick={() => setShowDropdown(false)}
-                  >
-                    Manage Teams
-                  </Link>
-                  <div
-                    className="block py-2 px-4 hover:bg-gray-700 cursor-pointer"
-                    onClick={() => {
-                      setShowDropdown(false);
-                      handleLogout();
-                    }}
-                  >
-                    Logout
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link
-              to="/login"
-              className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold rounded-lg py-2 px-6 text-lg shadow-lg hover:shadow-xl transform transition-transform duration-300 hover:scale-105"
+
+        {isAuth ? (
+          <div className="relative">
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="text-white text-2xl"
             >
-              Login
-            </Link>
-          )
+              <CgProfile />
+            </button>
+            {showDropdown && (
+              <div className="absolute top-8 right-0 bg-black text-white rounded shadow-lg w-40">
+                <Link
+                  to="/profile"
+                  className="block py-2 px-4 hover:bg-gray-700"
+                >
+                  Profile
+                </Link>
+                {role === "user" ? (
+                  <>
+                    <Link
+                      to="/arena"
+                      className="block py-2 px-4 hover:bg-gray-700"
+                    >
+                      Rooms
+                    </Link>
+                    <Link
+                      to="/leaderboard"
+                      className="block py-2 px-4 hover:bg-gray-700"
+                    >
+                      Leaderboard
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/hosting-room"
+                      className="block py-2 px-4 hover:bg-gray-700"
+                    >
+                      Create Room
+                    </Link>
+                    <Link
+                      to="/manage-teams"
+                      className="block py-2 px-4 hover:bg-gray-700"
+                    >
+                      Manage Teams
+                    </Link>
+                  </>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="block py-2 px-4 w-full text-left hover:bg-gray-700"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <Link
             to="/login"
@@ -194,83 +162,101 @@ function Navbar() {
       </button>
 
       {/* Mobile Navbar */}
-      <div
-        className={`absolute top-0 left-0 w-full ${
-          hamburger ? "bg-black" : "bg-transparent"
-        } bg-opacity-100 text-white flex flex-col items-center py-5 space-y-5 md:hidden z-40 transform transition-transform duration-300 ease-in-out ${
-          hamburger ? "translate-y-16" : "-translate-y-full"
-        }`}
-      >
-        <Link
-          to="/"
-          className="hover:text-gray-300"
-          onClick={() => setHamburger(false)}
-        >
-          Home
-        </Link>
-        <Link
-          to="/about"
-          className="hover:text-gray-300"
-          onClick={() => setHamburger(false)}
-        >
-          About
-        </Link>
-        {/* <Link
-          to="/tournament"
-          className="hover:text-gray-300"
-          onClick={() => setHamburger(false)}>
-          Tournament
-        </Link> */}
-        <a
-          href="#faq"
-          className="hover:text-gray-300"
-          onClick={() => setHamburger(false)}
-        >
-          FAQ
-        </a>
-
-        {isAuth ? (
-          <div className="relative">
-            <button
-              onClick={() => setShowDropdown(!showDropdown)}
-              className="block py-2 px-4 text-white text-2xl"
-            >
-              <CgProfile />
-            </button>
-            {showDropdown && (
-              <div className="absolute top-8 right-0 bg-black text-white rounded shadow-lg w-40">
-                <Link
-                  to="/profile"
-                  className="block py-2 px-4 hover:bg-gray-700"
-                  onClick={() => setShowDropdown(false)}
-                >
-                  Profile
-                </Link>
-                <Link
-                  to="/leaderboard"
-                  className="block py-2 px-4 hover:bg-gray-700"
-                  onClick={() => setShowDropdown(false)}
-                >
-                  Leaderboard
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="block py-2 px-4 w-full text-left hover:bg-gray-700"
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
+      {hamburger && (
+        <div className="absolute top-16 left-0 w-full bg-black text-white flex flex-col items-center py-5 space-y-5 md:hidden z-40">
           <Link
-            to="/login"
-            className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold rounded-lg py-2 px-6 text-lg shadow-lg hover:shadow-xl transform transition-transform duration-300 hover:scale-105"
+            to="/"
+            className="hover:text-gray-300"
+            onClick={() => setHamburger(false)}
           >
-            Login
+            Home
           </Link>
-        )}
-      </div>
+          <Link
+            to="/about"
+            className="hover:text-gray-300"
+            onClick={() => setHamburger(false)}
+          >
+            About
+          </Link>
+          <a
+            href="#faq"
+            className="hover:text-gray-300"
+            onClick={() => setHamburger(false)}
+          >
+            FAQ
+          </a>
+
+          {isAuth ? (
+            <div className="relative">
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="block py-2 px-4 text-white text-2xl"
+              >
+                <CgProfile />
+              </button>
+              {showDropdown && (
+                <div className="absolute top-8 right-0 bg-black text-white rounded shadow-lg w-40">
+                  <Link
+                    to="/profile"
+                    className="block py-2 px-4 hover:bg-gray-700"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Profile
+                  </Link>
+                  {role === "user" ? (
+                    <>
+                      <Link
+                        to="/arena"
+                        className="block py-2 px-4 hover:bg-gray-700"
+                        onClick={() => setShowDropdown(false)}
+                      >
+                        Rooms
+                      </Link>
+                      <Link
+                        to="/leaderboard"
+                        className="block py-2 px-4 hover:bg-gray-700"
+                        onClick={() => setShowDropdown(false)}
+                      >
+                        Leaderboard
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/hosting-room"
+                        className="block py-2 px-4 hover:bg-gray-700"
+                        onClick={() => setShowDropdown(false)}
+                      >
+                        Create Room
+                      </Link>
+                      <Link
+                        to="/manage-teams"
+                        className="block py-2 px-4 hover:bg-gray-700"
+                        onClick={() => setShowDropdown(false)}
+                      >
+                        Manage Teams
+                      </Link>
+                    </>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="block py-2 px-4 w-full text-left hover:bg-gray-700"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold rounded-lg py-2 px-6 text-lg shadow-lg hover:shadow-xl transform transition-transform duration-300 hover:scale-105"
+            >
+              Login
+            </Link>
+          )}
+        </div>
+      )}
     </nav>
   );
 }
