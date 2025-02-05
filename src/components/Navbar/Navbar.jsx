@@ -1,19 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { logoutHost, logoutUser } from "../../http";
 import { setAuth } from "../../Store/authSlice";
 import toast from "react-hot-toast";
+import Loader from "../Loader/Loader";
 
 function Navbar() {
   
   const [hamburger, setHamburger] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-
+  const [isLoading , setIsLoading] = useState(false)
   const { isAuth, role } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    const loggedIn = localStorage.getItem("_unreal_esports_uuid");
+    if (loggedIn) {
+      setIsLoading(true); 
+      setTimeout(() => setIsLoading(false), 1000); 
+    } else {
+      setIsLoading(false);
+    }
+  }, [isAuth]);
 
   async function handleLogout() {
     let response;
@@ -30,6 +40,10 @@ function Navbar() {
       localStorage.removeItem("_unreal_esports_visibliltiy")
     }
     dispatch(setAuth({ user: null }));
+  }
+
+  if(isLoading){
+    return <Loader/>
   }
 
   return (
@@ -69,8 +83,8 @@ function Navbar() {
           FAQ
         </a>
         
-        {isAuth ? (
-          role === "user" ? (
+        {isAuth  ? (
+          role === "user"  ? (
             <div className="relative">
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
@@ -110,7 +124,7 @@ function Navbar() {
                 </div>
               )}
             </div>
-          ) : role === "host" ? (
+          ) : role === "host"  ? (
             <div className="relative">
               <button
                 onClick={() => setShowDropdown(!showDropdown)}

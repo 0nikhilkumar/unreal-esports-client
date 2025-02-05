@@ -2,11 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Squares from "../../Design/Square";
 import DecryptedText from '../../Design/DecryptedText';
-import BlurText from '../../Design/BlurText';
 
 function Home() {
   
-  const [isDark, setIsDark] = useState(false);
   const [direction, setDirection] = useState("diagonal");
   const containerRef = useRef(null);
 
@@ -32,9 +30,7 @@ function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleAnimationComplete = () => {
-    console.log('Animation completed!');
-  };
+  
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-[#0D1717]">
