@@ -42,7 +42,7 @@ const Leaderboard = ({ inRoomTeam }) => {
           setTeams(initialTeams);
         }
       } catch (error) {
-        console.error("Error fetching leaderboard data:", error);
+        // console.error("Error fetching leaderboard data:", error);
         // Initialize with inRoomTeam data if fetch fails
         const initialTeams = inRoomTeam.map((team) => ({
           id: team.teamId._id,
@@ -97,7 +97,7 @@ const Leaderboard = ({ inRoomTeam }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8">
+    <div className="min-h-screen bg-gray-900 text-white p-2  sm:p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl sm:text-4xl font-bold text-center mb-4 sm:mb-8">
           Esports Leaderboard
@@ -105,29 +105,35 @@ const Leaderboard = ({ inRoomTeam }) => {
 
         <div className="bg-gray-800 rounded-lg shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[600px]">
+            <table className="w-full min-w-full">
               <thead>
                 <tr className="bg-gray-700">
-                  <th className="px-4 sm:px-6 py-4 text-left">Team Name</th>
-                  <th className="px-4 sm:px-6 py-4 text-center">Finishes</th>
-                  <th className="px-4 sm:px-6 py-4 text-center">
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm">
+                    Team Name
+                  </th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-center text-xs sm:text-sm">
+                    Finishes
+                  </th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-center text-xs sm:text-sm">
                     Place Points
                   </th>
-                  <th className="px-4 sm:px-6 py-4 text-center">Total</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-center text-xs sm:text-sm">
+                    Total
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {teams.map((team) => (
                   <tr key={team.id} className="border-t border-gray-700">
-                    <td className="px-4 sm:px-6 py-4 text-sm sm:text-base">
-                      <div className="bg-gray-700 rounded px-2 py-1">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm">
+                      <div className="bg-gray-700 rounded px-2 py-1 text-center">
                         {team.teamName}
                       </div>
                     </td>
                     {["finishes", "placePts"].map((field) => (
                       <td
                         key={field}
-                        className="px-4 sm:px-6 py-4 text-center text-sm sm:text-base"
+                        className="px-3 sm:px-6 py-3 sm:py-4 text-center text-xs sm:text-sm"
                       >
                         {editingCell?.teamId === team.id &&
                         editingCell?.field === field ? (
@@ -139,7 +145,7 @@ const Leaderboard = ({ inRoomTeam }) => {
                             }
                             onBlur={() => setEditingCell(null)}
                             autoFocus
-                            className="bg-gray-700 rounded px-2 py-1 w-16 sm:w-20 text-center"
+                            className="bg-gray-700 rounded px-2 py-1 w-12 sm:w-20 text-center"
                           />
                         ) : (
                           <div
@@ -153,7 +159,7 @@ const Leaderboard = ({ inRoomTeam }) => {
                         )}
                       </td>
                     ))}
-                    <td className="px-4 sm:px-6 py-4 text-center text-sm sm:text-base">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-center text-xs sm:text-sm">
                       {team.total}
                     </td>
                   </tr>
@@ -166,7 +172,7 @@ const Leaderboard = ({ inRoomTeam }) => {
         <div className="mt-4 sm:mt-8 flex justify-center">
           <button
             onClick={handleSubmit}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 sm:py-3 sm:px-8 rounded-lg transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 sm:py-3 sm:px-8 rounded-lg transition-colors text-xs sm:text-sm"
           >
             Submit
           </button>

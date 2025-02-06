@@ -162,7 +162,7 @@ function TeamSlotManagement({ inRoomTeam }) {
             </div>
           </div>
         </div>
-        <div className="flex justify-center items-center pt-2">
+        <div className="flex justify-center items-center pt-6">
           <button
             className={`bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 active:from-blue-700 active:to-purple-800 text-white rounded-lg px-6 py-2 tracking-wider shadow-lg transform transition duration-300 hover:scale-105 active:scale-95 font-bold`}
             onClick={handleSubmitData}

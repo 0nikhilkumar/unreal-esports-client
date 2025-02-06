@@ -164,17 +164,26 @@ function ManageTeams() {
                 <table className="w-full border-separate border-spacing-0">
                   <thead>
                     <tr className="text-xs text-gray-400">
-                      <th className="text-left pb-2">IGN</th>
-                      <th className="text-left pb-2">IGID</th>
-                      <th className="text-left pb-2">EMAIL</th>
+                      <th className="text-left pb-2 pr-4">IGN</th>
+                      <th className="text-left pb-2 px-4 border-l border-[#333]">
+                        IGID
+                      </th>
+                      <th className="text-left pb-2 pl-4 border-l border-[#333]">
+                        EMAIL
+                      </th>
                     </tr>
                   </thead>
+
                   <tbody className="text-sm">
                     {team.players.map((player, index) => (
                       <tr key={index} className="border-t border-[#222]">
-                        <td className="py-2">{player.ign}</td>
-                        <td className="py-2">{player.igId}</td>
-                        <td className="py-2">{player.email}</td>
+                        <td className="py-2 pr-4">{player.ign}</td>
+                        <td className="py-2 px-4 border-l border-[#333]">
+                          {player.igId}
+                        </td>
+                        <td className="py-2 pl-4 border-l border-[#333]">
+                          {player.email}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { BsFillMapFill } from "react-icons/bs";
 import {
-  FaGamepad,
-  FaUsers,
   FaCalendarAlt,
-  FaClock,
-  FaTrophy,
   FaCircle,
+  FaClock,
+  FaGamepad,
   FaToggleOff,
   FaToggleOn,
+  FaTrophy,
+  FaUsers,
 } from "react-icons/fa";
 import { TbBadgesFilled } from "react-icons/tb";
-import { BsFillMapFill } from "react-icons/bs";
-import InfoItem from "./InfoItem";
-import StatusBadge from "./StatusBadge";
-import { MdTimer } from "react-icons/md";
 import { useParams } from "react-router-dom";
+import { updateStatus } from "../../http";
 import {
   leaveRoom,
   onlineUsers,
@@ -22,7 +20,8 @@ import {
   toggleStatus,
   updatedStatus,
 } from "../../socket";
-import { updateStatus } from "../../http";
+import InfoItem from "./InfoItem";
+import StatusBadge from "./StatusBadge";
 
 const animatedBorderStyle = `
   @keyframes rotate {
@@ -143,12 +142,12 @@ function RoomDetails({ data }) {
       <style>{animatedBorderStyle}</style>
       <div className="relative bg-gradient-to-br from-gray-800 to-blue-900 rounded-3xl p-8 shadow-2xl">
         {/* Room Image */}
-        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-[90%] h-64 animated-border shadow-xl">
+        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-[90%] md:h-72 animated-border shadow-xl">
           <div className="w-full h-full overflow-hidden rounded-lg shadow-gray-700 shadow-sm">
             <img
               src={data.image}
               alt={data.roomName}
-              className="w-full h-full object-cover"
+              className="object-cover"
               onError={(e) => {
                 e.currentTarget.src =
                   "https://images.unsplash.com/photo-1542751371-adc38448a05e";
@@ -205,10 +204,10 @@ function RoomDetails({ data }) {
         {/* Status and Loading Dots */}
         <div className="flex justify-between items-center">
           <div className="flex gap-2">
-          <StatusBadge status={toggleData} />
-          <StatusBadge onlineUserCount={onlineUserCount} />
+            <StatusBadge status={toggleData} />
+            <StatusBadge onlineUserCount={onlineUserCount} />
           </div>
-          <div className="flex space-x-2">
+          <div className="hidden space-x-2  md:flex">
             {[0, 1, 2].map((index) => (
               <FaCircle
                 key={index}

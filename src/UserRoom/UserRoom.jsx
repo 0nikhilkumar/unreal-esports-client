@@ -130,7 +130,7 @@ function UserRoom() {
                 <button
                   key={tier}
                   onClick={() => !isDisabled && setSelectedButton(tier)}
-                  className={`py-3 md:px-8 px-5 m-auto rounded-full text-white font-bold flex items-center justify-center space-x-2 ${
+                  className={`py-3 md:px-8 md:ml-5 px-5 m-auto rounded-full text-white font-bold flex items-center justify-center space-x-2 ${
                     selectedButton === tier
                       ? "bg-gradient-to-r from-blue-500 to-blue-700 shadow-xl"
                       : "bg-gray-600"

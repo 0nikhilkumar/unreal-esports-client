@@ -75,17 +75,17 @@ function JoinedRooms() {
       {/* Main Content */}
       <div className="relative w-full max-w-6xl px-2 py-6 mx-auto">
         {/* Header Section with Banner Image */}
-        <div className="relative w-full h-96 mb-8">
+        <div className="relative w-full md:h-96 h-72  mb-8">
           <div className="absolute inset-0 bg-black opacity-40 rounded-lg"></div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <h2 className="text-4xl sm:text-6xl font-bold text-white uppercase tracking-wider">
+            <h2 className="text-2xl sm:text-6xl font-bold text-white uppercase tracking-wider">
               Your Joined Rooms
             </h2>
           </div>
         </div>
 
         <div className="flex items-center justify-between flex-wrap">
-          <div className="flex justify-center space-x-6">
+          <div className="flex justify-center space-x-6 md:ml-6">
             <button
               onClick={() => setSelectedButton("T3")}
               className={`py-3 px-8 rounded-full text-white font-bold ${
@@ -116,7 +116,7 @@ function JoinedRooms() {
           </div>
 
           {/* Search Bar */}
-          <div className="w-full max-w-md my-4 relative">
+          <div className="w-full max-w-sm my-10 relative">
             <input
               type="text"
               ref={searchInputRef}

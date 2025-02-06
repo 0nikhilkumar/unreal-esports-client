@@ -52,19 +52,20 @@ const Profile = () => {
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route exact path="/" element={<HomeLayout />} errorElement={<Error />} /> //done👍
+      <Route exact path="/" element={<HomeLayout />} errorElement={<Error />} />{" "}
+      //done👍
       <Route path="/signup" element={<Signup />} /> //done👍
       <Route exact path="/login" element={<Login />} /> //done👍
       <Route exact path="/loader" element={<Loader />} />
       <Route path="/about" element={<ProtectedRoute element={<About />} />} />
       <Route
         path="/tournament"
-        element={<ProtectedRoute element={<Tournament />} />} //no need 
+        element={<ProtectedRoute element={<Tournament />} />} //no need
       />
       <Route path="/feedback" element={<FeedbackForm />} /> //done👍
       <Route
         path="/create-room"
-        element={<ProtectedRoute element={<CreateRoom />} />} // no need 
+        element={<ProtectedRoute element={<CreateRoom />} />} // no need
       />
       <Route
         path="/hosting-room"
@@ -72,42 +73,39 @@ const router = createBrowserRouter(
       />
       <Route
         path="/hosting-tournament"
-        element={<ProtectedRoute element={<CreateTournament />} />} // no need 
+        element={<ProtectedRoute element={<CreateTournament />} />} // no need
       />
       <Route
         path="/leaderboard"
-        element={<ProtectedRoute element={<Leaderboard />} />}
+        element={<ProtectedRoute element={<Leaderboard />} />} // done👍
       />
       <Route
         path="/profile"
-        element={<ProtectedRoute element={<Profile />} />}  //HostingProfile && UserProfile Done👍
+        element={<ProtectedRoute element={<Profile />} />} //HostingProfile && UserProfile Done👍
       />
-
-      <Route path="/arena" element={<ProtectedRoute element={<Arena />} />} /> Done👍
+      <Route path="/arena" element={<ProtectedRoute element={<Arena />} />} />{" "} //Done👍
+      
       <Route
         path="/arena/:id"
-        element={<ProtectedRoute element={<UserRoom />} />}
-      />
+        element={<ProtectedRoute element={<UserRoom />} />} //Done👍
+      />{" "}
+      
       <Route
         path="/hosting-room/:id"
-        element={<ProtectedRoute element={<HostRoom />} />}
+        element={<ProtectedRoute element={<HostRoom />} />} //Done👍
       />
       <Route
         path="/joined-rooms"
-        element={<ProtectedRoute element={<JoinedRooms />} />}
+        element={<ProtectedRoute element={<JoinedRooms />} />} //Done👍
       />
       <Route
         path="/joined-rooms/:id"
-        element={<ProtectedRoute element={<Room />} />}
+        element={<ProtectedRoute element={<Room />} />} //Done👍
       />
-      
-     
-      
       <Route
         path="/manage-teams"
-        element={<ProtectedRoute element={<ManageTeams />} />} //Team Card Pending 
+        element={<ProtectedRoute element={<ManageTeams />} />} // Done👍
       />
-
       <Route path="/wallet" element={<ProtectedRoute element={<Wallet />} />} />
     </>
   )
@@ -163,12 +161,11 @@ const App = () => {
   }, []);
 
   return (
-   
-      <>
+    <>
       <StorageChangeHandler />
       <Toaster position="top-right" toastOptions={{ duration: 5000 }} />
       <RouterProvider router={router} />
-      </>
+    </>
   );
 };
 
