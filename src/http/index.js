@@ -7,7 +7,6 @@ const api = axios.create({
     Accept: "application/json",
   },
   withCredentials: true,
-  
 });
 
 export const sendOTPToEmail = (email, username) => api.post("/user/send-otp-to-email", { email, username });
@@ -16,8 +15,8 @@ export const signUpUser = (data) => api.post("/user/signup", data, { withCredent
 export const signUpHost = (data) => api.post("/host/register", data, { withCredentials: true });
 
 // credentials includes cookies
-export const loginUser = (data) => api.post("/user/login", data, { withCredentials: true, credentails: "include" });
-export const loginHost = (data) => api.post("/host/login", data, { withCredentials: true, credentails: "include" });
+export const loginUser = (data) => api.post("/user/login", data);
+export const loginHost = (data) => api.post("/host/login", data);
 
 
 export const logoutUser = () => api.get("/user/logout", { withCredentials: true });
@@ -95,3 +94,34 @@ export const forgotPassword = (data) => api.patch("/user/forgot-password", data)
 export const sendOtpToHostEmailForForgotPassword = (email) => api.post("/host/send-otp-for-forgot-password", email);
 export const verifyOtpForHostForgotPassword = (data) => api.post("/host/verify-otp-for-forgot-password", data);
 export const forgotHostPassword = (data) => api.patch("/host/forgot-password", data);
+
+
+// Interceptors
+api.interceptors.response.use(
+  (config) => {
+    return config;
+  },
+  async (error) => {
+    const originalRequest = error.config;
+    if (
+      error.response.status === 401 &&
+      originalRequest &&
+      !originalRequest._isRetry
+    ) {
+      originalRequest._isRetry = true;
+      try {
+        console.log(import.meta.env.VITE_API_URL);
+        await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/user/check-auth`, {
+          withCredentials: true,
+        });
+
+        return api.request(originalRequest);
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+    throw error;
+  }
+);
+
+export default api;
