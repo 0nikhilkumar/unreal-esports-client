@@ -86,7 +86,7 @@ const Signup = () => {
 
   const checkUsernameAvailability = async (username) => {
     try {
-      console.log(isHost);
+      // console.log(isHost);
       const isHost = activeForm === "host";
       const response = isHost
         ? await checkHostUsername(username)
@@ -185,7 +185,7 @@ const Signup = () => {
           let response;
           if (activeForm === "user") {
             response = await sendOTPToEmail(formData.email, formData.username);
-            console.log(response.data);
+            // console.log(response.data);
           } else {
             response = await sendOTPToEmail(formData.email, formData.username);
           }

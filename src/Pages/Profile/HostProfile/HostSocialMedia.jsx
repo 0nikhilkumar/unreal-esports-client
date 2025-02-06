@@ -126,7 +126,7 @@ export default function HostSocialMediaLinks() {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto">
+    <div className="w-full mx-auto">
       <div className="bg-gray-900 rounded-xl shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 md:p-6">

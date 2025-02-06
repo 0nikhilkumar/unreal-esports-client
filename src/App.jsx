@@ -52,27 +52,27 @@ const Profile = () => {
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route exact path="/" element={<HomeLayout />} errorElement={<Error />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route exact path="/login" element={<Login />} />
+      <Route exact path="/" element={<HomeLayout />} errorElement={<Error />} /> //done👍
+      <Route path="/signup" element={<Signup />} /> //done👍
+      <Route exact path="/login" element={<Login />} /> //done👍
       <Route exact path="/loader" element={<Loader />} />
       <Route path="/about" element={<ProtectedRoute element={<About />} />} />
       <Route
         path="/tournament"
-        element={<ProtectedRoute element={<Tournament />} />}
+        element={<ProtectedRoute element={<Tournament />} />} //no need 
       />
-      <Route path="/feedback" element={<FeedbackForm />} />
+      <Route path="/feedback" element={<FeedbackForm />} /> //done👍
       <Route
         path="/create-room"
-        element={<ProtectedRoute element={<CreateRoom />} />}
+        element={<ProtectedRoute element={<CreateRoom />} />} // no need 
       />
       <Route
         path="/hosting-room"
-        element={<ProtectedRoute element={<HostingRoom />} />}
+        element={<ProtectedRoute element={<HostingRoom />} />} //done👍
       />
       <Route
         path="/hosting-tournament"
-        element={<ProtectedRoute element={<CreateTournament />} />}
+        element={<ProtectedRoute element={<CreateTournament />} />} // no need 
       />
       <Route
         path="/leaderboard"
@@ -80,7 +80,7 @@ const router = createBrowserRouter(
       />
       <Route
         path="/profile"
-        element={<ProtectedRoute element={<Profile />} />}
+        element={<ProtectedRoute element={<Profile />} />}  //HostingProfile Done👍
       />
 
       <Route path="/arena" element={<ProtectedRoute element={<Arena />} />} />
@@ -100,9 +100,12 @@ const router = createBrowserRouter(
         path="/joined-rooms/:id"
         element={<ProtectedRoute element={<Room />} />}
       />
+      
+     
+      
       <Route
         path="/manage-teams"
-        element={<ProtectedRoute element={<ManageTeams />} />}
+        element={<ProtectedRoute element={<ManageTeams />} />} //Team Card Pending 
       />
 
       <Route path="/wallet" element={<ProtectedRoute element={<Wallet />} />} />

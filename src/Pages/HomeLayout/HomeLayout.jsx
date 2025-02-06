@@ -11,7 +11,7 @@ function HomeLayout() {
   return (
     <>
       <div>
-        <Feedback_Navbar />
+        {/* <Feedback_Navbar /> */}
         <Home />
         <Partners />
         <TournamentComponent />

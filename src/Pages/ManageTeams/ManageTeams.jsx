@@ -1,10 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Camera,
-  ChevronDown,
-  ChevronUp,
-  Search,
-} from "lucide-react";
+import { Camera, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { getUpdateTierFor, updateTierForHost } from "../../http";
 
 function ManageTeams() {
@@ -102,7 +97,11 @@ function ManageTeams() {
     const isExpanded = expandedTeam === team._id;
 
     return (
-      <div className={`rounded-lg overflow-hidden ${isExpanded ? "bg-[#111]" : ""}`}>
+      <div
+        className={`rounded-lg overflow-hidden ${
+          isExpanded ? "bg-[#111]" : ""
+        }`}
+      >
         <div
           className={`p-4 cursor-pointer border border-[#333] ${
             isExpanded ? "bg-[#111]" : "bg-[#1A1A1A]"
@@ -116,7 +115,9 @@ function ManageTeams() {
                 onClick={(e) => handleImageClick(team._id, e)}
               >
                 <img
-                  src={teamLogos[team._id] || team.logo || "/images/logo-fav.png"}
+                  src={
+                    teamLogos[team._id] || team.logo || "/images/logo-fav.png"
+                  }
                   alt={`${team.teamName} logo`}
                   className="w-12 h-12 object-cover rounded-full bg-[#222]"
                 />
@@ -133,10 +134,14 @@ function ManageTeams() {
                 />
               </div>
               <div>
-                <h2 className="font-medium text-lg text-white">{team.teamName}</h2>
+                <h2 className="font-medium text-lg text-white">
+                  {team.teamName}
+                </h2>
                 <div className="flex items-center gap-2 mt-1">
                   <span
-                    className={`px-2 py-0.5 text-xs rounded ${getTierBadgeStyle(currentTier)} text-black font-medium`}
+                    className={`px-2 py-0.5 text-xs rounded ${getTierBadgeStyle(
+                      currentTier
+                    )} text-black font-medium`}
                   >
                     {currentTier}
                   </span>
@@ -197,12 +202,18 @@ function ManageTeams() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-gray-100">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold tracking-tight mb-10">Team Management</h1>
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-1 max-w-xs">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Heading */}
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-6 sm:mb-10">
+          Team Management
+        </h1>
+
+        {/* Filters and Search Bar */}
+        <div className="flex flex-col md:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
+          {/* Tier Filter */}
+          <div className="relative flex-1 max-w-full md:max-w-xs">
             <select
-              className="w-full h-10 px-4 bg-[#1A1A1A] border border-[#333] rounded focus:outline-none focus:border-[#666]"
+              className="w-full h-10 px-3 sm:px-4 bg-[#1A1A1A] border border-[#333] rounded focus:outline-none focus:border-[#666] text-sm sm:text-base"
               value={selectedTier}
               onChange={(e) => setSelectedTier(e.target.value)}
             >
@@ -213,25 +224,30 @@ function ManageTeams() {
             </select>
           </div>
 
+          {/* Search Bar */}
           <div className="relative flex-1">
             <input
               type="text"
               ref={searchInputRef}
               placeholder="Search teams..."
-              className="w-full h-10 px-4 pl-10 bg-[#1A1A1A] border border-[#333] rounded focus:outline-none focus:border-[#666]"
+              className="w-full h-10 px-3 sm:px-4 pl-8 sm:pl-10 bg-[#1A1A1A] border border-[#333] rounded focus:outline-none focus:border-[#666] text-sm sm:text-base"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">
+            <Search
+              className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={16}
+            />
+            <span className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">
               Ctrl + K
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Team Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {filteredTeams.length === 0 ? (
-            <div className="col-span-full text-center text-gray-400">
+            <div className="col-span-full text-center text-gray-400 text-sm sm:text-base">
               Team doesn't exist
             </div>
           ) : (

@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa6";
-import { Link } from "react-router-dom";
-import { dummyData } from "./dummyData";
 import { LuAsterisk } from "react-icons/lu";
-import {createTeam, getPreferredNameData, getUserTeam, updateUserTeam} from "../../http/index"
-import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
+import { createTeam, getPreferredNameData, getUserTeam, updateUserTeam } from "../../http/index";
 import Loader from "../Loader/Loader";
 
 const UserRoom = () => {
@@ -78,7 +77,7 @@ const UserRoom = () => {
       const res = await getPreferredNameData();
       setAllPreferredHostData(res.data.data);
     } catch (error) {
-      console.log(error)
+      
     }
     finally{
       setLoading(false)
@@ -123,7 +122,6 @@ const UserRoom = () => {
     setLoading(true)
     try {
       const res = await getUserTeam();
-      console.log(res.data);
       if (res.data.data !== null) {
         setTeamName(res.data.data.teamName);
   
@@ -155,7 +153,6 @@ const UserRoom = () => {
   };
 
   const handleUpdate = async () => {
-    console.log(players, teamName);
     try {
       const res = await updateUserTeam(teamName, players);
       toast.success(res.data.message);
@@ -173,12 +170,10 @@ const UserRoom = () => {
   const createUserTeam = async (teamName, players) => {
     try {
       const res = await createTeam(teamName, players);
-      console.log(res.data);
       setTeamCreated(true);
       setIsModalOpen(false);
       toast.success(res.data.message);
     } catch (error) {
-      console.log(error);
       setIsModalOpen(true);
       toast.error(error.response.data.data);
     }

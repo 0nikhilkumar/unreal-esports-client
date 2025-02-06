@@ -35,10 +35,10 @@ const OTPVerificationPopup = ({ setResetPassword, email, setOtpp }) => {
     }
   }
 
-  const handleResendOTP = () => {
-    // Implement OTP resend logic here
-    console.log("Resending OTP...")
-  }
+  // const handleResendOTP = () => {
+  //    Implement OTP resend logic here
+  //    console.log("Resending OTP...")
+  // }
 
   const handleVerify = async () => {
     setOtpp(otp.join(""));

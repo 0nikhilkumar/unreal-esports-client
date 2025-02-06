@@ -11,7 +11,7 @@ function JoinedRooms() {
   const [allRooms, setAllRooms] = useState(null);
   const [loading, setLoading] = useState(false)
 
-  console.log(allRooms)
+  // console.log(allRooms)
 
   const searchInputRef = useRef(null);
 
@@ -40,11 +40,11 @@ function JoinedRooms() {
       setAllRooms((prevRooms) =>
         prevRooms.map((room) =>{
           if(room._id === data.id){
-            console.log(data);
+            // console.log(data);
           }
         })
       );
-      console.log(data);
+      // console.log(data);
     };
     updatedStatus(handleStatusUpdate);
   }, []);

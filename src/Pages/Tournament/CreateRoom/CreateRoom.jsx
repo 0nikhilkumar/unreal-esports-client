@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { createRooms } from "../../../http";
 
-const CreateRoom = ({handleRoomAdded}) => {
+const CreateRoom = () => {
   const [formData, setFormData] = useState({
     name: "Apna Room",
     date: "",

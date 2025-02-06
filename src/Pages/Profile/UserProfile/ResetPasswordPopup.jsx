@@ -16,7 +16,6 @@ const ResetPasswordPopup = ({ setResetPassword }) => {
   const { role } = useSelector((state) => state.auth);
 
   const handleSubmit = async (e) => {
-    console.log("hi");
     e.preventDefault();
     if (step === 1) {
       // Send OTP to email
@@ -27,7 +26,6 @@ const ResetPasswordPopup = ({ setResetPassword }) => {
       } else {
         toast.error(response.data.data);
       }
-      console.log(response.data);
     } else if (step === 2) {
       // Verify OTP
       const data = {
@@ -35,7 +33,6 @@ const ResetPasswordPopup = ({ setResetPassword }) => {
         otp
       };
 
-      console.log(email, otp);
       const response = await (role === "user" ? verifyOtpForForgotPassword(data) : verifyOtpForHostForgotPassword(data));
       if(response.data.statusCode === 200){
         toast.success(response.data.message);

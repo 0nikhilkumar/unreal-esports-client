@@ -51,7 +51,7 @@ const OTPVerificationPopup = ({ data, role, setShowOTP }) => {
       const otpString = otp.join("");
       
       // Add debug logging
-      console.log('OTP String before request:', otpString);
+      // console.log('OTP String before request:', otpString);
       
       // Validate OTP
       if (otpString.length !== 4) {
@@ -68,7 +68,7 @@ const OTPVerificationPopup = ({ data, role, setShowOTP }) => {
       };
   
       // Debug log the full request data
-      console.log('Full request data:', JSON.stringify(requestData, null, 2));
+      // console.log('Full request data:', JSON.stringify(requestData, null, 2));
   
       // If it's a host signup, include preferred name
       if (role === "host" && data.preferredName) {
@@ -76,12 +76,12 @@ const OTPVerificationPopup = ({ data, role, setShowOTP }) => {
       }
   
       // Log the actual request being made
-      console.log('Making signup request as:', role);
+      // console.log('Making signup request as:', role);
       
       const response = await (role === "user" ? signUpUser(requestData) : signUpHost(requestData));
       
       // Log the response
-      console.log('Response received:', response);
+      // console.log('Response received:', response);
   
       if (response?.data?.statusCode === 201) {
         toast.success(`${role} registered successfully!`);

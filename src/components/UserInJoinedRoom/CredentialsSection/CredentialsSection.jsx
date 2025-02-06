@@ -144,7 +144,7 @@ const CredentialsSection = ({ presentRoomData }) => {
     });
 
     receiveSlotUpdate((data) => {
-      console.log("Received slot update:", data);
+      // console.log("Received slot update:", data);
 
       
       if(status === "Live"){
@@ -152,7 +152,7 @@ const CredentialsSection = ({ presentRoomData }) => {
           setUserSlots((prev) => {
             // Add or update the slot for the specific team
             const updatedSlots = { ...prev, [data.teamId]: data.slot };
-            console.log("Updated User Slots:", updatedSlots);
+            // console.log("Updated User Slots:", updatedSlots);
             return updatedSlots;
           });
         }

@@ -108,7 +108,6 @@ function RoomDetails({ data }) {
       if (data.id === id) {
         setToggleData(data.newStatus);
       }
-      console.log("room details", data);
     };
     // Attach the socket listener
     updatedStatus(handleStatusUpdate);

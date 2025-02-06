@@ -17,7 +17,7 @@ export default function MatchCard({ match, isOpen, onToggle }) {
       setLeaderboardTeamData(apiData || match.joinedTeam); 
     } catch (error) {
       // console.log("Error fetching leaderboard data:");
-      console.log("ERROR: fetching data",error)
+      // console.log("ERROR: fetching data",error)
     } finally {
       setLoading(false);
     }
