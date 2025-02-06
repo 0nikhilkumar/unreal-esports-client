@@ -113,8 +113,8 @@ function UserRoom() {
       </div> */}
 
       <Sidebar/>
-      <div className="relative w-full max-w-6xl px-2 py-6 mx-auto">
-        <div className="relative w-full h-96 mb-8">
+      <div className="relative w-full px-2 py-6 mx-auto">
+        <div className="relative w-full md:h-96 h-60 mb-8">
           <div className="absolute inset-0 bg-black opacity-40 rounded-lg"></div>
           <div className="absolute inset-0 flex items-center justify-center">
             <h2 className="text-4xl sm:text-6xl font-bold text-white uppercase tracking-wider">
@@ -130,7 +130,7 @@ function UserRoom() {
                 <button
                   key={tier}
                   onClick={() => !isDisabled && setSelectedButton(tier)}
-                  className={`py-3 px-8 rounded-full text-white font-bold flex items-center justify-center space-x-2 ${
+                  className={`py-3 md:px-8 px-5 m-auto rounded-full text-white font-bold flex items-center justify-center space-x-2 ${
                     selectedButton === tier
                       ? "bg-gradient-to-r from-blue-500 to-blue-700 shadow-xl"
                       : "bg-gray-600"

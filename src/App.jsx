@@ -83,7 +83,7 @@ const router = createBrowserRouter(
         element={<ProtectedRoute element={<Profile />} />}  //HostingProfile && UserProfile Done👍
       />
 
-      <Route path="/arena" element={<ProtectedRoute element={<Arena />} />} />
+      <Route path="/arena" element={<ProtectedRoute element={<Arena />} />} /> Done👍
       <Route
         path="/arena/:id"
         element={<ProtectedRoute element={<UserRoom />} />}
