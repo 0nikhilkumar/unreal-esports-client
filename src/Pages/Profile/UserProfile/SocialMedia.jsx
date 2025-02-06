@@ -12,7 +12,7 @@ export default function SocialMediaLinks() {
   const [errors, setErrors] = useState({
     youtube: "",
     twitter: "",
-    instagram: "",
+    instagram: "", 
   });
   
   const [isEditing, setIsEditing] = useState(false);
@@ -118,7 +118,7 @@ export default function SocialMediaLinks() {
   };
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="w-full mx-auto">
       <div className="bg-gray-900 rounded-xl shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6">

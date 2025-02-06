@@ -26,6 +26,7 @@ const ResetPasswordPopup = ({ setResetPassword }) => {
       } else {
         toast.error(response.data.data);
       }
+      // console.log(response.data);
     } else if (step === 2) {
       // Verify OTP
       const data = {
@@ -33,6 +34,7 @@ const ResetPasswordPopup = ({ setResetPassword }) => {
         otp
       };
 
+      // console.log(email, otp);
       const response = await (role === "user" ? verifyOtpForForgotPassword(data) : verifyOtpForHostForgotPassword(data));
       if(response.data.statusCode === 200){
         toast.success(response.data.message);
@@ -59,23 +61,23 @@ const ResetPasswordPopup = ({ setResetPassword }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 p-8 rounded-lg max-w-md w-full relative">
-        <h2 className="text-2xl font-bold mb-4">Change Password</h2>
+      <div className="bg-gray-800 py-4 px-8 md:min-w-[30rem] md:py-8 rounded-lg relative">
+        <h2 className=" text-md md:text-2xl font-bold mb-4">Change Password</h2>
         <div
           className="absolute top-10 right-10"
           onClick={() => setResetPassword(false)}
         >
-          <RxCross2 className="text-white text-xl cursor-pointer" />
+          <RxCross2 className="text-white text-md md:text-2xl relative bottom-7 left-7 cursor-pointer" />
         </div>
         <form onSubmit={handleSubmit}>
           {step === 1 && (
             <div>
-              <label className="block mb-2">Email</label>
+              <label className="block mb-2 ">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-gray-700 text-white p-2 rounded mb-4"
+                className="w-full bg-gray-700 text-white p-2 rounded mb-4 "
                 required
               />
             </div>

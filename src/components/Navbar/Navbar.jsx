@@ -16,19 +16,12 @@ function Navbar() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const encryptVisibility = localStorage.getItem(
-      "_unreal_esports_visibliltiy"
-    );
-    let decryptVisibility;
-    if (encryptVisibility) {
-      decryptVisibility = decryptData(encryptVisibility);
-    }
+    const token = localStorage.getItem("_unreal_esports_visibliltiy")
 
-
-    if (["role","host"].includes(decryptVisibility)) {
+    if (token) {
       setTimeout(() => {
         setIsCheckingAuth(false);
-      },400);
+      },600);
     } else {
       setIsCheckingAuth(false);
     }

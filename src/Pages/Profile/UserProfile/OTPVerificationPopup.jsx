@@ -3,6 +3,7 @@ import { X, ArrowRight } from "lucide-react"
 import toast from "react-hot-toast"
 import { sendOtpToHostEmailForForgotPassword, verifyOtpForForgotPassword } from "../../../http"
 import { useSelector } from "react-redux"
+import { RxCross2 } from "react-icons/rx"
 
 const OTPVerificationPopup = ({ setResetPassword, email, setOtpp }) => {
   const [otp, setOtp] = useState(["", "", "", ""])
@@ -35,10 +36,10 @@ const OTPVerificationPopup = ({ setResetPassword, email, setOtpp }) => {
     }
   }
 
-  // const handleResendOTP = () => {
-  //    Implement OTP resend logic here
-  //    console.log("Resending OTP...")
-  // }
+  const handleResendOTP = () => { 
+    // Implement OTP resend logic here
+    // console.log("Resending OTP...")
+  }
 
   const handleVerify = async () => {
     setOtpp(otp.join(""));
@@ -46,19 +47,19 @@ const OTPVerificationPopup = ({ setResetPassword, email, setOtpp }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-md w-full relative animate-fade-in-up">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl sm:py-2 sm:mx-2 md:px-4 md:py-4 relative animate-fade-in-up">
         <button
           onClick={()=>setResetPassword(false)}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
           aria-label="Close"
         >
-          <X size={24} />
+          <RxCross2 className="text-white text-md md:text-xl cursor-pointer" />
         </button>
-        <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white text-center">Verify Your Account</h2>
-        <p className="text-gray-600 dark:text-gray-300 mb-8 text-center">
+        <h2 className="text-lg md:text-2xl font-bold mb-6 text-gray-800 dark:text-white text-center">Verify Your Account</h2>
+        <p className="text-gray-600 dark:text-gray-300 mb-8 text-center text-sm md:text-lg ">
           We've sent a 4-digit code to your email. Enter it below to confirm your account.
         </p>
-        <div className="flex justify-between mb-8">
+        <div className="flex mb-8 gap-4 justify-center items-center">
           {otp.map((data, index) => (
             <input
               key={index}
@@ -68,7 +69,7 @@ const OTPVerificationPopup = ({ setResetPassword, email, setOtpp }) => {
               ref={(el) => (inputRefs.current[index] = el)}
               onChange={(e) => handleChange(e.target, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
-              className="w-12 h-14 text-center text-2xl border-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all"
+              className="md:w-12 md:h-14 w-10 h-10 text-center border-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all"
             />
           ))}
         </div>
@@ -81,7 +82,7 @@ const OTPVerificationPopup = ({ setResetPassword, email, setOtpp }) => {
           </button>
           <button
             onClick={handleVerify}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center justify-center gap-2 w-full sm:w-auto"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center justify-center gap-2 w-[10rem] sm:w-auto"
           >
             Verify
             <ArrowRight size={20} />
