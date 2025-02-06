@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa6";
-import { LuAsterisk } from "react-icons/lu";
 import { Link } from "react-router-dom";
-import { createTeam, getPreferredNameData, getUserTeam, updateUserTeam } from "../../http/index";
+import { dummyData } from "./dummyData";
+import { LuAsterisk } from "react-icons/lu";
+import {createTeam, getPreferredNameData, getUserTeam, updateUserTeam} from "../../http/index"
+import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
 
 const UserRoom = () => {
@@ -77,7 +78,7 @@ const UserRoom = () => {
       const res = await getPreferredNameData();
       setAllPreferredHostData(res.data.data);
     } catch (error) {
-      
+      console.log(error)
     }
     finally{
       setLoading(false)
@@ -122,6 +123,7 @@ const UserRoom = () => {
     setLoading(true)
     try {
       const res = await getUserTeam();
+      // console.log(res.data);
       if (res.data.data !== null) {
         setTeamName(res.data.data.teamName);
   
@@ -153,6 +155,7 @@ const UserRoom = () => {
   };
 
   const handleUpdate = async () => {
+    console.log(players, teamName);
     try {
       const res = await updateUserTeam(teamName, players);
       toast.success(res.data.message);
@@ -170,10 +173,12 @@ const UserRoom = () => {
   const createUserTeam = async (teamName, players) => {
     try {
       const res = await createTeam(teamName, players);
+      console.log(res.data);
       setTeamCreated(true);
       setIsModalOpen(false);
       toast.success(res.data.message);
     } catch (error) {
+      console.log(error);
       setIsModalOpen(true);
       toast.error(error.response.data.data);
     }
@@ -194,7 +199,7 @@ const UserRoom = () => {
       </div>
 
       <div className="flex flex-col sm:flex-row justify-between items-center w-full mt-20 mb-20 px-6">
-        <div className="relative w-full max-w-md mt-20 mb-32">
+        <div className="relative mt-20">
           <input
             type="text"
             ref={searchInputRef}
@@ -212,7 +217,7 @@ const UserRoom = () => {
           </span>
         </div>
 
-        <div className="mt-20 mb-32 flex justify-end w-full">
+        <div className="mt-20  flex justify-center md:justify-end w-full">
           {!teamCreated ? (
             <button
               onClick={toggleModal}
@@ -221,7 +226,6 @@ const UserRoom = () => {
             </button>
           ) : (
             <button
-              // onClick={handleOpenPopup}
               className="bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 focus:outline-none transition-colors duration-300 flex items-center">
               <Link onClick={toggleModal}>View Team</Link>
             </button>
